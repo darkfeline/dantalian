@@ -8,10 +8,10 @@ Specification
 Tags
 ----
 
-Files and directories can be assigned any number of tags.  Tag names must be
-unique.  If there's a name/path collision between a directory and tag, the tag
-takes precedence, and a warning will be raised.  Ideally, hitagiFS will detect
-when an action will cause this and refuse to perform the action.
+Files and directories can be assigned any number of tags.  If there's a path
+collision between a directory and tag, the tag takes precedence, and a warning
+will be raised.  Ideally, hitagiFS will detect when an action will cause this
+and refuse to perform the action.
 
 Directory hierarchy
 -------------------
