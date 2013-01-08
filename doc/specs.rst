@@ -5,57 +5,43 @@ Design
 Specification
 =============
 
-Tags
-----
+HitagiFS mounts a root directory.  Every directory under it counts as a tag,
+and files will appear under each directory it is tagged with.  Modifying one
+will modify the rest, and deleting one will not affect the others.  hitagi will
+support the following commands::
 
-Files and directories can be assigned any number of tags.  If there's a path
-collision between a directory and tag, the tag takes precedence, and a warning
-will be raised.  Ideally, hitagiFS will detect when an action will cause this
-and refuse to perform the action.
+    tag
+    utag
+    find
+    rm
+    rename
 
-Directory hierarchy
--------------------
-
-Tags are organized in a standard tree hierarchy.  Files and directories with
-the given tag will appear under the tag in the hierarchy.
-
-Interaction
------------
-
-All interactions with the mounted hitagiFS will interact with the virtual file
-system.  Creating a directory creates a tag.  Adding, moving, deleting objects
-(actual files and directories) changes that object's tags.
+Both files and tags (directories) can have multiple tags (parent directories).
+Name collisions will not be automatically resolved.  By default, tagged
+entities will retain the same name under different directories.
 
 Implementation
 ==============
 
-hitagiFS will be implemented in Python 2 using llfuse.  Metadata will be stored
-in a database (probably sqlite3).
+HitagiFS will be built on top of existing file system features, specifically
+hard links and soft links.  hfs will support ``ext4`` primarily, but should
+work for any similar file system.  HitagiFS will primarily use calls to
+standard system utils.
+
+Tsun side
+---------
+
+Files will be handled with hard links, with a possible database cache to speed
+up certain operations.
+
+Dere side
+---------
+
+Because POSIX disallows directory hard links, directories will be handled with
+soft links instead.  Tagged directories will reside in a special location in
+the root directory, and will be symlinked to all other directories.  The name
+of the directory will be kept the same when possible, and ask for a manual
+rename when necessary.  Again, information will be cached in a database.
 
 Example
 =======
-
-``/home/fag/file`` is tagged with ``loli``, ``2hu``, ``halloween``.
-hitagiFS is mounted at ``/hitagi``.
-
-Tag hierarchy::
-
-    /
-    /themes
-    /themes/loli
-    /themes/halloween
-    /sauce
-    /sauce/2hu
-
-::
-
-    $ ls /hitagi/
-    themes/
-    sauce/
-    $ ls /hitagi/themes
-    loli/
-    halloween/
-    $ ls /hitagi/themes/loli
-    file
-    $ ls /hitagi/themes/halloween
-    file
