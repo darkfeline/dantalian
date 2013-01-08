@@ -6,25 +6,23 @@ from time import time
 
 from fuse3 import Operations
 
+from hitagifs import data
+
 
 class HitagiOps(Operations):
 
     def __init__(self, fs):
         self.fs = fs
         self.fd = 0
-        now = time()
-        self.fs['/'] = dict(
-            st_mode=(S_IFDIR | 0o755), st_ctime=now, st_mtime=now,
-            st_atime=now, st_nlink=2)
 
     def chmod(self, path, mode):
-        self.fs[path]['st_mode'] &= 0o770000
-        self.fs[path]['st_mode'] |= mode
+        self.fs[path].attr['st_mode'] &= 0o770000
+        self.fs[path].attr['st_mode'] |= mode
         return 0
 
     def chown(self, path, uid, gid):
-        self.fs[path]['st_uid'] = uid
-        self.fs[path]['st_gid'] = gid
+        self.fs[path].attr['st_uid'] = uid
+        self.fs[path].attr['st_gid'] = gid
 
     def create(self, path, mode):
         self.fs[path] = dict(
