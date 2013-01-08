@@ -3,6 +3,7 @@
 from errno import ENOENT
 from stat import S_IFDIR, S_IFLNK, S_IFREG
 from time import time
+import os.path
 
 from fuse3 import Operations
 
@@ -25,20 +26,27 @@ class HitagiOps(Operations):
         self.fs[path].attr['st_gid'] = gid
 
     def create(self, path, mode):
-        self.fs[path] = dict(
-            st_mode=(S_IFREG | mode), st_nlink=1, st_size=0, st_ctime=time(),
-            st_mtime=time(), st_atime=time())
+        node = data.Tag(
+            dict(
+                st_mode=(S_IFREG | mode), st_nlink=1, st_size=0,
+                st_ctime=time(), st_mtime=time(), st_atime=time()
+            ), {})
+        path, name = os.path.split(path)
+        self.fs.addnode(path, name, node)
         self.fd += 1
         return self.fd
 
+    # until here done
+
     def getattr(self, path, fh=None):
+        node = self.fs[path]
         if path not in self.fs:
             raise OSError(ENOENT, '')
-        st = self.fs[path]
+        st = self.fs[path].attr
         return st
 
     def getxattr(self, path, name, position=0):
-        attrs = self.fs[path].get('attrs', {})
+        attrs = self.fs[path].attr.get('attrs', {})
         try:
             return attrs[name]
         except KeyError:

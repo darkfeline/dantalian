@@ -1,8 +1,22 @@
+"""
+.. class:: Tag(attr, children)
+
+.. class:: Object(attr, path)
+
+.. class:: Node
+
+.. autoclass:: HitagiFS
+
+"""
+
 import time
 import abc
 import os.path
 from stat import S_IFDIR
 from collections import namedtuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 Tag = namedtuple("Tag", ['attr', 'children'])
 Object = namedtuple("Object", ['attr', 'path'])
@@ -27,6 +41,7 @@ Node.register(Tag)
 class HitagiFS:
 
     def __init__(self):
+        logger.info('Initializing HtagiFS')
         now = time.time()
         self.root = Tag(
             dict(
@@ -35,12 +50,16 @@ class HitagiFS:
             ), [])
 
     def addnode(self, path, name, node):
+        """Add a node.  ``path`` must point to a Tag."""
+        logger.debug('addnode(%s, %s, %s)', path, name, node)
         path = splitpath(os.path.normpath(path))
         parentnode = getnode(self.root, path)
         assert isinstance(parentnode, Tag)
         parentnode.children[name] = node
 
     def __getitem__(self, key):
+        """"""
+        logger.debug('getting key %s', key)
         path = splitpath(os.path.normpath(key))
         return getnode(self.root, path)
 
