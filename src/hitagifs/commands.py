@@ -21,7 +21,11 @@ def untag(fs, *args):
 
 def find(fs, *args):
     parser = argparse.ArgumentParser(prog="hfs find")
+    parser.add_argument('tags', nargs='+')
     args = parser.parse_args(args)
+    r = fs.find(args.tags)
+    for file in r:
+        print(file)
 
 
 def rm(fs, *args):

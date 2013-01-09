@@ -6,6 +6,7 @@
 .. autoclass:: TagError
 
 """
+
 import os
 
 __all__ = ['HitagiFS', 'FSError', 'TagError']
@@ -42,7 +43,12 @@ class HitagiFS:
         self.root = os.path.abspath(root)
 
     def tag(self, file, tag):
-        """`file` is relative to current dir. `tag` is relative to FS root."""
+        """Tag `file` with `tag`.
+
+        `file` is relative to current dir. `tag` is relative to FS root.  If
+        file is already tagged, :exc:`TagError` is raised.
+
+        """
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join([dest, name])
@@ -52,7 +58,12 @@ class HitagiFS:
             raise TagError('File already tagged')
 
     def untag(self, file, tag):
-        """`file` is relative to current dir. `tag` is relative to FS root."""
+        """Remove `tag` from `file`.
+
+        `file` is relative to current dir. `tag` is relative to FS root.  If
+        file is not tagged, :exc:`TagError` is raised.
+
+        """
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join([dest, name])
@@ -60,6 +71,20 @@ class HitagiFS:
             os.unlink(dest)
         except OSError:
             raise TagError('File not tagged')
+
+    def find(self, tags):
+        """Return a list of files with all of the given tags.
+
+        `tags` is a list. `tags` is left unchanged.  Returns a list.
+
+        """
+        tag = tags[:].pop(0)
+        path = self._get_tag_path(tag)
+        files = set(os.listdir(path))
+        for tag in tags:
+            path = self._get_tag_path(tag)
+            files &= set(os.listdir(path))
+        return list(files)
 
     def _get_tag_path(self, tag):
         path = os.path.join(self.root, tag)
