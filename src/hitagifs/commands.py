@@ -38,7 +38,10 @@ def rm(fs, *args):
 
 def rename(fs, *args):
     parser = argparse.ArgumentParser(prog="hfs rename")
+    parser.add_argument('source')
+    parser.add_argument('dest')
     args = parser.parse_args(args)
+    fs.rename(args.source, args.dest)
 
 
 def init(fs, *args):

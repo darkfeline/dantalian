@@ -1,10 +1,7 @@
 """
 .. autoclass:: HitagiFS
-
 .. autoclass:: FSError
-
 .. autoclass:: TagError
-
 .. autoclass:: DependencyError
 
 """
@@ -23,8 +20,10 @@ class HitagiFS:
     :func:`os.path.abspath` prior to being stored internally or returned.
 
     .. automethod:: tag
-
     .. automethod:: untag
+    .. automethod:: find
+    .. automethod:: rm
+    .. automethod:: rename
 
     """
 
@@ -93,11 +92,45 @@ class HitagiFS:
         """Removes all tags from `file`.
 
         `file` is a path relative to the current dir.  If `file` is not tagged,
-        nothing happens.  Relies on 'find' utility, for sheer simplicity and
-        speed.  If it cannot be found, :exc:`DependencyError` is raised.
+        nothing happens.
 
-        In essence, this removes all tracked hard links to `file`!  If no other
-        hard links exist, `file` is deleted.
+        .. warning::
+            In essence, this removes all tracked hard links to `file`!  If no
+            other hard links exist, `file` is deleted.
+
+        """
+        for file in self._get_all(file):
+            os.unlink(file)
+
+    def rename(self, source, dest, tag=None):
+        """Rename tracked file.
+
+        Rename all tracked hard links of `source` to `dest`.  If file is not
+        tagged, nothing happens.  If `tag` is given, only that singular
+        instance of file is renamed.  If any name collisions exist, nothing
+        will be renamed and :exc:`FSError` will be raised.
+
+        .. warning::
+            Don't use single rename yet.  Without a database, it will break
+            tracking, probably.
+
+        """
+        output = self._get_all(source)
+        for file in output:
+            head = os.path.dirname(file)
+            new = os.path.join([head, dest])
+            if os.path.exists(new):
+                raise FSError('{} exists'.format(new))
+        for file in output:
+            head = os.path.dirname(file)
+            new = os.path.join([head, dest])
+            os.rename(file, new)
+
+    def _get_all(self, file):
+        """Get all tracked hard links of `file`.
+
+        Relies on 'find' utility, for sheer simplicity and
+        speed.  If it cannot be found, :exc:`DependencyError` is raised.
 
         """
         try:
@@ -106,8 +139,6 @@ class HitagiFS:
         except FileNotFoundError:
             raise DependencyError("'find' could not be found")
         output = output.decode().rstrip().split('\n')
-        for file in output:
-            os.unlink(file)
 
     def _get_tag_path(self, tag):
         path = os.path.join(self.root, tag)
@@ -119,12 +150,12 @@ class HitagiFS:
 
 
 class FSError(Exception):
-    pass
+    """File system error"""
 
 
 class TagError(Exception):
-    pass
+    """Tag error"""
 
 
 class DependencyError(Exception):
-    pass
+    """Dependency error"""
