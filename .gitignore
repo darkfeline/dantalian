@@ -1,1 +1,8 @@
-virt-env/
+*.sw[op]
+__pycache__/
+*.py[co]
+
+/build/
+/dist/
+
+/virt-env/
