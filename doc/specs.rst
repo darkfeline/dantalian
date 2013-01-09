@@ -8,13 +8,25 @@ Specification
 HitagiFS mounts a root directory.  Every directory under it counts as a tag,
 and files will appear under each directory it is tagged with.  Modifying one
 will modify the rest, and deleting one will not affect the others.  hitagi will
-support the following commands::
+support the following commands:
 
-    tag
-    utag
-    find
-    rm
-    rename
+tag
+    Tag a file
+
+untag
+    Remove a tag from a file
+
+find
+    Find all files with the given tags
+
+rm
+    Remove a file globally
+
+rename
+    Rename a file globally or a single instance
+
+init
+    Create and initialize new FS
 
 Both files and tags (directories) can have multiple tags (parent directories).
 Name collisions will not be automatically resolved.  By default, tagged

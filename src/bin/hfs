@@ -3,11 +3,14 @@
 import sys
 import argparse
 
-from hitagi import commands
+from hitagifs import commands
+from hitagifs.fs import HitagiFS
 
 parser = argparse.ArgumentParser(prog="hfs", desc="hitagiFS CLI tool")
 parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
+parser.add_argument('--root')
 
 args = parser.parse_args(sys.argv[1:])
-getattr(commands, args.command)(*args.args)
+fs = HitagiFS(getattr(args, 'root', None))
+getattr(commands, args.command)(fs, *args.args)
