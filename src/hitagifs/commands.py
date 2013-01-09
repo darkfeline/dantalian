@@ -30,7 +30,10 @@ def find(fs, *args):
 
 def rm(fs, *args):
     parser = argparse.ArgumentParser(prog="hfs rm")
+    parser.add_argument('files', nargs='+')
     args = parser.parse_args(args)
+    for file in args.files:
+        fs.rm(file)
 
 
 def rename(fs, *args):

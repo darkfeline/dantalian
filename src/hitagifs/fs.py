@@ -5,11 +5,14 @@
 
 .. autoclass:: TagError
 
+.. autoclass:: DependencyError
+
 """
 
 import os
+import subprocess
 
-__all__ = ['HitagiFS', 'FSError', 'TagError']
+__all__ = ['HitagiFS', 'FSError', 'TagError', 'DependencyError']
 
 
 class HitagiFS:
@@ -86,6 +89,26 @@ class HitagiFS:
             files &= set(os.listdir(path))
         return list(files)
 
+    def rm(self, file):
+        """Removes all tags from `file`.
+
+        `file` is a path relative to the current dir.  If `file` is not tagged,
+        nothing happens.  Relies on 'find' utility, for sheer simplicity and
+        speed.  If it cannot be found, :exc:`DependencyError` is raised.
+
+        In essence, this removes all tracked hard links to `file`!  If no other
+        hard links exist, `file` is deleted.
+
+        """
+        try:
+            output = subprocess.check_output(
+                ['find', self.root, '-samefile', file])
+        except FileNotFoundError:
+            raise DependencyError("'find' could not be found")
+        output = output.decode().rstrip().split('\n')
+        for file in output:
+            os.unlink(file)
+
     def _get_tag_path(self, tag):
         path = os.path.join(self.root, tag)
         if not os.path.isdir(path):
@@ -100,4 +123,8 @@ class FSError(Exception):
 
 
 class TagError(Exception):
+    pass
+
+
+class DependencyError(Exception):
     pass
