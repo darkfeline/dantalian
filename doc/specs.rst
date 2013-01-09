@@ -57,5 +57,11 @@ the root directory, and will be symlinked to all other directories.  The name
 of the directory will be kept the same when possible, and ask for a manual
 rename when necessary.  Again, information will be cached in a database.
 
+Thankfully, soft links *are* files, so can then be hard linked and tracked as
+per Tsun implementation, with some extra tracking metadata.
+
+Database Specification
+----------------------
+
 Example
 =======
