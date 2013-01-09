@@ -10,6 +10,5 @@ setup(
     url='http://abagofapples.com/',
     package_dir={'': 'src'},
     packages=['hitagifs'],
-    modules=['fuse3'],
-    scripts=['src/bin/torrent-preview'],
+    scripts=['src/bin/hfs'],
 )

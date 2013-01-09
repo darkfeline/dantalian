@@ -26,7 +26,9 @@ Implementation
 HitagiFS will be built on top of existing file system features, specifically
 hard links and soft links.  hfs will support ``ext4`` primarily, but should
 work for any similar file system.  HitagiFS will primarily use calls to
-standard system utils.
+standard system utils.  As HitagiFS makes extensive use of hard links,
+everything under its root must belong to one file system, that supports hard
+links.
 
 Tsun side
 ---------
