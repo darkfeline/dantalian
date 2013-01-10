@@ -7,7 +7,8 @@ from hitagifs import commands
 from hitagifs.fs import HitagiFS
 
 parser = argparse.ArgumentParser(
-    prog="hfs", description="hitagiFS CLI tool.  Check docs for usage.")
+    prog="hfs", add_help=False,
+    description="hitagiFS CLI tool.  Check docs for usage.")
 parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
 parser.add_argument('--loglevel', action='store', default='warn')
