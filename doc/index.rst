@@ -10,5 +10,6 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    quickstart
     specs
     api
