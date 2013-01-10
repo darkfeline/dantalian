@@ -57,4 +57,5 @@ def mount(*args):
     logger.debug('mount(%s)', args)
     parser = argparse.ArgumentParser(prog="hfs mount")
     parser.add_argument('root')
+    args = parser.parse_args(args)
     fs.mount(args.root)
