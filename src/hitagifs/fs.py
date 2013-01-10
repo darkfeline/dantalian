@@ -23,10 +23,10 @@ class HitagiFS:
     @classmethod
     def init(cls, root):
         root = os.path.join(root, cls.root_dir)
-        logging.debug('mkdir %s', root)
+        logger.debug('mkdir %s', root)
         os.mkdir(root)
         bin = os.path.join(root, 'bin')
-        logging.debug('mkdir %s', bin)
+        logger.debug('mkdir %s', bin)
         os.mkdir(bin)
         _install(
             os.path.join(cls.data_dir, 'activate'),
