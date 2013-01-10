@@ -17,10 +17,7 @@ class HitagiFS:
 
     _root_dir = '.hitagifs'
     _root_file = os.path.join(_root_dir, 'root')
-    _bin_dir = os.path.join(_root_dir, 'bin')
     _dirs_dir = os.path.join(_root_dir, 'dirs')
-
-    _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
     @classmethod
     def init(cls, root):
@@ -44,16 +41,6 @@ class HitagiFS:
             with open(root_file, 'w') as f:
                 f.write(root)
 
-        bin = os.path.join(root, cls._bin_dir)
-        logger.debug('mkdir %s', bin)
-        try:
-            os.mkdir(bin)
-        except FileExistsError:
-            logger.debug('skipping %s; exists', bin)
-        _install(
-            os.path.join(cls._data_dir, 'activate'),
-            os.path.join(bin, 'activate'), root=root)
-
         dirs = os.path.join(root, cls._dirs_dir)
         try:
             dirs = os.mkdir(dirs)
@@ -64,19 +51,16 @@ class HitagiFS:
 
     def __init__(self, root=None):
         """
-        If `root` is ``None``, HitagiFS will get `root` from the environment
-        variable ``HITAGIFS_ROOT``.  If it's not set, it will raise
-        :exc:`FSError`.  Otherwise, `root` will be used.  Either way, the path
-        will be normalized with :func:`os.path.abspath`.  If `root` is not a
-        directory, :exc:`NotADirectoryError` will be raised.
+        If `root` is ``None``, HitagiFS will search up the directory tree for
+        the first hitagifs (a directory that contains ``.hitagifs``) it finds
+        and use that.  If none are found, raises :exc:`FSError`.  Otherwise,
+        `root` will be used.  Either way, the path will be normalized with
+        :func:`os.path.abspath`.  If `root` is not a directory,
+        :exc:`NotADirectoryError` will be raised.
 
         """
         if root is None:
-            try:
-                root = os.environ['HITAGIFS_ROOT']
-                logger.debug('got root from env')
-            except KeyError:
-                raise FSError('HITAGIFS_ROOT not set')
+            self._find_root(os.getcwd())
         if not os.path.isdir(root):
             raise NotADirectoryError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
@@ -266,18 +250,23 @@ class HitagiFS:
         path = os.path.abspath(path)
         return path
 
+    @classmethod
+    def _find_root(cls, dir):
+        """Find the first hitagiFS root directory above `dir`.
 
-def _install(file, dest, *args, **kwargs):
-    """
-    Install `file` to `dest`, passing `args` and `kwargs` to ``format()``
+        If none are found, raises :exc:`FSError`.
 
-    """
-    logger.debug('installing %s to %s with %s, %s', file, dest, args, kwargs)
-    with open(file) as f:
-        data = f.read()
-    data = data.format(*args, **kwargs)
-    with open(dest, 'w') as f:
-        f.write(data)
+        """
+        assert os.path.isdir(dir)
+        dir = os.path.abspath(dir)
+        while dir:
+            if cls._root_dir in os.listdir(dir):
+                return dir
+            else:
+                if dir == '/':
+                    break
+                dir = os.path.dirname(dir)
+        raise FSError('No root found')
 
 
 class FSError(Exception):
