@@ -22,6 +22,7 @@ class HitagiFS:
 
     @classmethod
     def init(cls, root):
+        logger.debug('init(%s)', root)
         root = os.path.join(root, cls.root_dir)
         logger.debug('mkdir %s', root)
         os.mkdir(root)
