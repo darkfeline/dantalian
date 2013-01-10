@@ -183,7 +183,7 @@ def _install(file, dest, *args, **kwargs):
     with open(file) as f:
         data = f.read()
     data = data.format(*args, **kwargs)
-    with open(dest) as f:
+    with open(dest, 'w') as f:
         f.write(data)
 
 
