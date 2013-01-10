@@ -31,11 +31,8 @@ rename
 convert
     Convert a directory to a symlink (so it's taggable)
 
-rebuild
-    Fix symlinks after moving the hitagifs
-
 init
-    Create and initialize a hitagifs
+    Create and initialize a hitagifs.
 
 Both files and converted directories/tags can have multiple tags.  Unconverted
 directories can only have one tag.  Name collisions will not be automatically
@@ -50,9 +47,10 @@ hard links, and supports any underlying (POSIX-compliant?) system that supports
 hard links.  hitagiFS will primarily use calls to builtin Python library
 :mod:`os` utils and standard system utils.  As hitagiFS makes extensive use of
 hard links, everything under its root must belong to one file system.  As an
-implementation detail, the hitagiFS should not be moved after creation.
-Eventually, a helper script will be added to fix things after moving the
-hitagiFS.
+implementation detail, due to having to symlink directories, take care moving
+the hitagiFS after creation.  Running ``hfs init`` on it after moving will
+fix all of the symlinks (Running any command will fix it).  This may take some
+time.
 
 Tsun side
 ---------
