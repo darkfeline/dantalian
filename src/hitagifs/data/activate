@@ -37,6 +37,11 @@ export HITAGIFS_ROOT="{root}"
 _OLD_VIRTUAL_PATH="$PATH"
 export PATH="$HITAGIFS_ROOT/bin:$PATH"
 
+if [ -z "$VIRTUAL_ENV_DISABLE_PROMPT" ] ; then
+    _OLD_VIRTUAL_PS1="$PS1"
+    export PS1="(hitagifs:`basename\"$VIRTUAL_ENV\"`)$PS1"
+fi
+
 # This should detect bash and zsh, which have a hash command that must
 # be called to get it to forget past commands.  Without forgetting
 # past commands the $PATH changes we made may not be respected
