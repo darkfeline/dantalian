@@ -9,9 +9,7 @@ logger = logging.getLogger(__name__)
 class HitagiFS:
 
     """
-    HitagiFS virtual file system.  All paths are handled internally as
-    normalized absolute paths.  All external paths are sanitized with
-    :func:`os.path.abspath` prior to being stored internally or returned.
+    HitagiFS virtual file system.
 
     .. automethod:: __init__
 
@@ -162,8 +160,8 @@ class HitagiFS:
     def _get_all(self, file):
         """Get all tracked hard links of `file`.
 
-        Relies on 'find' utility, for sheer simplicity and
-        speed.  If it cannot be found, :exc:`DependencyError` is raised.
+        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
+        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
 
         """
         try:
@@ -175,6 +173,7 @@ class HitagiFS:
         return output
 
     def _get_tag_path(self, tag):
+        """Get absolute path of `tag`."""
         path = os.path.join(self.root, tag)
         if not os.path.isdir(path):
             raise TagError(
