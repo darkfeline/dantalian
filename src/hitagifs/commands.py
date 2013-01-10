@@ -1,10 +1,7 @@
 import argparse
 import logging
-import os
 
-from hitagifs import fs
-
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'mount']
+__all__ = ['tag', 'untag', 'find', 'rm', 'rename']
 logger = logging.getLogger(__name__)
 
 
@@ -52,14 +49,3 @@ def rename(fs, *args):
     parser.add_argument('dest')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
-
-
-def mount(*args):
-    logger.debug('mount(%s)', args)
-    parser = argparse.ArgumentParser(prog="hfs mount", add_help=False)
-    parser.add_argument('root', nargs='*')
-    args = parser.parse_args(args)
-    if args.root:
-        fs.mount(args.root)
-    else:
-        fs.mount(os.getcwd())

@@ -2,7 +2,7 @@ import os
 import subprocess
 import logging
 
-__all__ = ['mount', 'HitagiFS', 'FSError', 'TagError', 'DependencyError']
+__all__ = ['HitagiFS', 'FSError', 'TagError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
 
@@ -150,15 +150,6 @@ class HitagiFS:
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         path = os.path.abspath(path)
         return path
-
-
-def mount(root):
-    """Mount hitagiFS at `root`.
-
-    Sets environment variable ``HITAGIFS_ROOT``.
-
-    """
-    os.environ['HITAGIFS_ROOT'] = os.path.abspath(root)
 
 
 class FSError(Exception):
