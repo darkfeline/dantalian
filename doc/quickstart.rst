@@ -30,50 +30,123 @@ or::
     $ cd test
     $ hfs init
 
-Navigate into the directory, and activate the hitagifs::
+Navigate into the directory.  hitagiFS will look through parent directories to
+find a hitagifs to work with, but you can also specify a specific directory::
 
-    $ cd test
-    $ source .hitagifs/bin/activate
 
-.. warning::
-    This may interact with python's virtualenv in unpredictable ways.  I've
-    used the two together without issue, but I haven't checked extensively.
-
-Your prompt should now show that it is activated::
-
-    (hitagifs:test)$
+    $ hfs --root=/path/to/root <command>
 
 Make a few tags (tags are directories!)::
 
-    (hitagifs:test)$ mkdir -p pics/kitty
-    (hitagifs:test)$ mkdir -p pics/fruit
-    (hitagifs:test)$ mkdir -p food
-    (hitagifs:test)$ tree .
+    $ mkdir -p pics/kitty
+    $ mkdir -p pics/fruit
+    $ mkdir -p food
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   └── fruit
+    ├── food
+    └── 1.jpg
+
+Tag a few photos::
+
+    $ hfs tag pics/kitty 1.jpg
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 1.jpg
+    │   └── fruit
+    ├── food
+    └── 1.jpg
+    $ hfs tag food 1.jpg
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 1.jpg
+    │   └── fruit
+    ├── food
+    │   └── 1.jpg
+    └── 1.jpg
+
+Untag::
+
+    $ hfs untag food 1.jpg
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 1.jpg
+    │   └── fruit
+    ├── food
+    └── 1.jpg
+
+Rename::
+
+    $ hfs rename 1.jpg 2.jpg
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 2.jpg
+    │   └── fruit
+    ├── food
+    └── 2.jpg
+
+Convert a directory so you can tag it::
+
+    $ hfs convert pics/fruit
+    $ hfs tag food pics/fruit
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 2.jpg
+    │   └── fruit
+    ├── food
+    │   └── fruit
+    └── 2.jpg
+    $ hfs tag pics/fruit 2.jpg
+    $ tree .
+    .
+    ├── pics
+    │   ├── kitty
+    │   │   └── 2.jpg
+    │   └── fruit
+    │       └── 2.jpg
+    ├── food
+    │   └── fruit
+    │       └── 2.jpg
+    └── 2.jpg
+
+Delete a file::
+
+    $ hfs rm 2.jpg
+    $ tree .
     .
     ├── pics
     │   ├── kitty
     │   └── fruit
     └── food
+        └── fruit
 
-Tag a few photos (you can nagivate somewhere else)::
+You can also look for multiple tags at once::
 
-    (hitagifs:test)$ cd ..
-    (hitagifs:test)$ hfs tag pics/kitty 1.jpg
-    (hitagifs:test)$ tree test
-    test
+    $ tree .
+    .
     ├── pics
     │   ├── kitty
-    │   │   └── 1.jpg
+    │   │   ├── 1.jpg
+    │   │   └── 2.jpg
     │   └── fruit
     └── food
-    (hitagifs:test)$ hfs tag food 1.jpg
-    (hitagifs:test)$ tree test
-    test
-    ├── pics
-    │   ├── kitty
-    │   │   └── 1.jpg
-    │   └── fruit
-    └── food
-        └── 1.jpg
+        └── 2.jpg
+    $ hfs find pics/kitty
+    1.jpg
+    2.jpg
+    $ hfs find pics/kitty food
+    2.jpg
 
-Check the specification for all the commands and internal details.
+Make sure to check the rest of the documentation for specifics.
