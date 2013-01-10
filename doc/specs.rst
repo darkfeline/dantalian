@@ -49,8 +49,8 @@ hard links.  hitagiFS will primarily use calls to builtin Python library
 hard links, everything under its root must belong to one file system.  As an
 implementation detail, due to having to symlink directories, take care moving
 the hitagiFS after creation.  Running ``hfs init`` on it after moving will
-fix all of the symlinks (Running any command will fix it).  This may take some
-time.
+fix all of the symlinks (Running any command will fix it, but you don't have to
+look for something to tag or find if you use ``hfs init`` ).
 
 Tsun side
 ---------
