@@ -164,6 +164,7 @@ class HitagiFS:
         except FileNotFoundError:
             raise DependencyError("'find' could not be found")
         output = output.decode().rstrip().split('\n')
+        return output
 
     def _get_tag_path(self, tag):
         path = os.path.join(self.root, tag)
