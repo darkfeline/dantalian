@@ -94,6 +94,10 @@ class HitagiFS:
         nothing happens.
 
         .. warning::
+            Currently has no safety measure if unlinking one of the hard links
+            fails.  If that happens, state will be left halfway.
+
+        .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
             other hard links exist, `file` is deleted.
 
@@ -109,10 +113,6 @@ class HitagiFS:
         tagged, nothing happens.  If `tag` is given, only that singular
         instance of file is renamed.  If any name collisions exist, nothing
         will be renamed and :exc:`FSError` will be raised.
-
-        .. warning::
-            Don't use single rename yet.  Without a database, it will break
-            tracking, probably.
 
         """
         output = self._get_all(source)
