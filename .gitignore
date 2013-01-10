@@ -7,3 +7,5 @@ __pycache__/
 
 /virt-env/
 /bugs.otl
+
+/test/
