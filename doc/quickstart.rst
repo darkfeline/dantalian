@@ -36,6 +36,10 @@ Navigate into the directory, and activate the hitagifs::
     $ cd test
     $ source .hitagifs/bin/activate
 
+.. warning::
+    This may interact with python's virtualenv in unpredictable ways.  I've
+    used the two together without issue, but I haven't checked extensively.
+
 Your prompt should now show that it is activated::
 
     (hitagifs:test)$
