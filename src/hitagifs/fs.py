@@ -17,6 +17,21 @@ class HitagiFS:
 
     """
 
+    root_dir = '.hitagifs'
+    data_dir = os.path.join([__file__, 'data'])
+
+    @classmethod
+    def init(cls, root):
+        root = os.path.join([root, cls.root_dir])
+        logging.debug('mkdir %s', root)
+        os.mkdir(root)
+        bin = os.path.join([root, 'bin'])
+        logging.debug('mkdir %s', bin)
+        os.mkdir(bin)
+        _install(
+            os.path.join([cls.data_dir, 'activate']),
+            os.path.join([bin, 'activate']), {'root': root})
+
     def __init__(self, root=None):
         """
         If `root` is ``None``, HitagiFS will get `root` from the environment
@@ -150,6 +165,19 @@ class HitagiFS:
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         path = os.path.abspath(path)
         return path
+
+
+def _install(file, dest, *args, **kwargs):
+    """
+    Install `file` to `dest`, passing `args` and `kwargs` to ``format()``
+
+    """
+    logger.debug('installing %s to %s with %s, %s', file, dest, args, kwargs)
+    with open(file) as f:
+        data = f.read()
+    data = data.format(*args, **kwargs)
+    with open(dest) as f:
+        f.write(data)
 
 
 class FSError(Exception):

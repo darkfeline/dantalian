@@ -10,5 +10,6 @@ setup(
     url='http://abagofapples.com/',
     package_dir={'': 'src'},
     packages=['hitagifs'],
+    package_data={'hitagifi': ['src/hitagifs/data/*']},
     scripts=['src/bin/hfs'],
 )

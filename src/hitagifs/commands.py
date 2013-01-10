@@ -1,7 +1,10 @@
 import argparse
 import logging
+import os
 
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename']
+from hitagifs.fs import HitagiFS
+
+__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'init']
 logger = logging.getLogger(__name__)
 
 
@@ -49,3 +52,11 @@ def rename(fs, *args):
     parser.add_argument('dest')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
+
+
+def init(*args):
+    logger.debug('init(%s)', args)
+    parser = argparse.ArgumentParser(prog="hfs init", add_help=False)
+    parser.add_argument('root', nargs="?", default=os.getcwd())
+    args = parser.parse_args(args)
+    HitagiFS.init(args.root)

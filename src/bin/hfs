@@ -29,5 +29,8 @@ logger.setLevel(args.loglevel.upper())
 if args.logfilter:
     handler.addFilter(logging.Filter(args.logfilter))
 
-fs = HitagiFS(getattr(args, 'root', None))
-getattr(commands, args.command)(fs, *args.args)
+if args.command in ('init'):
+    getattr(commands, args.command)(*args.args)
+else:
+    fs = HitagiFS(getattr(args, 'root', None))
+    getattr(commands, args.command)(fs, *args.args)
