@@ -91,6 +91,14 @@ class HitagiFS:
         except OSError:
             raise TagError('File not tagged')
 
+    def listtags(self, file):
+        """Return a list of all tags of `file`"""
+        files = self._get_all(file)
+        return [os.path.dirname(file).replace(self.root, '') for file in files]
+
+    def convert(self, dir):
+        """Convert a directory to a symlink."""
+
     def find(self, tags):
         """Return a list of files with all of the given tags.
 

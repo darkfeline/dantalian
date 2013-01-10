@@ -4,7 +4,7 @@ import os
 
 from hitagifs.fs import HitagiFS
 
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'init']
+__all__ = ['tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'init']
 logger = logging.getLogger(__name__)
 
 
@@ -24,6 +24,16 @@ def untag(fs, *args):
     parser.add_argument('file')
     args = parser.parse_args(args)
     fs.untag(args.file, args.tag)
+
+
+def tags(fs, *args):
+    logger.debug('tags(%s, %s)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs tags", add_help=False)
+    parser.add_argument('file')
+    args = parser.parse_args(args)
+    r = fs.listtags(args.file)
+    for tag in r:
+        print(tag)
 
 
 def find(fs, *args):
@@ -52,6 +62,12 @@ def rename(fs, *args):
     parser.add_argument('dest')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
+
+
+def convert(fs, *args):
+    logger.debug('convert(%s, %s)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs convert", add_help=False)
+    args = parser.parse_args(args)
 
 
 def init(*args):
