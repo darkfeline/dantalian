@@ -23,13 +23,13 @@ class HitagiFS:
     @classmethod
     def init(cls, root):
         logger.debug('init(%s)', root)
-        root = os.path.join(root, cls.root_dir)
-        logger.debug('mkdir %s', root)
+        root_dir = os.path.join(root, cls.root_dir)
+        logger.debug('mkdir %s', root_dir)
         try:
-            os.mkdir(root)
+            os.mkdir(root_dir)
         except OSError:
-            logger.debug('skipping %s; exists', root)
-        bin = os.path.join(root, 'bin')
+            logger.debug('skipping %s; exists', root_dir)
+        bin = os.path.join(root_dir, 'bin')
         logger.debug('mkdir %s', bin)
         try:
             os.mkdir(bin)
