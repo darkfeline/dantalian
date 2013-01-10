@@ -37,7 +37,7 @@ class HitagiFS:
             logger.debug('skipping %s; exists', bin)
         _install(
             os.path.join(cls.data_dir, 'activate'),
-            os.path.join(bin, 'activate'), {'root': root})
+            os.path.join(bin, 'activate'), root=root)
 
     def __init__(self, root=None):
         """
