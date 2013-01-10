@@ -22,7 +22,6 @@ deactivate () {{
         unset _OLD_VIRTUAL_PS1
     fi
 
-    unset VIRTUAL_ENV
     if [ ! "$1" = "nondestructive" ] ; then
     # Self destruct!
         unset -f deactivate
@@ -30,7 +29,7 @@ deactivate () {{
 }}
 
 # unset irrelevant variables
-deactivate nondestructive
+#deactivate nondestructive
 
 export HITAGIFS_ROOT="{root}"
 
@@ -39,7 +38,7 @@ export PATH="$HITAGIFS_ROOT/bin:$PATH"
 
 if [ -z "$VIRTUAL_ENV_DISABLE_PROMPT" ] ; then
     _OLD_VIRTUAL_PS1="$PS1"
-    export PS1="(hitagifs:`basename\"$VIRTUAL_ENV\"`)$PS1"
+    export PS1="(hitagifs:`basename \"$HITAGIFS_ROOT\"`)$PS1"
 fi
 
 # This should detect bash and zsh, which have a hash command that must
