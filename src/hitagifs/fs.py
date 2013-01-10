@@ -19,6 +19,7 @@ class HitagiFS:
     normalized absolute paths.  All external paths are sanitized with
     :func:`os.path.abspath` prior to being stored internally or returned.
 
+    .. automethod:: __init__
     .. automethod:: tag
     .. automethod:: untag
     .. automethod:: find

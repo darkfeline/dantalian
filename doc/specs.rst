@@ -25,9 +25,6 @@ rm
 rename
     Rename a file globally or a single instance
 
-init
-    Create and initialize new FS
-
 Both files and tags (directories) can have multiple tags (parent directories).
 Name collisions will not be automatically resolved.  By default, tagged
 entities will retain the same name under different directories.

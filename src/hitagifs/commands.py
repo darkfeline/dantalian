@@ -1,6 +1,6 @@
 import argparse
 
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'init']
+__all__ = ['tag', 'untag', 'find', 'rm', 'rename']
 
 
 def tag(fs, *args):
@@ -42,8 +42,3 @@ def rename(fs, *args):
     parser.add_argument('dest')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
-
-
-def init(fs, *args):
-    parser = argparse.ArgumentParser(prog="hfs init")
-    args = parser.parse_args(args)
