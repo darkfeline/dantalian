@@ -147,15 +147,15 @@ class HitagiFS:
         will be renamed and :exc:`FileExistsError` will be raised.
 
         """
-        output = self._get_all(source)
-        logger.debug('found to rename %s', output)
-        for file in output:
+        files = self._get_all(source)
+        logger.debug('found to rename %s', files)
+        for file in files:
             head = os.path.dirname(file)
             new = os.path.join(head, dest)
             if os.path.exists(new):
                 raise FileExistsError('{} exists'.format(new))
         logger.info('rename check okay')
-        for file in output:
+        for file in files:
             head = os.path.dirname(file)
             new = os.path.join(head, dest)
             logger.debug('renaming %s %s', file, new)
