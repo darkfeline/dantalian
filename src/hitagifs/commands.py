@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 
 from hitagifs import fs
 
@@ -55,7 +56,10 @@ def rename(fs, *args):
 
 def mount(*args):
     logger.debug('mount(%s)', args)
-    parser.add_argument('root')
     parser = argparse.ArgumentParser(prog="hfs mount", add_help=False)
+    parser.add_argument('root', nargs='*')
     args = parser.parse_args(args)
-    fs.mount(args.root)
+    if args.root:
+        fs.mount(args.root)
+    else:
+        fs.mount(os.getcwd())
