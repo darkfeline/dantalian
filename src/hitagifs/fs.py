@@ -2,7 +2,7 @@ import os
 import subprocess
 import logging
 
-__all__ = ['HitagiFS', 'FSError', 'TagError', 'DependencyError']
+__all__ = ['HitagiFS', 'FSError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
 
@@ -45,7 +45,8 @@ class HitagiFS:
         If `root` is ``None``, HitagiFS will get `root` from the environment
         variable ``HITAGIFS_ROOT``.  If it's not set, it will raise
         :exc:`FSError`.  Otherwise, `root` will be used.  Either way, the path
-        will be normalized with :func:`os.path.abspath`.
+        will be normalized with :func:`os.path.abspath`.  If `root` is not a
+        directory, :exc:`NotADirectoryError` will be raised.
 
         """
         if root is None:
@@ -55,7 +56,7 @@ class HitagiFS:
             except KeyError:
                 raise FSError('HITAGIFS_ROOT not set')
         if not os.path.isdir(root):
-            raise FSError("Root {} isn't a directory".format(root))
+            raise NotADirectoryError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
         logger.info('HitagiFS initialized')
         logger.debug('root is %s', self.root)
@@ -64,7 +65,7 @@ class HitagiFS:
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is already tagged, :exc:`TagError` is raised.
+        file is already tagged, :exc:`FileExistsError` is raised.
 
         """
         dest = self._get_tag_path(tag)
@@ -73,14 +74,14 @@ class HitagiFS:
         try:
             logger.debug('tagging %s %s', file, dest)
             os.link(file, dest)
-        except OSError:
-            raise TagError('File already tagged')
+        except FileExistsError:
+            raise FileExistsError('File already tagged')
 
     def untag(self, file, tag):
         """Remove `tag` from `file`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is not tagged, :exc:`TagError` is raised.
+        file is not tagged, :exc:`FileNotFoundError` is raised.
 
         """
         dest = self._get_tag_path(tag)
@@ -89,8 +90,8 @@ class HitagiFS:
         try:
             logger.debug('untagging %s %s', file, dest)
             os.unlink(dest)
-        except OSError:
-            raise TagError('File not tagged')
+        except FileNotFoundError:
+            raise FileNotFoundError('File not tagged')
 
     def listtags(self, file):
         """Return a list of all tags of `file`"""
@@ -143,7 +144,7 @@ class HitagiFS:
         Rename all tracked hard links of `source` to `dest`.  If file is not
         tagged, nothing happens.  If `tag` is given, only that singular
         instance of file is renamed.  If any name collisions exist, nothing
-        will be renamed and :exc:`FSError` will be raised.
+        will be renamed and :exc:`FileExistsError` will be raised.
 
         """
         output = self._get_all(source)
@@ -152,7 +153,7 @@ class HitagiFS:
             head = os.path.dirname(file)
             new = os.path.join(head, dest)
             if os.path.exists(new):
-                raise FSError('{} exists'.format(new))
+                raise FileExistsError('{} exists'.format(new))
         logger.info('rename check okay')
         for file in output:
             head = os.path.dirname(file)
@@ -179,7 +180,7 @@ class HitagiFS:
         """Get absolute path of `tag`."""
         path = os.path.join(self.root, tag)
         if not os.path.isdir(path):
-            raise TagError(
+            raise NotADirectoryError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         path = os.path.abspath(path)
         return path
@@ -200,10 +201,6 @@ def _install(file, dest, *args, **kwargs):
 
 class FSError(Exception):
     """File system error"""
-
-
-class TagError(Exception):
-    """Tag error"""
 
 
 class DependencyError(Exception):
