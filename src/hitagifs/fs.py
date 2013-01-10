@@ -18,19 +18,19 @@ class HitagiFS:
     """
 
     root_dir = '.hitagifs'
-    data_dir = os.path.join([__file__, 'data'])
+    data_dir = os.path.join(__file__, 'data')
 
     @classmethod
     def init(cls, root):
-        root = os.path.join([root, cls.root_dir])
+        root = os.path.join(root, cls.root_dir)
         logging.debug('mkdir %s', root)
         os.mkdir(root)
-        bin = os.path.join([root, 'bin'])
+        bin = os.path.join(root, 'bin')
         logging.debug('mkdir %s', bin)
         os.mkdir(bin)
         _install(
-            os.path.join([cls.data_dir, 'activate']),
-            os.path.join([bin, 'activate']), {'root': root})
+            os.path.join(cls.data_dir, 'activate'),
+            os.path.join(bin, 'activate'), {'root': root})
 
     def __init__(self, root=None):
         """
@@ -61,7 +61,7 @@ class HitagiFS:
         """
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
-        dest = os.path.join([dest, name])
+        dest = os.path.join(dest, name)
         try:
             logger.debug('tagging %s %s', file, dest)
             os.link(file, dest)
@@ -77,7 +77,7 @@ class HitagiFS:
         """
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
-        dest = os.path.join([dest, name])
+        dest = os.path.join(dest, name)
         try:
             logger.debug('untagging %s %s', file, dest)
             os.unlink(dest)
@@ -134,13 +134,13 @@ class HitagiFS:
         logger.debug('found to rename %s', output)
         for file in output:
             head = os.path.dirname(file)
-            new = os.path.join([head, dest])
+            new = os.path.join(head, dest)
             if os.path.exists(new):
                 raise FSError('{} exists'.format(new))
         logger.info('rename check okay')
         for file in output:
             head = os.path.dirname(file)
-            new = os.path.join([head, dest])
+            new = os.path.join(head, dest)
             logger.debug('renaming %s %s', file, new)
             os.rename(file, new)
 
