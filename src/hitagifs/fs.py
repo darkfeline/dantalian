@@ -25,13 +25,13 @@ class HitagiFS:
         logger.debug('mkdir %s', root_dir)
         try:
             os.mkdir(root_dir)
-        except OSError:
+        except FileExistsError:
             logger.debug('skipping %s; exists', root_dir)
         bin = os.path.join(root_dir, 'bin')
         logger.debug('mkdir %s', bin)
         try:
             os.mkdir(bin)
-        except OSError:
+        except FileExistsError:
             logger.debug('skipping %s; exists', bin)
         _install(
             os.path.join(cls.data_dir, 'activate'),
