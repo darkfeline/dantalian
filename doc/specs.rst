@@ -25,8 +25,8 @@ rm
 rename
     Rename a file globally or a single instance
 
-mount
-    Mount FS
+init
+    Create and initialized a hitagifs
 
 Both files and tags (directories) can have multiple tags (parent directories).
 Name collisions will not be automatically resolved.  By default, tagged
