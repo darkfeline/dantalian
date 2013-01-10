@@ -7,9 +7,8 @@ Quickstart Guide
     preparations before using.
 
 hitagiFS is a tag-based "soft filesystem".  It provides a wrapper interface to
-the underlying filesystem.  It requires hard links, and expects to be on one
-device/partition (can't hard link across devices or partitions), and expects to
-be in a constant location (don't move around).
+the underlying filesystem.  It requires hard links and expects to be on one
+device/partition (can't hard link across devices or partitions).
 
 Installing is as easy as::
 
