@@ -26,7 +26,7 @@ tags
     List tags of file
 
 rename
-    Rename a file globally or a single instance
+    Rename a file globally
 
 convert
     Convert a directory to a symlink (so it's taggable)

@@ -58,8 +58,8 @@ def rm(fs, *args):
 def rename(fs, *args):
     logger.debug('rename(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs rename", add_help=False)
-    parser.add_argument('source')
-    parser.add_argument('dest')
+    parser.add_argument('file')
+    parser.add_argument('new')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
 

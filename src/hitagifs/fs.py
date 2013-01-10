@@ -138,26 +138,25 @@ class HitagiFS:
             logger.debug('unlinking %s', file)
             os.unlink(file)
 
-    def rename(self, source, dest, tag=None):
+    def rename(self, file, new):
         """Rename tracked file.
 
-        Rename all tracked hard links of `source` to `dest`.  If file is not
-        tagged, nothing happens.  If `tag` is given, only that singular
-        instance of file is renamed.  If any name collisions exist, nothing
+        Rename all tracked hard links of `file` to `new`.  If file is not
+        tagged, nothing happens.  If any name collisions exist, nothing
         will be renamed and :exc:`FileExistsError` will be raised.
 
         """
-        files = self._get_all(source)
+        files = self._get_all(file)
         logger.debug('found to rename %s', files)
         for file in files:
             head = os.path.dirname(file)
-            new = os.path.join(head, dest)
+            new = os.path.join(head, new)
             if os.path.exists(new):
                 raise FileExistsError('{} exists'.format(new))
         logger.info('rename check okay')
         for file in files:
             head = os.path.dirname(file)
-            new = os.path.join(head, dest)
+            new = os.path.join(head, new)
             logger.debug('renaming %s %s', file, new)
             os.rename(file, new)
 
