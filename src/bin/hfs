@@ -2,6 +2,7 @@
 
 import sys
 import argparse
+import logging
 
 from hitagifs import commands
 from hitagifs.fs import HitagiFS
@@ -9,7 +10,23 @@ from hitagifs.fs import HitagiFS
 parser = argparse.ArgumentParser(prog="hfs", desc="hitagiFS CLI tool")
 parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
+parser.add_argument('--loglevel', action='store', default='warn')
+parser.add_argument('--logfile', action='store', default='')
+parser.add_argument('--logfilter', action='store', default='')
 parser.add_argument('--root')
+args = parser.parse_args()
+
+logger = logging.getLogger()
+if args.logfile:
+    handler = logging.FileHandler(args.logfile)
+else:
+    handler = logging.StreamHandler()
+logger.addHandler(handler)
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s @%(name)s %(message)s'))
+logger.setLevel(args.loglevel.upper())
+if args.logfilter:
+    handler.addFilter(logging.Filter(args.logfilter))
 
 if args.command in ('mount'):
     getattr(commands, args.command)(*args.args)

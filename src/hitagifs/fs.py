@@ -1,7 +1,9 @@
 import os
 import subprocess
+import logging
 
 __all__ = ['mount', 'HitagiFS', 'FSError', 'TagError', 'DependencyError']
+logger = logging.getLogger(__name__)
 
 
 class HitagiFS:
@@ -26,11 +28,14 @@ class HitagiFS:
         if root is None:
             try:
                 root = os.environ['HITAGIFS_ROOT']
+                logger.debug('got root from env')
             except KeyError:
                 raise FSError('HITAGIFS_ROOT not set')
         if not os.path.isdir(root):
             raise FSError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
+        logger.info('HitagiFS initialized')
+        logger.debug('root is %s', self.root)
 
     def tag(self, file, tag):
         """Tag `file` with `tag`.
@@ -43,6 +48,7 @@ class HitagiFS:
         name = os.path.basename(file)
         dest = os.path.join([dest, name])
         try:
+            logger.debug('tagging %s %s', file, dest)
             os.link(file, dest)
         except OSError:
             raise TagError('File already tagged')
@@ -58,6 +64,7 @@ class HitagiFS:
         name = os.path.basename(file)
         dest = os.path.join([dest, name])
         try:
+            logger.debug('untagging %s %s', file, dest)
             os.unlink(dest)
         except OSError:
             raise TagError('File not tagged')
@@ -69,11 +76,15 @@ class HitagiFS:
 
         """
         tag = tags[:].pop(0)
+        logger.debug('filter tag %s', tag)
         path = self._get_tag_path(tag)
         files = set(os.listdir(path))
+        logger.debug('found set %s', files)
         for tag in tags:
+            logger.debug('filter tag %s', tag)
             path = self._get_tag_path(tag)
             files &= set(os.listdir(path))
+            logger.debug('found set %s', files)
         return list(files)
 
     def rm(self, file):
@@ -88,6 +99,7 @@ class HitagiFS:
 
         """
         for file in self._get_all(file):
+            logger.debug('unlinking %s', file)
             os.unlink(file)
 
     def rename(self, source, dest, tag=None):
@@ -104,14 +116,17 @@ class HitagiFS:
 
         """
         output = self._get_all(source)
+        logger.debug('found to rename %s', output)
         for file in output:
             head = os.path.dirname(file)
             new = os.path.join([head, dest])
             if os.path.exists(new):
                 raise FSError('{} exists'.format(new))
+        logger.info('rename check okay')
         for file in output:
             head = os.path.dirname(file)
             new = os.path.join([head, dest])
+            logger.debug('renaming %s %s', file, new)
             os.rename(file, new)
 
     def _get_all(self, file):

@@ -1,11 +1,14 @@
 import argparse
+import logging
 
 from hitagifs import fs
 
 __all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'mount']
+logger = logging.getLogger(__name__)
 
 
 def tag(fs, *args):
+    logger.debug('tag(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs tag")
     parser.add_argument('tag')
     parser.add_argument('file')
@@ -14,6 +17,7 @@ def tag(fs, *args):
 
 
 def untag(fs, *args):
+    logger.debug('untag(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs utag")
     parser.add_argument('tag')
     parser.add_argument('file')
@@ -22,6 +26,7 @@ def untag(fs, *args):
 
 
 def find(fs, *args):
+    logger.debug('find(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs find")
     parser.add_argument('tags', nargs='+')
     args = parser.parse_args(args)
@@ -31,6 +36,7 @@ def find(fs, *args):
 
 
 def rm(fs, *args):
+    logger.debug('rm(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs rm")
     parser.add_argument('files', nargs='+')
     args = parser.parse_args(args)
@@ -39,6 +45,7 @@ def rm(fs, *args):
 
 
 def rename(fs, *args):
+    logger.debug('rename(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs rename")
     parser.add_argument('source')
     parser.add_argument('dest')
@@ -47,6 +54,7 @@ def rename(fs, *args):
 
 
 def mount(*args):
+    logger.debug('mount(%s)', args)
     parser = argparse.ArgumentParser(prog="hfs mount")
     parser.add_argument('root')
     fs.mount(args.root)
