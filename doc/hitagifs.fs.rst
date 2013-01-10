@@ -2,3 +2,5 @@
 ========================================
 
 .. automodule:: hitagifs.fs
+    :members:
+    :undoc-members:

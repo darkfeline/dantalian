@@ -1,15 +1,7 @@
-"""
-.. autoclass:: HitagiFS
-.. autoclass:: FSError
-.. autoclass:: TagError
-.. autoclass:: DependencyError
-
-"""
-
 import os
 import subprocess
 
-__all__ = ['HitagiFS', 'FSError', 'TagError', 'DependencyError']
+__all__ = ['mount', 'HitagiFS', 'FSError', 'TagError', 'DependencyError']
 
 
 class HitagiFS:
@@ -20,11 +12,6 @@ class HitagiFS:
     :func:`os.path.abspath` prior to being stored internally or returned.
 
     .. automethod:: __init__
-    .. automethod:: tag
-    .. automethod:: untag
-    .. automethod:: find
-    .. automethod:: rm
-    .. automethod:: rename
 
     """
 
@@ -148,6 +135,15 @@ class HitagiFS:
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         path = os.path.abspath(path)
         return path
+
+
+def mount(root):
+    """Mount hitagiFS at `root`.
+
+    Sets environment variable ``HITAGIFS_ROOT``.
+
+    """
+    os.environ['HITAGIFS_ROOT'] = os.path.abspath(root)
 
 
 class FSError(Exception):

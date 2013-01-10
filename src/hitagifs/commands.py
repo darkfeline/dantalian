@@ -1,6 +1,8 @@
 import argparse
 
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename']
+from hitagifs import fs
+
+__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'mount']
 
 
 def tag(fs, *args):
@@ -42,3 +44,9 @@ def rename(fs, *args):
     parser.add_argument('dest')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
+
+
+def mount(*args):
+    parser = argparse.ArgumentParser(prog="hfs mount")
+    parser.add_argument('root')
+    fs.mount(args.root)

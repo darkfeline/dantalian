@@ -11,6 +11,8 @@ parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
 parser.add_argument('--root')
 
-args = parser.parse_args(sys.argv[1:])
-fs = HitagiFS(getattr(args, 'root', None))
-getattr(commands, args.command)(fs, *args.args)
+if args.command in ('mount'):
+    getattr(commands, args.command)(*args.args)
+else:
+    fs = HitagiFS(getattr(args, 'root', None))
+    getattr(commands, args.command)(fs, *args.args)
