@@ -16,10 +16,12 @@ class HitagiFS:
     """
 
     root_dir = '.hitagifs'
+    bin_dir = os.path.join(root_dir, 'bin')
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
     @classmethod
     def init(cls, root):
+
         logger.debug('init(%s)', root)
         root_dir = os.path.join(root, cls.root_dir)
         logger.debug('mkdir %s', root_dir)
@@ -27,7 +29,8 @@ class HitagiFS:
             os.mkdir(root_dir)
         except FileExistsError:
             logger.debug('skipping %s; exists', root_dir)
-        bin = os.path.join(root_dir, 'bin')
+
+        bin = os.path.join(root, cls.bin_dir)
         logger.debug('mkdir %s', bin)
         try:
             os.mkdir(bin)
