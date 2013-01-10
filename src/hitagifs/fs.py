@@ -18,7 +18,7 @@ class HitagiFS:
     """
 
     root_dir = '.hitagifs'
-    data_dir = os.path.join(__file__, 'data')
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
     @classmethod
     def init(cls, root):
