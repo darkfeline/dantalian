@@ -15,30 +15,52 @@ class HitagiFS:
 
     """
 
-    root_dir = '.hitagifs'
-    bin_dir = os.path.join(root_dir, 'bin')
-    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    _root_dir = '.hitagifs'
+    _root_file = os.path.join(_root_dir, 'root')
+    _bin_dir = os.path.join(_root_dir, 'bin')
+    _dirs_dir = os.path.join(_root_dir, 'dirs')
+
+    _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
     @classmethod
     def init(cls, root):
+        """Initialize a hitagiFS at `root`
+
+        Calling :meth:`init` on an existing hitagiFS does no harm.  Returns an
+        instance of :class:`HitagiFS`.
+
+        """
 
         logger.debug('init(%s)', root)
-        root_dir = os.path.join(root, cls.root_dir)
+        root_dir = os.path.join(root, cls._root_dir)
         logger.debug('mkdir %s', root_dir)
         try:
             os.mkdir(root_dir)
         except FileExistsError:
             logger.debug('skipping %s; exists', root_dir)
+        root_file = os.path.join(root, cls._root_file)
+        if not os.path.exists(root_file):
+            logger.debug('writing %s', root_file)
+            with open(root_file, 'w') as f:
+                f.write(root)
 
-        bin = os.path.join(root, cls.bin_dir)
+        bin = os.path.join(root, cls._bin_dir)
         logger.debug('mkdir %s', bin)
         try:
             os.mkdir(bin)
         except FileExistsError:
             logger.debug('skipping %s; exists', bin)
         _install(
-            os.path.join(cls.data_dir, 'activate'),
+            os.path.join(cls._data_dir, 'activate'),
             os.path.join(bin, 'activate'), root=root)
+
+        dirs = os.path.join(root, cls._dirs_dir)
+        try:
+            dirs = os.mkdir(dirs)
+        except FileExistsError:
+            logger.debug('skipping %s; exists', dirs)
+
+        return cls(root)
 
     def __init__(self, root=None):
         """
@@ -60,6 +82,22 @@ class HitagiFS:
         self.root = os.path.abspath(root)
         logger.info('HitagiFS initialized')
         logger.debug('root is %s', self.root)
+        logger.info('Checking if moved')
+        with open(os.path.join(self.root, self.__class__._root_file)) as f:
+            old_root = f.read()
+        if old_root == self.root:
+            logger.info('All clear')
+        else:
+            logger.info('Move detected; fixing')
+            newdir = os.path.join(self.root, self.__class__._dirs_dir)
+            files = self._get_symlinks()
+            for file in files:
+                old = os.readlink(file)
+                oldbase = os.path.basename(old)
+                new = os.path.join(newdir, oldbase)
+                logger.debug("symlinking %s to %s", old, new)
+                os.symlink(new, old)
+            logger.info('finished fixing')
 
     def tag(self, file, tag):
         """Tag `file` with `tag`.
@@ -98,8 +136,37 @@ class HitagiFS:
         files = self._get_all(file)
         return [os.path.dirname(file).replace(self.root, '') for file in files]
 
-    def convert(self, dir):
-        """Convert a directory to a symlink."""
+    def convert(self, dir, alt=None):
+        """Convert a directory to a symlink.
+
+        If `dir` is in ``.hitagifs/dirs`` (converting an already converted
+        directory/smartassery), :meth:`convert()` returns without doing
+        anything.  If its name conflicts, :exc:`FileExistsError` will be
+        raised.  If `dir` is not a directory, :exc:`NotADirectoryError` will be
+        raised.  If `alt` is given, the alternate name will be used for the
+        copy kept in ``.hitagifs/dirs``.
+
+        """
+        if not os.path.isdir(dir):
+            raise NotADirectoryError("{} is not a directory".format(dir))
+        logger.info("Checking %s is not already converted", dir)
+        dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
+        dirbase, dirname = os.path.split(dir)
+        if os.path.samefile(dirbase, dirs_dir):
+            return
+        logger.info("Check okay")
+        if alt is not None:
+            assert isinstance(alt, str)
+            dirname = alt
+        new = os.path.join(dirs_dir, dirname)
+        logger.info("Checking name conflict")
+        if os.path.exists(new):
+            raise FileExistsError('{} exists'.format(new))
+        logger.info("Check okay")
+        logger.debug("moving %s to %s", dir, new)
+        os.rename(dir, new)
+        logger.debug("linking %s to %s", dir, new)
+        os.symlink(new, dir)
 
     def find(self, tags):
         """Return a list of files with all of the given tags.
@@ -169,7 +236,22 @@ class HitagiFS:
         """
         try:
             output = subprocess.check_output(
-                ['find', self.root, '-samefile', file])
+                ['find', '-L', self.root, '-samefile', file])
+        except FileNotFoundError:
+            raise DependencyError("'find' could not be found")
+        output = output.decode().rstrip().split('\n')
+        return output
+
+    def _get_symlinks(self):
+        """Get all tracked symlinks.
+
+        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
+        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
+
+        """
+        try:
+            output = subprocess.check_output(
+                ['find', self.root, '-type', 'l'])
         except FileNotFoundError:
             raise DependencyError("'find' could not be found")
         output = output.decode().rstrip().split('\n')

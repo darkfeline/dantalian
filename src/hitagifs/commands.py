@@ -67,7 +67,11 @@ def rename(fs, *args):
 def convert(fs, *args):
     logger.debug('convert(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs convert", add_help=False)
+    parser.add_argument('--alt')
+    parser.add_argument('dir')
     args = parser.parse_args(args)
+    alt = getattr(args, 'alt', None)
+    fs.convert(args.dir, alt)
 
 
 def init(*args):
