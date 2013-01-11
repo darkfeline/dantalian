@@ -111,7 +111,7 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         logger.info('checking if %s already tagged with %s', file, tag)
-        for f in os.listdir(dest):
+        for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
             if samefile(f, file):
                 return
         logger.info('check okay')
@@ -133,7 +133,7 @@ class HitagiFS:
         assert isinstance(file, str)
         assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
-        for f in os.listdir(dest):
+        for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
             if samefile(f, file):
                 logger.debug('unlinking %s', dest)
                 os.unlink(dest)
