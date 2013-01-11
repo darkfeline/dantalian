@@ -18,7 +18,7 @@ def tag(fs, *args):
         try:
             fs.tag(file, args.tag)
         except IsADirectoryError:
-            logger.warn('skipped %s; convert it first', file)
+            logger.warn('skipped %r; convert it first', file)
 
 
 def untag(fs, *args):
@@ -78,9 +78,9 @@ def convert(fs, *args):
         try:
             fs.convert(dir)
         except NotADirectoryError:
-            logger.warn('%s is not a directory; skipping', dir)
+            logger.warn('%r is not a directory; skipping', dir)
         except FileExistsError:
-            logger.warn('Name conflict %s; skipping', dir)
+            logger.warn('Name conflict %r; skipping', dir)
 
 
 def init(*args):

@@ -30,14 +30,14 @@ class HitagiFS:
 
         logger.debug('init(%r)', root)
         root_dir = os.path.join(root, cls._root_dir)
-        logger.debug('mkdir %s', root_dir)
+        logger.debug('mkdir %r', root_dir)
         try:
             os.mkdir(root_dir)
         except FileExistsError:
-            logger.debug('skipping %s; exists', root_dir)
+            logger.debug('skipping %r; exists', root_dir)
         root_file = os.path.join(root, cls._root_file)
         if not os.path.exists(root_file):
-            logger.debug('writing %s', root_file)
+            logger.debug('writing %r', root_file)
             with open(root_file, 'w') as f:
                 f.write(root)
 
@@ -45,7 +45,7 @@ class HitagiFS:
         try:
             dirs = os.mkdir(dirs)
         except FileExistsError:
-            logger.debug('skipping %s; exists', dirs)
+            logger.debug('skipping %r; exists', dirs)
 
         return cls(root)
 
@@ -65,7 +65,7 @@ class HitagiFS:
             raise NotADirectoryError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
         logger.info('HitagiFS initialized')
-        logger.debug('root is %s', self.root)
+        logger.debug('root is %r', self.root)
         logger.info('Checking if moved')
         with open(os.path.join(self.root, self.__class__._root_file)) as f:
             old_root = f.read()
@@ -75,22 +75,22 @@ class HitagiFS:
             logger.info('Move detected; fixing')
             newdir = os.path.join(self.root, self.__class__._dirs_dir)
             files = self._get_symlinks()
-            logger.debug('found symlinks %s', files)
+            logger.debug('found symlinks %r', files)
             for set in files:
                 f = set.pop(0)
                 new = os.path.join(newdir, os.path.basename(os.readlink(f)))
-                logger.debug("unlinking %s", f)
+                logger.debug("unlinking %r", f)
                 os.unlink(f)
-                logger.debug("symlinking %s to %s", f, new)
+                logger.debug("symlinking %r to %r", f, new)
                 os.symlink(new, f)
                 for file in set:
-                    logger.debug("unlinking %s", file)
+                    logger.debug("unlinking %r", file)
                     os.unlink(file)
-                    logger.debug("linking %s to %s", file, f)
+                    logger.debug("linking %r to %r", file, f)
                     os.link(f, file)
             logger.info('finished fixing')
             root_file = os.path.join(self.root, self.__class__._root_file)
-            logger.debug('writing %s', root_file)
+            logger.debug('writing %r', root_file)
             with open(root_file, 'w') as f:
                 f.write(root)
 
@@ -110,13 +110,13 @@ class HitagiFS:
                 '{} is a directory; convert it first'.format(file))
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
-        logger.info('checking if %s already tagged with %s', file, tag)
+        logger.info('checking if %r already tagged with %r', file, tag)
         for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
             if samefile(f, file):
                 return
         logger.info('check okay')
         dest = os.path.join(dest, name)
-        logger.debug('linking %s %s', file, dest)
+        logger.debug('linking %r %r', file, dest)
         try:
             os.link(file, dest)
         except FileExistsError as e:
@@ -135,7 +135,7 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
             if samefile(f, file):
-                logger.debug('unlinking %s', dest)
+                logger.debug('unlinking %r', dest)
                 os.unlink(dest)
 
     def listtags(self, file):
@@ -161,17 +161,17 @@ class HitagiFS:
         assert isinstance(dir, str)
         assert alt is None or isinstance(alt, str)
 
-        logger.info("Checking %s is a dir", dir)
+        logger.info("Checking %r is a dir", dir)
         if not os.path.isdir(dir):
             raise NotADirectoryError("{} is not a directory".format(dir))
         logger.info("Check okay")
 
-        logger.info("Checking %s is not a symlink", dir)
+        logger.info("Checking %r is not a symlink", dir)
         if os.path.islink(dir):
             return
         logger.info("Check okay")
 
-        logger.info("Checking %s is not in dirs", dir)
+        logger.info("Checking %r is not in dirs", dir)
         dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
         dir = os.path.dirname(os.path.abspath(dir))
         if samefile(dir, dirs_dir):
@@ -187,9 +187,9 @@ class HitagiFS:
             raise FileExistsError('{} exists'.format(new))
         logger.info("Check okay")
 
-        logger.debug("moving %s to %s", dir, new)
+        logger.debug("moving %r to %r", dir, new)
         os.rename(dir, new)
-        logger.debug("linking %s to %s", dir, new)
+        logger.debug("linking %r to %r", dir, new)
         os.symlink(new, dir)
 
     def find(self, tags):
@@ -202,12 +202,12 @@ class HitagiFS:
         """
         tags = list(tags)
         tag = tags.pop(0)
-        logger.debug('filter tag %s', tag)
+        logger.debug('filter tag %r', tag)
         path = self._get_tag_path(tag)
         files = [os.path.abspath(f) for f in os.listdir(path)]
-        logger.debug('found set %s', files)
+        logger.debug('found set %r', files)
         for tag in tags:
-            logger.debug('filter tag %s', tag)
+            logger.debug('filter tag %r', tag)
             path = self._get_tag_path(tag)
             good = []
             i = 0
@@ -219,7 +219,7 @@ class HitagiFS:
                 else:
                     i += 1
             files = good
-            logger.debug('found set %s', files)
+            logger.debug('found set %r', files)
         return files
 
     def rm(self, file):
@@ -238,12 +238,12 @@ class HitagiFS:
         assert isinstance(file, str)
         error = None
         for file in self._get_all(file):
-            logger.debug('unlinking %s', file)
+            logger.debug('unlinking %r', file)
             try:
                 os.unlink(file)
             except OSError as e:
                 logger.warn(e)
-                logger.warn('Could not unlink %s', file)
+                logger.warn('Could not unlink %r', file)
                 error = 1
         return error
 
@@ -258,7 +258,7 @@ class HitagiFS:
         assert isinstance(file, str)
         assert isinstance(new, str)
         files = self._get_all(file)
-        logger.debug('found to rename %s', files)
+        logger.debug('found to rename %r', files)
         for file in files:
             head = os.path.dirname(file)
             new = os.path.join(head, new)
@@ -268,7 +268,7 @@ class HitagiFS:
         for file in files:
             head = os.path.dirname(file)
             new = os.path.join(head, new)
-            logger.debug('renaming %s %s', file, new)
+            logger.debug('renaming %r %r', file, new)
             os.rename(file, new)
 
     def _get_all(self, file):
