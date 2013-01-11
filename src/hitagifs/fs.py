@@ -131,6 +131,7 @@ class HitagiFS:
         copy kept in ``.hitagifs/dirs``.
 
         """
+        logger.debug('convert(%s, %s)', dir, alt)
         if not os.path.isdir(dir):
             raise NotADirectoryError("{} is not a directory".format(dir))
         logger.info("Checking %s is not already converted", dir)
