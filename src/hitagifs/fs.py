@@ -78,6 +78,8 @@ class HitagiFS:
             for file in files:
                 oldbase = os.path.basename(os.readlink(file))
                 new = os.path.join(newdir, oldbase)
+                logger.debug("unlinking %s", file)
+                os.unlink(file)
                 logger.debug("symlinking %s to %s", file, new)
                 os.symlink(new, file)
             logger.info('finished fixing')
