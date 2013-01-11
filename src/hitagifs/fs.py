@@ -308,7 +308,6 @@ class HitagiFS:
         if not os.path.isdir(path):
             raise NotADirectoryError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
-        path = os.path.abspath(path)
         return path
 
     @classmethod
