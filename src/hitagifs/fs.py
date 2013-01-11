@@ -95,8 +95,8 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
+        logger.debug('tagging %s %s', file, dest)
         try:
-            logger.debug('tagging %s %s', file, dest)
             os.link(file, dest)
         except FileExistsError:
             pass
@@ -113,8 +113,8 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
+        logger.debug('untagging %s %s', file, dest)
         try:
-            logger.debug('untagging %s %s', file, dest)
             os.unlink(dest)
         except FileNotFoundError:
             pass
