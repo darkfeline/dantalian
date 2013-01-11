@@ -195,21 +195,32 @@ class HitagiFS:
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is an iterable. `tags` is left unchanged.  Returns a list.
+        `tags` is an iterable. `tags` is left unchanged.  Returns a list.  File
+        paths are absolute and are paths to the hard link under the first tag
+        given.
 
         """
         tags = list(tags)
         tag = tags.pop(0)
         logger.debug('filter tag %s', tag)
         path = self._get_tag_path(tag)
-        files = set(os.listdir(path))
+        files = [os.path.abspath(f) for f in os.listdir(path)]
         logger.debug('found set %s', files)
         for tag in tags:
             logger.debug('filter tag %s', tag)
             path = self._get_tag_path(tag)
-            files &= set(os.listdir(path))
+            good = []
+            i = 0
+            for f in [os.path.abspath(f) for f in os.listdir(path)]:
+                if i >= len(files):
+                    break
+                elif samefile(files[i], f):
+                    good.append(files.pop(i))
+                else:
+                    i += 1
+            files = good
             logger.debug('found set %s', files)
-        return list(files)
+        return files
 
     def rm(self, file):
         """Removes all tags from `file`.
