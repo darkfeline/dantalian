@@ -73,7 +73,7 @@ def convert(fs, *args):
     args = parser.parse_args(args)
     for dir in args.dir:
         try:
-            fs.convert(args.dir)
+            fs.convert(dir)
         except NotADirectoryError:
             logger.warn('%s is not a directory; skipping', dir)
         except FileExistsError:
