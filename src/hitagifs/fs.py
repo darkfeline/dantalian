@@ -90,6 +90,8 @@ class HitagiFS:
         file is already tagged, nothing happens.
 
         """
+        assert isinstance(file, str)
+        assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
@@ -106,6 +108,8 @@ class HitagiFS:
         file is not tagged, nothing happens.
 
         """
+        assert isinstance(file, str)
+        assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
@@ -117,6 +121,7 @@ class HitagiFS:
 
     def listtags(self, file):
         """Return a list of all tags of `file`"""
+        assert isinstance(file, str)
         files = self._get_all(file)
         return [os.path.dirname(file).replace(self.root, '') for file in files]
 
@@ -132,6 +137,8 @@ class HitagiFS:
 
         """
         logger.debug('convert(%s, %s)', dir, alt)
+        assert isinstance(dir, str)
+        assert alt is None or isinstance(alt, str)
         if not os.path.isdir(dir):
             raise NotADirectoryError("{} is not a directory".format(dir))
         logger.info("Checking %s is not already converted", dir)
@@ -182,6 +189,7 @@ class HitagiFS:
             other hard links exist, `file` is deleted.
 
         """
+        assert isinstance(file, str)
         for file in self._get_all(file):
             logger.debug('unlinking %s', file)
             try:
@@ -198,6 +206,8 @@ class HitagiFS:
         will be renamed and :exc:`FileExistsError` will be raised.
 
         """
+        assert isinstance(file, str)
+        assert isinstance(new, str)
         files = self._get_all(file)
         logger.debug('found to rename %s', files)
         for file in files:
