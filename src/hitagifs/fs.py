@@ -75,13 +75,17 @@ class HitagiFS:
             logger.info('Move detected; fixing')
             newdir = os.path.join(self.root, self.__class__._dirs_dir)
             files = self._get_symlinks()
-            for file in files:
-                oldbase = os.path.basename(os.readlink(file))
-                new = os.path.join(newdir, oldbase)
-                logger.debug("unlinking %s", file)
-                os.unlink(file)
-                logger.debug("symlinking %s to %s", file, new)
-                os.symlink(new, file)
+            logger.debug('found symlinks %s', files)
+            for set in files:
+                f = set.pop(0)
+                new = os.path.join(newdir, os.path.basename(os.readlink(f)))
+                logger.debug("unlinking %s", f)
+                os.unlink(f)
+                logger.debug("symlinking %s to %s", f, new)
+                os.symlink(new, f)
+                for file in set:
+                    logger.debug("linking %s to %s", file, f)
+                    os.link(f, file)
             logger.info('finished fixing')
 
     def tag(self, file, tag):
@@ -264,8 +268,10 @@ class HitagiFS:
     def _get_symlinks(self):
         """Get all tracked symlinks.
 
-        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
-        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
+        Returns a list of lists.  Symlinks that are the same inode are grouped
+        together.  Relies on 'find' utility, for sheer simplicity and speed.
+        If it cannot be found, :exc:`DependencyError` is raised.  Output paths
+        are absolute.
 
         """
         try:
@@ -274,7 +280,17 @@ class HitagiFS:
         except FileNotFoundError:
             raise DependencyError("'find' could not be found")
         output = output.decode().rstrip().split('\n')
-        return output
+        result = []
+        for file in output:
+            found = 0
+            for set in result:
+                if os.path.samefile(set[0], file):
+                    set.append(file)
+                    found = 1
+                    break
+            if not found:
+                result.append([file])
+        return result
 
     def _get_tag_path(self, tag):
         """Get absolute path of `tag`."""
