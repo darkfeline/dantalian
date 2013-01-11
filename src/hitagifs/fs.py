@@ -84,6 +84,8 @@ class HitagiFS:
                 logger.debug("symlinking %s to %s", f, new)
                 os.symlink(new, f)
                 for file in set:
+                    logger.debug("unlinking %s", file)
+                    os.unlink(file)
                     logger.debug("linking %s to %s", file, f)
                     os.link(f, file)
             logger.info('finished fixing')
