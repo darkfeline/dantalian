@@ -89,6 +89,10 @@ class HitagiFS:
                     logger.debug("linking %s to %s", file, f)
                     os.link(f, file)
             logger.info('finished fixing')
+            root_file = os.path.join(self.root, self.__class__._root_file)
+            logger.debug('writing %s', root_file)
+            with open(root_file, 'w') as f:
+                f.write(root)
 
     def tag(self, file, tag):
         """Tag `file` with `tag`.
