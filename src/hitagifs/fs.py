@@ -97,7 +97,7 @@ class HitagiFS:
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
         logger.debug('tagging %s %s', file, dest)
-        if os.path.isdir(file):
+        if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
         try:
