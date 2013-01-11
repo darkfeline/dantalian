@@ -183,7 +183,9 @@ class HitagiFS:
         """Removes all tags from `file`.
 
         `file` is a path relative to the current dir.  If `file` is not tagged,
-        nothing happens.  If a file cannot be removed, a warning is logged.
+        nothing happens.  If a file cannot be removed, it is skipped, a
+        warning is logged, and :meth:`rm` returns ``1``.  Otherwise, returns
+        ``None``.
 
         .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
@@ -191,6 +193,7 @@ class HitagiFS:
 
         """
         assert isinstance(file, str)
+        error = None
         for file in self._get_all(file):
             logger.debug('unlinking %s', file)
             try:
@@ -198,6 +201,8 @@ class HitagiFS:
             except OSError as e:
                 logger.warn(e)
                 logger.warn('Could not unlink %s', file)
+                error = 1
+        return error
 
     def rename(self, file, new):
         """Rename tracked file.
