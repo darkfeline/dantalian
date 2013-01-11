@@ -210,14 +210,12 @@ class HitagiFS:
             logger.debug('filter tag %r', tag)
             path = self._get_tag_path(tag)
             good = []
-            i = 0
-            for f in [os.path.join(path, f) for f in os.listdir(path)]:
-                if i >= len(files):
-                    break
-                elif samefile(files[i], f):
-                    good.append(files.pop(i))
-                else:
-                    i += 1
+            check = [os.path.join(path, f) for f in os.listdir(path)]
+            for file in files:
+                for f in check:
+                    if samefile(file, f):
+                        good.append(file)
+                        break
             files = good
             logger.debug('found set %r', files)
         return files
