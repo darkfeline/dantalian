@@ -60,7 +60,7 @@ class HitagiFS:
 
         """
         if root is None:
-            self._find_root(os.getcwd())
+            root = self._find_root(os.getcwd())
         if not os.path.isdir(root):
             raise NotADirectoryError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
