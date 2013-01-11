@@ -28,7 +28,7 @@ class HitagiFS:
 
         """
 
-        logger.debug('init(%s)', root)
+        logger.debug('init(%r)', root)
         root_dir = os.path.join(root, cls._root_dir)
         logger.debug('mkdir %s', root_dir)
         try:
@@ -136,7 +136,7 @@ class HitagiFS:
         copy kept in ``.hitagifs/dirs``.
 
         """
-        logger.debug('convert(%s, %s)', dir, alt)
+        logger.debug('convert(%r, %r)', dir, alt)
         assert isinstance(dir, str)
         assert alt is None or isinstance(alt, str)
         if not os.path.isdir(dir):
