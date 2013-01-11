@@ -131,27 +131,39 @@ class HitagiFS:
         return [os.path.dirname(file).replace(self.root, '') for file in files]
 
     def convert(self, dir, alt=None):
+
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.hitagifs/dirs`` (converting an already converted
-        directory/smartassery), :meth:`convert()` returns without doing
-        anything.  If its name conflicts, :exc:`FileExistsError` will be
-        raised.  If `dir` is not a directory, :exc:`NotADirectoryError` will be
-        raised.  If `alt` is given, the alternate name will be used for the
-        copy kept in ``.hitagifs/dirs``.
+        If `dir` is in ``.hitagifs/dirs`` (smartassery), :meth:`convert` raises
+        :exc:`FSError`.  If `dir` is a symlink (probably already converted),
+        :meth:`convert` returns without doing anything.  If its name conflicts,
+        :exc:`FileExistsError` will be raised.  If `dir` is not a directory,
+        :exc:`NotADirectoryError` will be raised.  If `alt` is given, the
+        alternate name will be used for the copy kept in ``.hitagifs/dirs``.
 
         """
+
         logger.debug('convert(%r, %r)', dir, alt)
         assert isinstance(dir, str)
         assert alt is None or isinstance(alt, str)
+
+        logger.info("Checking %s is a dir", dir)
         if not os.path.isdir(dir):
             raise NotADirectoryError("{} is not a directory".format(dir))
-        logger.info("Checking %s is not already converted", dir)
-        dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
-        dirbase, dirname = os.path.split(os.path.abspath(dir))
-        if os.path.samefile(dirbase, dirs_dir):
+        logger.info("Check okay")
+
+        logger.info("Checking %s is not a symlink", dir)
+        if os.path.islink(dir):
             return
         logger.info("Check okay")
+
+        logger.info("Checking %s is not in dirs", dir)
+        dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
+        dir = os.path.dirname(os.path.abspath(dir))
+        if os.path.samefile(dir, dirs_dir):
+            raise FSError("{} is in special directory".format(dir))
+        logger.info("Check okay")
+
         if alt is not None:
             assert isinstance(alt, str)
             dirname = alt
@@ -160,6 +172,7 @@ class HitagiFS:
         if os.path.exists(new):
             raise FileExistsError('{} exists'.format(new))
         logger.info("Check okay")
+
         logger.debug("moving %s to %s", dir, new)
         os.rename(dir, new)
         logger.debug("linking %s to %s", dir, new)
