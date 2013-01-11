@@ -287,6 +287,7 @@ class HitagiFS:
         for x in iter(output):
             if '.hitagifs/dirs/' in x:
                 output.remove(x)
+        return output
 
     def _get_symlinks(self):
         """Get all tracked symlinks.
