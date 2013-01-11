@@ -76,11 +76,10 @@ class HitagiFS:
             newdir = os.path.join(self.root, self.__class__._dirs_dir)
             files = self._get_symlinks()
             for file in files:
-                old = os.readlink(file)
-                oldbase = os.path.basename(old)
+                oldbase = os.path.basename(os.readlink(file))
                 new = os.path.join(newdir, oldbase)
-                logger.debug("symlinking %s to %s", old, new)
-                os.symlink(new, old)
+                logger.debug("symlinking %s to %s", file, new)
+                os.symlink(new, file)
             logger.info('finished fixing')
 
     def tag(self, file, tag):
