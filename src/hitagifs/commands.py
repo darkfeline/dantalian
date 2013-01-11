@@ -15,7 +15,10 @@ def tag(fs, *args):
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
     for file in args.file:
-        fs.tag(file, args.tag)
+        try:
+            fs.tag(file, args.tag)
+        except IsADirectoryError:
+            logger.warn('skipped %s; convert it first', file)
 
 
 def untag(fs, *args):

@@ -87,7 +87,8 @@ class HitagiFS:
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is already tagged, nothing happens.
+        `file` is already tagged, nothing happens.  If `file` is an unconverted
+        directory, :exc:`IsADirectoryError` will be raised.
 
         """
         assert isinstance(file, str)
@@ -96,6 +97,9 @@ class HitagiFS:
         name = os.path.basename(file)
         dest = os.path.join(dest, name)
         logger.debug('tagging %s %s', file, dest)
+        if os.path.isdir(file):
+            raise IsADirectoryError(
+                '{} is a directory; convert it first'.format(file))
         try:
             os.link(file, dest)
         except FileExistsError:
