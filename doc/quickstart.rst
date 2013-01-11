@@ -1,11 +1,6 @@
 Quickstart Guide
 ================
 
-.. warning::
-    hitagiFS is still in development/unstable.  I've preliminarily tested it,
-    so it shouldn't e.g. delete ``/``, but just in case, make the necessary
-    preparations before using.
-
 hitagiFS is a tag-based "soft filesystem".  It provides a wrapper interface to
 the underlying filesystem.  It requires hard links and expects to be on one
 device/partition (can't hard link across devices or partitions).
