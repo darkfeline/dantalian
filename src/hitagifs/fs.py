@@ -163,10 +163,11 @@ class HitagiFS:
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is a list. `tags` is left unchanged.  Returns a list.
+        `tags` is an iterable. `tags` is left unchanged.  Returns a list.
 
         """
-        tag = tags[:].pop(0)
+        tags = list(tags)
+        tag = tags.pop(0)
         logger.debug('filter tag %s', tag)
         path = self._get_tag_path(tag)
         files = set(os.listdir(path))
