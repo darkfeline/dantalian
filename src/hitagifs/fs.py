@@ -275,6 +275,7 @@ class HitagiFS:
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
         be found, :exc:`DependencyError` is raised.  Output paths are absolute.
+        Trims out any '.hitagifs/dirs/' entries.
 
         """
         try:
@@ -283,7 +284,9 @@ class HitagiFS:
         except FileNotFoundError:
             raise DependencyError("'find' could not be found")
         output = output.decode().rstrip().split('\n')
-        return output
+        for x in iter(output):
+            if '.hitagifs/dirs/' in x:
+                output.remove(x)
 
     def _get_symlinks(self):
         """Get all tracked symlinks.
