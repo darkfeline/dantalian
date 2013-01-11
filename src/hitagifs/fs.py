@@ -87,7 +87,7 @@ class HitagiFS:
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is already tagged, :exc:`FileExistsError` is raised.
+        file is already tagged, nothing happens.
 
         """
         dest = self._get_tag_path(tag)
@@ -97,13 +97,13 @@ class HitagiFS:
             logger.debug('tagging %s %s', file, dest)
             os.link(file, dest)
         except FileExistsError:
-            raise FileExistsError('File already tagged')
+            pass
 
     def untag(self, file, tag):
         """Remove `tag` from `file`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is not tagged, :exc:`FileNotFoundError` is raised.
+        file is not tagged, nothing happens.
 
         """
         dest = self._get_tag_path(tag)
@@ -113,7 +113,7 @@ class HitagiFS:
             logger.debug('untagging %s %s', file, dest)
             os.unlink(dest)
         except FileNotFoundError:
-            raise FileNotFoundError('File not tagged')
+            pass
 
     def listtags(self, file):
         """Return a list of all tags of `file`"""
@@ -174,11 +174,7 @@ class HitagiFS:
         """Removes all tags from `file`.
 
         `file` is a path relative to the current dir.  If `file` is not tagged,
-        nothing happens.
-
-        .. warning::
-            Currently has no safety measure if unlinking one of the hard links
-            fails.  If that happens, state will be left halfway.
+        nothing happens.  If a file cannot be removed, a warning is logged.
 
         .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
@@ -187,7 +183,11 @@ class HitagiFS:
         """
         for file in self._get_all(file):
             logger.debug('unlinking %s', file)
-            os.unlink(file)
+            try:
+                os.unlink(file)
+            except OSError as e:
+                logger.warn(e)
+                logger.warn('Could not unlink %s', file)
 
     def rename(self, file, new):
         """Rename tracked file.
