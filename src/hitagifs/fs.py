@@ -93,40 +93,44 @@ class HitagiFS:
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
         `file` is already tagged, nothing happens.  If `file` is an unconverted
-        directory, :exc:`IsADirectoryError` will be raised.
+        directory, :exc:`IsADirectoryError` will be raised.  If there's a name
+        collision, :exc:`FileExistsError` is raised.
 
         """
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        dest = self._get_tag_path(tag)
-        name = os.path.basename(file)
-        dest = os.path.join(dest, name)
-        logger.debug('tagging %s %s', file, dest)
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
+        dest = self._get_tag_path(tag)
+        name = os.path.basename(file)
+        logger.info('checking if %s already tagged with %s', file, tag)
+        for f in os.listdir(dest):
+            if os.path.samefile(f, file):
+                return
+        logger.info('check okay')
+        dest = os.path.join(dest, name)
+        logger.debug('linking %s %s', file, dest)
         try:
             os.link(file, dest)
-        except FileExistsError:
-            pass
+        except FileExistsError as e:
+            raise e
 
     def untag(self, file, tag):
         """Remove `tag` from `file`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is not tagged, nothing happens.
+        file is not tagged, nothing happens.  Removes all hard links to `file`
+        with `tag`.
 
         """
         assert isinstance(file, str)
         assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
-        name = os.path.basename(file)
-        dest = os.path.join(dest, name)
-        logger.debug('untagging %s %s', file, dest)
-        try:
-            os.unlink(dest)
-        except FileNotFoundError:
-            pass
+        for f in os.listdir(dest):
+            if os.path.samefile(f, file):
+                logger.debug('unlinking %s', dest)
+                os.unlink(dest)
 
     def listtags(self, file):
         """Return a list of all tags of `file`"""
