@@ -142,7 +142,8 @@ class HitagiFS:
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
         files = self._get_all(file)
-        return [os.path.dirname(file).replace(self.root, '') for file in files]
+        return [os.path.dirname(file).replace(self.root + '/', '') for file in
+                files]
 
     def convert(self, dir, alt=None):
 
