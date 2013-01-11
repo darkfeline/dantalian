@@ -143,7 +143,7 @@ class HitagiFS:
             raise NotADirectoryError("{} is not a directory".format(dir))
         logger.info("Checking %s is not already converted", dir)
         dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
-        dirbase, dirname = os.path.split(dir)
+        dirbase, dirname = os.path.split(os.path.abspath(dir))
         if os.path.samefile(dirbase, dirs_dir):
             return
         logger.info("Check okay")
