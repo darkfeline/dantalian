@@ -112,7 +112,7 @@ class HitagiFS:
         name = os.path.basename(file)
         logger.info('checking if %s already tagged with %s', file, tag)
         for f in os.listdir(dest):
-            if os.path.samefile(f, file):
+            if samefile(f, file):
                 return
         logger.info('check okay')
         dest = os.path.join(dest, name)
@@ -134,7 +134,7 @@ class HitagiFS:
         assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
         for f in os.listdir(dest):
-            if os.path.samefile(f, file):
+            if samefile(f, file):
                 logger.debug('unlinking %s', dest)
                 os.unlink(dest)
 
@@ -174,7 +174,7 @@ class HitagiFS:
         logger.info("Checking %s is not in dirs", dir)
         dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
         dir = os.path.dirname(os.path.abspath(dir))
-        if os.path.samefile(dir, dirs_dir):
+        if samefile(dir, dirs_dir):
             raise FSError("{} is in special directory".format(dir))
         logger.info("Check okay")
 
@@ -294,7 +294,7 @@ class HitagiFS:
         for file in output:
             found = 0
             for set in result:
-                if os.path.samefile(set[0], file):
+                if samefile(set[0], file):
                     set.append(file)
                     found = 1
                     break
@@ -328,6 +328,10 @@ class HitagiFS:
                     break
                 dir = os.path.dirname(dir)
         raise FSError('No root found')
+
+
+def samefile(f1, f2):
+    return os.path.samestat(os.lstat(f1), os.lstat(f2))
 
 
 class FSError(Exception):
