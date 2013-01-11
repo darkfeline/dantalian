@@ -12,18 +12,20 @@ def tag(fs, *args):
     logger.debug('tag(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs tag", add_help=False)
     parser.add_argument('tag')
-    parser.add_argument('file')
+    parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
-    fs.tag(args.file, args.tag)
+    for file in args.file:
+        fs.tag(file, args.tag)
 
 
 def untag(fs, *args):
     logger.debug('untag(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs utag", add_help=False)
     parser.add_argument('tag')
-    parser.add_argument('file')
+    parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
-    fs.untag(args.file, args.tag)
+    for file in args.file:
+        fs.untag(file, args.tag)
 
 
 def tags(fs, *args):
@@ -67,11 +69,15 @@ def rename(fs, *args):
 def convert(fs, *args):
     logger.debug('convert(%s, %s)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs convert", add_help=False)
-    parser.add_argument('--alt')
-    parser.add_argument('dir')
+    parser.add_argument('dir', nargs="+")
     args = parser.parse_args(args)
-    alt = getattr(args, 'alt', None)
-    fs.convert(args.dir, alt)
+    for dir in args.dir:
+        try:
+            fs.convert(args.dir)
+        except NotADirectoryError:
+            logger.warn('%s is not a directory; skipping', dir)
+        except FileExistsError:
+            logger.warn('Name conflict %s; skipping', dir)
 
 
 def init(*args):
