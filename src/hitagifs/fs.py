@@ -135,8 +135,8 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
             if samefile(f, file):
-                logger.debug('unlinking %r', dest)
-                os.unlink(dest)
+                logger.debug('unlinking %r', f)
+                os.unlink(f)
 
     def listtags(self, file):
         """Return a list of all tags of `file`"""
