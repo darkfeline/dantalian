@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='hitagifs',
-    version='0.2',
+    version='0.3',
     author='Allen Li',
     author_email='darkfeline@abagofapples.com',
     url='http://abagofapples.com/',
