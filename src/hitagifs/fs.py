@@ -133,8 +133,10 @@ class HitagiFS:
         assert isinstance(file, str)
         assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
+        inode = os.lstat(file)
         for f in listdir(dest):
-            if samefile(f, file):
+            logger.debug('checking %r', f)
+            if os.path.samestat(inode, os.lstat(f)):
                 logger.debug('unlinking %r', f)
                 os.unlink(f)
 
