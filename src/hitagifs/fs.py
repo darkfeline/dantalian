@@ -111,7 +111,7 @@ class HitagiFS:
         dest = self._get_tag_path(tag)
         name = os.path.basename(file)
         logger.info('checking if %r already tagged with %r', file, tag)
-        for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
+        for f in listdir(dest):
             if samefile(f, file):
                 return
         logger.info('check okay')
@@ -133,7 +133,7 @@ class HitagiFS:
         assert isinstance(file, str)
         assert isinstance(tag, str)
         dest = self._get_tag_path(tag)
-        for f in [os.path.join(dest, f) for f in os.listdir(dest)]:
+        for f in listdir(dest):
             if samefile(f, file):
                 logger.debug('unlinking %r', f)
                 os.unlink(f)
@@ -206,15 +206,14 @@ class HitagiFS:
         tag = tags.pop(0)
         logger.debug('filter tag %r', tag)
         path = self._get_tag_path(tag)
-        files = [os.path.join(path, f) for f in os.listdir(path)]
+        files = list(listdir(path))
         logger.debug('found set %r', files)
         for tag in tags:
             logger.debug('filter tag %r', tag)
             path = self._get_tag_path(tag)
             good = []
-            check = [os.path.join(path, f) for f in os.listdir(path)]
             for file in files:
-                for f in check:
+                for f in listdir(path):
                     if samefile(file, f):
                         good.append(file)
                         break
@@ -346,6 +345,10 @@ class HitagiFS:
 
 def samefile(f1, f2):
     return os.path.samestat(os.lstat(f1), os.lstat(f2))
+
+
+def listdir(path):
+    return iter(os.path.join(path, f) for f in os.listdir(path))
 
 
 class FSError(Exception):
