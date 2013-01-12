@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Design &mdash; hitagiFS 0.1 documentation</title>
+    <title>Design &mdash; hitagiFS 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="hitagiFS 0.1 documentation" href="index.html" />
+    <link rel="top" title="hitagiFS 0.2 documentation" href="index.html" />
     <link rel="next" title="API Reference" href="api.html" />
     <link rel="prev" title="Quickstart Guide" href="quickstart.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="quickstart.html" title="Quickstart Guide"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -58,10 +58,10 @@
 <h1>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="specification">
 <h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
-<p>HitagiFS mounts a root directory.  Every directory under it counts as a tag,
-and files will appear under each directory it is tagged with.  Modifying one
-will modify the rest, and deleting one will not affect the others.  hitagi will
-support the following commands:</p>
+<p>hitagiFS operates on a root directory.  Every directory under it counts as a
+tag, and files will appear under each directory it is tagged with.  Modifying
+one will modify the rest, and deleting one will not affect the others.
+hitagiFS will support the following commands:</p>
 <dl class="docutils">
 <dt>tag</dt>
 <dd>Tag a file</dd>
@@ -71,27 +71,34 @@ support the following commands:</p>
 <dd>Find all files with the given tags</dd>
 <dt>rm</dt>
 <dd>Remove a file globally</dd>
+<dt>tags</dt>
+<dd>List tags of file</dd>
 <dt>rename</dt>
-<dd>Rename a file globally or a single instance</dd>
-<dt>mount</dt>
-<dd>Mount FS</dd>
+<dd>Rename a file globally</dd>
+<dt>convert</dt>
+<dd>Convert a directory to a symlink (so it&#8217;s taggable)</dd>
+<dt>init</dt>
+<dd>Create and initialize a hitagifs.</dd>
 </dl>
-<p>Both files and tags (directories) can have multiple tags (parent directories).
-Name collisions will not be automatically resolved.  By default, tagged
-entities will retain the same name under different directories.</p>
+<p>Both files and converted directories/tags can have multiple tags.  Unconverted
+directories can only have one tag.  Name collisions will not be automatically
+resolved.  By default, tagged entities will retain the same name under
+different directories, but can be manually renamed individually.</p>
 </div>
 <div class="section" id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
-<p>HitagiFS will be built on top of existing file system features, specifically
-hard links and soft links.  hfs will support <tt class="docutils literal"><span class="pre">ext4</span></tt> primarily, but should
-work for any similar file system.  HitagiFS will primarily use calls to
-standard system utils.  As HitagiFS makes extensive use of hard links,
-everything under its root must belong to one file system, that supports hard
-links.</p>
+<p>hitagiFS will be built on top of existing file systems.  It relies heavily on
+hard links, and supports any underlying (POSIX-compliant?) system that supports
+hard links.  hitagiFS will primarily use calls to builtin Python library
+<tt class="xref py py-mod docutils literal"><span class="pre">os</span></tt> utils and standard system utils.  As hitagiFS makes extensive use of
+hard links, everything under its root must belong to one file system.  As an
+implementation detail, due to having to symlink directories, take care moving
+the hitagiFS after creation.  Running <tt class="docutils literal"><span class="pre">hfs</span> <span class="pre">init</span></tt> on it after moving will
+fix all of the symlinks (Running any command will fix it, but you don&#8217;t have to
+look for something to tag or find if you use <tt class="docutils literal"><span class="pre">hfs</span> <span class="pre">init</span></tt> ).</p>
 <div class="section" id="tsun-side">
 <h3>Tsun side<a class="headerlink" href="#tsun-side" title="Permalink to this headline">¶</a></h3>
-<p>Files will be handled with hard links, with a possible database cache to speed
-up certain operations.</p>
+<p>Tagged files are hard linked under the respective directories.</p>
 </div>
 <div class="section" id="dere-side">
 <h3>Dere side<a class="headerlink" href="#dere-side" title="Permalink to this headline">¶</a></h3>
@@ -99,16 +106,10 @@ up certain operations.</p>
 soft links instead.  Tagged directories will reside in a special location in
 the root directory, and will be symlinked to all other directories.  The name
 of the directory will be kept the same when possible, and ask for a manual
-rename when necessary.  Again, information will be cached in a database.</p>
+rename when necessary.</p>
 <p>Thankfully, soft links <em>are</em> files, so can then be hard linked and tracked as
-per Tsun implementation, with some extra tracking metadata.</p>
+per Tsun implementation.</p>
 </div>
-<div class="section" id="database-specification">
-<h3>Database Specification<a class="headerlink" href="#database-specification" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -125,10 +126,8 @@ per Tsun implementation, with some extra tracking metadata.</p>
 <li><a class="reference internal" href="#implementation">Implementation</a><ul>
 <li><a class="reference internal" href="#tsun-side">Tsun side</a></li>
 <li><a class="reference internal" href="#dere-side">Dere side</a></li>
-<li><a class="reference internal" href="#database-specification">Database Specification</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
 </ul>
@@ -176,7 +175,7 @@ per Tsun implementation, with some extra tracking metadata.</p>
         <li class="right" >
           <a href="quickstart.html" title="Quickstart Guide"
              >previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
