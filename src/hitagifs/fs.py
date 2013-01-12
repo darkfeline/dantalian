@@ -323,7 +323,7 @@ class HitagiFS:
         if not os.path.isdir(path):
             raise NotADirectoryError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
-        return path
+        return os.path.abspath(path)
 
     @classmethod
     def _find_root(cls, dir):
