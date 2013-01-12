@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>hitagifs.commands — Commands &mdash; hitagiFS 0.1 documentation</title>
+    <title>hitagifs.commands — Commands &mdash; hitagiFS 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="hitagiFS 0.1 documentation" href="index.html" />
+    <link rel="top" title="hitagiFS 0.2 documentation" href="index.html" />
     <link rel="up" title="API Reference" href="api.html" />
     <link rel="next" title="hitagifs.fs — Virtual file system" href="hitagifs.fs.html" />
     <link rel="prev" title="API Reference" href="api.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="api.html" title="API Reference"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">API Reference</a> &raquo;</li> 
       </ul>
     </div>  
@@ -58,35 +58,73 @@
             
   <div class="section" id="module-hitagifs.commands">
 <span id="hitagifs-commands-commands"></span><h1><a class="reference internal" href="#module-hitagifs.commands" title="hitagifs.commands"><tt class="xref py py-mod docutils literal"><span class="pre">hitagifs.commands</span></tt></a> — Commands<a class="headerlink" href="#module-hitagifs.commands" title="Permalink to this headline">¶</a></h1>
+<p>All the functions in this module are scripts to be called from the command
+line.</p>
+<p>Usage: hfs <cite>command</cite> <cite>args</cite> ...</p>
 <dl class="function">
 <dt id="hitagifs.commands.tag">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">tag</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.tag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs tag <cite>tag</cite> <cite>file1</cite> [<cite>file2</cite>, [...]]</p>
+<p>Tags <cite>file</cite> with <cite>tag</cite> (Hard links <cite>file</cite> under <cite>tag</cite> directory with the
+same name).  If <cite>file</cite> is already tagged, does nothing.  If <cite>file</cite> is a
+directory, you&#8217;ll need to convert it first.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hitagifs.commands.untag">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">untag</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.untag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs untag <cite>tag</cite> <cite>file1</cite> [<cite>file2</cite>, [...]]</p>
+<p>Removes tag <cite>tag</cite> from <cite>file</cite> (Removes the hard link to <cite>file</cite> under <cite>tag</cite>
+directory).  If <cite>file</cite> isn&#8217;t tagged, does nothing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hitagifs.commands.tags">
+<tt class="descclassname">hitagifs.commands.</tt><tt class="descname">tags</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: hfs tags <cite>file</cite></p>
+<p>Lists all the tags of <cite>file</cite> (Lists the directories that have hard links to
+<cite>file</cite>).</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hitagifs.commands.find">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">find</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.find" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs find <cite>tag1</cite> [<cite>tag2</cite> [...]]</p>
+<p>Intersect tag search.  Lists all files that have all of the given tags.
+Lists files by the path to the hard link under the first tag given.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hitagifs.commands.rm">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">rm</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.rm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs rm <cite>file1</cite> [<cite>file2</cite> [...]]</p>
+<p>Removes the files given (Removes all hard links to the files under the root
+directory).</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hitagifs.commands.rename">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">rename</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.rename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs rename <cite>file</cite> <cite>new</cite></p>
+<p>Renames all hard links to <cite>file</cite> to <cite>new</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hitagifs.commands.convert">
+<tt class="descclassname">hitagifs.commands.</tt><tt class="descname">convert</tt><big>(</big><em>fs</em>, <em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: hfs convert <cite>dir1</cite> [<cite>dir2</cite> [...]]</p>
+<p>Converts directories so they can be tagged.  (Moves directories to special
+location &#8216;.hitagifs/dirs&#8217; and replaces the original with a symlink pointing
+to the absolute path)</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hitagifs.commands.init">
 <tt class="descclassname">hitagifs.commands.</tt><tt class="descname">init</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#hitagifs.commands.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usage: hfs convert [<cite>dir</cite>]</p>
+<p>Creates a hitagifs in <cite>dir</cite> (for internal tracking purposes).  If <cite>dir</cite> is
+omitted, creates a hitagifs in the current directory.</p>
+</dd></dl>
 
 </div>
 
@@ -139,7 +177,7 @@
         <li class="right" >
           <a href="api.html" title="API Reference"
              >previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li>
           <li><a href="api.html" >API Reference</a> &raquo;</li> 
       </ul>
     </div>

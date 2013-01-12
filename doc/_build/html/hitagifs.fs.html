@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>hitagifs.fs — Virtual file system &mdash; hitagiFS 0.1 documentation</title>
+    <title>hitagifs.fs — Virtual file system &mdash; hitagiFS 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="hitagiFS 0.1 documentation" href="index.html" />
+    <link rel="top" title="hitagiFS 0.2 documentation" href="index.html" />
     <link rel="up" title="API Reference" href="api.html" />
     <link rel="prev" title="hitagifs.commands — Commands" href="hitagifs.command.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="hitagifs.command.html" title="hitagifs.commands — Commands"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">API Reference</a> &raquo;</li> 
       </ul>
     </div>  
@@ -57,43 +57,60 @@
 <dl class="class">
 <dt id="hitagifs.fs.HitagiFS">
 <em class="property">class </em><tt class="descclassname">hitagifs.fs.</tt><tt class="descname">HitagiFS</tt><big>(</big><em>root=None</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>HitagiFS virtual file system.  All paths are handled internally as
-normalized absolute paths.  All external paths are sanitized with
-<tt class="xref py py-func docutils literal"><span class="pre">os.path.abspath()</span></tt> prior to being stored internally or returned.</p>
+<dd><p>HitagiFS virtual file system.</p>
 <dl class="method">
 <dt id="hitagifs.fs.HitagiFS.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>root=None</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>If <cite>root</cite> is <tt class="docutils literal"><span class="pre">None</span></tt>, HitagiFS will get <cite>root</cite> from the environment
-variable <tt class="docutils literal"><span class="pre">HITAGIFS_ROOT</span></tt>.  If it&#8217;s not set, it will raise
-<a class="reference internal" href="#hitagifs.fs.FSError" title="hitagifs.fs.FSError"><tt class="xref py py-exc docutils literal"><span class="pre">FSError</span></tt></a>.  Otherwise, <cite>root</cite> will be used.  Either way, the path
-will be normalized with <tt class="xref py py-func docutils literal"><span class="pre">os.path.abspath()</span></tt>.</p>
+<dd><p>If <cite>root</cite> is <tt class="docutils literal"><span class="pre">None</span></tt>, HitagiFS will search up the directory tree for
+the first hitagifs (a directory that contains <tt class="docutils literal"><span class="pre">.hitagifs</span></tt>) it finds
+and use that.  If none are found, raises <a class="reference internal" href="#hitagifs.fs.FSError" title="hitagifs.fs.FSError"><tt class="xref py py-exc docutils literal"><span class="pre">FSError</span></tt></a>.  Otherwise,
+<cite>root</cite> will be used.  Either way, the path will be normalized with
+<tt class="xref py py-func docutils literal"><span class="pre">os.path.abspath()</span></tt>.  If <cite>root</cite> is not a directory,
+<tt class="xref py py-exc docutils literal"><span class="pre">NotADirectoryError</span></tt> will be raised.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="hitagifs.fs.HitagiFS.data_dir">
-<tt class="descname">data_dir</tt><em class="property"> = '/home/darkfeline/lib/python/hitagiFS/virt-env/lib/python3.3/site-packages/hitagifs/data'</em><a class="headerlink" href="#hitagifs.fs.HitagiFS.data_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="hitagifs.fs.HitagiFS.convert">
+<tt class="descname">convert</tt><big>(</big><em>dir</em>, <em>alt=None</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a directory to a symlink.</p>
+<p>If <cite>dir</cite> is in <tt class="docutils literal"><span class="pre">.hitagifs/dirs</span></tt> (smartassery), <a class="reference internal" href="#hitagifs.fs.HitagiFS.convert" title="hitagifs.fs.HitagiFS.convert"><tt class="xref py py-meth docutils literal"><span class="pre">convert()</span></tt></a> raises
+<a class="reference internal" href="#hitagifs.fs.FSError" title="hitagifs.fs.FSError"><tt class="xref py py-exc docutils literal"><span class="pre">FSError</span></tt></a>.  If <cite>dir</cite> is a symlink (probably already converted),
+<a class="reference internal" href="#hitagifs.fs.HitagiFS.convert" title="hitagifs.fs.HitagiFS.convert"><tt class="xref py py-meth docutils literal"><span class="pre">convert()</span></tt></a> returns without doing anything.  If its name conflicts,
+<tt class="xref py py-exc docutils literal"><span class="pre">FileExistsError</span></tt> will be raised.  If <cite>dir</cite> is not a directory,
+<tt class="xref py py-exc docutils literal"><span class="pre">NotADirectoryError</span></tt> will be raised.  If <cite>alt</cite> is given, the
+alternate name will be used for the copy kept in <tt class="docutils literal"><span class="pre">.hitagifs/dirs</span></tt>.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="hitagifs.fs.HitagiFS.find">
 <tt class="descname">find</tt><big>(</big><em>tags</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of files with all of the given tags.</p>
-<p><cite>tags</cite> is a list. <cite>tags</cite> is left unchanged.  Returns a list.</p>
+<p><cite>tags</cite> is an iterable. <cite>tags</cite> is left unchanged.  Returns a list.  File
+paths are absolute and are paths to the hard link under the first tag
+given.</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="hitagifs.fs.HitagiFS.init">
 <em class="property">classmethod </em><tt class="descname">init</tt><big>(</big><em>root</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialize a hitagiFS at <cite>root</cite></p>
+<p>Calling <a class="reference internal" href="#hitagifs.fs.HitagiFS.init" title="hitagifs.fs.HitagiFS.init"><tt class="xref py py-meth docutils literal"><span class="pre">init()</span></tt></a> on an existing hitagiFS does no harm.  Returns an
+instance of <a class="reference internal" href="#hitagifs.fs.HitagiFS" title="hitagifs.fs.HitagiFS"><tt class="xref py py-class docutils literal"><span class="pre">HitagiFS</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hitagifs.fs.HitagiFS.listtags">
+<tt class="descname">listtags</tt><big>(</big><em>file</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.listtags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all tags of <cite>file</cite></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="hitagifs.fs.HitagiFS.rename">
-<tt class="descname">rename</tt><big>(</big><em>source</em>, <em>dest</em>, <em>tag=None</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.rename" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rename</tt><big>(</big><em>file</em>, <em>new</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.rename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rename tracked file.</p>
-<p>Rename all tracked hard links of <cite>source</cite> to <cite>dest</cite>.  If file is not
-tagged, nothing happens.  If <cite>tag</cite> is given, only that singular
-instance of file is renamed.  If any name collisions exist, nothing
-will be renamed and <a class="reference internal" href="#hitagifs.fs.FSError" title="hitagifs.fs.FSError"><tt class="xref py py-exc docutils literal"><span class="pre">FSError</span></tt></a> will be raised.</p>
+<p>Rename all tracked hard links of <cite>file</cite> to <cite>new</cite>.  If file is not
+tagged, nothing happens.  If any name collisions exist, nothing
+will be renamed and <tt class="xref py py-exc docutils literal"><span class="pre">FileExistsError</span></tt> will be raised.</p>
 </dd></dl>
 
 <dl class="method">
@@ -101,12 +118,9 @@ will be renamed and <a class="reference internal" href="#hitagifs.fs.FSError" ti
 <tt class="descname">rm</tt><big>(</big><em>file</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.rm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes all tags from <cite>file</cite>.</p>
 <p><cite>file</cite> is a path relative to the current dir.  If <cite>file</cite> is not tagged,
-nothing happens.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Currently has no safety measure if unlinking one of the hard links
-fails.  If that happens, state will be left halfway.</p>
-</div>
+nothing happens.  If a file cannot be removed, it is skipped, a
+warning is logged, and <a class="reference internal" href="#hitagifs.fs.HitagiFS.rm" title="hitagifs.fs.HitagiFS.rm"><tt class="xref py py-meth docutils literal"><span class="pre">rm()</span></tt></a> returns <tt class="docutils literal"><span class="pre">1</span></tt>.  Otherwise, returns
+<tt class="docutils literal"><span class="pre">None</span></tt>.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">In essence, this removes all tracked hard links to <cite>file</cite>!  If no
@@ -114,17 +128,14 @@ other hard links exist, <cite>file</cite> is deleted.</p>
 </div>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="hitagifs.fs.HitagiFS.root_dir">
-<tt class="descname">root_dir</tt><em class="property"> = '.hitagifs'</em><a class="headerlink" href="#hitagifs.fs.HitagiFS.root_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="hitagifs.fs.HitagiFS.tag">
 <tt class="descname">tag</tt><big>(</big><em>file</em>, <em>tag</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tag <cite>file</cite> with <cite>tag</cite>.</p>
 <p><cite>file</cite> is relative to current dir. <cite>tag</cite> is relative to FS root.  If
-file is already tagged, <a class="reference internal" href="#hitagifs.fs.TagError" title="hitagifs.fs.TagError"><tt class="xref py py-exc docutils literal"><span class="pre">TagError</span></tt></a> is raised.</p>
+<cite>file</cite> is already tagged, nothing happens.  If <cite>file</cite> is an unconverted
+directory, <tt class="xref py py-exc docutils literal"><span class="pre">IsADirectoryError</span></tt> will be raised.  If there&#8217;s a name
+collision, <tt class="xref py py-exc docutils literal"><span class="pre">FileExistsError</span></tt> is raised.</p>
 </dd></dl>
 
 <dl class="method">
@@ -132,7 +143,8 @@ file is already tagged, <a class="reference internal" href="#hitagifs.fs.TagErro
 <tt class="descname">untag</tt><big>(</big><em>file</em>, <em>tag</em><big>)</big><a class="headerlink" href="#hitagifs.fs.HitagiFS.untag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove <cite>tag</cite> from <cite>file</cite>.</p>
 <p><cite>file</cite> is relative to current dir. <cite>tag</cite> is relative to FS root.  If
-file is not tagged, <a class="reference internal" href="#hitagifs.fs.TagError" title="hitagifs.fs.TagError"><tt class="xref py py-exc docutils literal"><span class="pre">TagError</span></tt></a> is raised.</p>
+file is not tagged, nothing happens.  Removes all hard links to <cite>file</cite>
+with <cite>tag</cite>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -141,12 +153,6 @@ file is not tagged, <a class="reference internal" href="#hitagifs.fs.TagError" t
 <dt id="hitagifs.fs.FSError">
 <em class="property">exception </em><tt class="descclassname">hitagifs.fs.</tt><tt class="descname">FSError</tt><a class="headerlink" href="#hitagifs.fs.FSError" title="Permalink to this definition">¶</a></dt>
 <dd><p>File system error</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="hitagifs.fs.TagError">
-<em class="property">exception </em><tt class="descclassname">hitagifs.fs.</tt><tt class="descname">TagError</tt><a class="headerlink" href="#hitagifs.fs.TagError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tag error</p>
 </dd></dl>
 
 <dl class="exception">
@@ -200,7 +206,7 @@ file is not tagged, <a class="reference internal" href="#hitagifs.fs.TagError" t
         <li class="right" >
           <a href="hitagifs.command.html" title="hitagifs.commands — Commands"
              >previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li>
           <li><a href="api.html" >API Reference</a> &raquo;</li> 
       </ul>
     </div>

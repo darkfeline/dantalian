@@ -1,33 +1,85 @@
+"""
+All the functions in this module are scripts to be called from the command
+line.
+
+Usage: hfs `command` `args` ...
+
+"""
+
 import argparse
 import logging
 import os
 
 from hitagifs.fs import HitagiFS
 
-__all__ = ['tag', 'untag', 'find', 'rm', 'rename', 'init']
+__all__ = ['tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'init']
 logger = logging.getLogger(__name__)
 
 
 def tag(fs, *args):
-    logger.debug('tag(%s, %s)', fs, args)
+    """
+    Usage: hfs tag `tag` `file1` [`file2`, [...]]
+
+    Tags `file` with `tag` (Hard links `file` under `tag` directory with the
+    same name).  If `file` is already tagged, does nothing.  If `file` is a
+    directory, you'll need to convert it first.
+
+    """
+    logger.debug('tag(%r, %r)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs tag", add_help=False)
     parser.add_argument('tag')
-    parser.add_argument('file')
+    parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
-    fs.tag(args.file, args.tag)
+    for file in args.file:
+        try:
+            fs.tag(file, args.tag)
+        except IsADirectoryError:
+            logger.warn('skipped %r; convert it first', file)
 
 
 def untag(fs, *args):
-    logger.debug('untag(%s, %s)', fs, args)
+    """
+    Usage: hfs untag `tag` `file1` [`file2`, [...]]
+
+    Removes tag `tag` from `file` (Removes the hard link to `file` under `tag`
+    directory).  If `file` isn't tagged, does nothing.
+
+    """
+    logger.debug('untag(%r, %r)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs utag", add_help=False)
     parser.add_argument('tag')
+    parser.add_argument('file', nargs="+")
+    args = parser.parse_args(args)
+    for file in args.file:
+        fs.untag(file, args.tag)
+
+
+def tags(fs, *args):
+    """
+    Usage: hfs tags `file`
+
+    Lists all the tags of `file` (Lists the directories that have hard links to
+    `file`).
+
+    """
+    logger.debug('tags(%r, %r)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs tags", add_help=False)
     parser.add_argument('file')
     args = parser.parse_args(args)
-    fs.untag(args.file, args.tag)
+    r = fs.listtags(args.file)
+    for tag in r:
+        print(tag)
 
 
 def find(fs, *args):
-    logger.debug('find(%s, %s)', fs, args)
+    """
+    Usage: hfs find `tag1` [`tag2` [...]]
+
+    Intersect tag search.  Lists all files that have all of the given tags.
+    Lists files by the path to the hard link under the first tag given.
+
+    """
+    logger.debug('find(%r, %r)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs find", add_help=False)
     parser.add_argument('tags', nargs='+')
     args = parser.parse_args(args)
@@ -37,7 +89,14 @@ def find(fs, *args):
 
 
 def rm(fs, *args):
-    logger.debug('rm(%s, %s)', fs, args)
+    """
+    Usage: hfs rm `file1` [`file2` [...]]
+
+    Removes the files given (Removes all hard links to the files under the root
+    directory).
+
+    """
+    logger.debug('rm(%r, %r)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs rm", add_help=False)
     parser.add_argument('files', nargs='+')
     args = parser.parse_args(args)
@@ -46,16 +105,51 @@ def rm(fs, *args):
 
 
 def rename(fs, *args):
-    logger.debug('rename(%s, %s)', fs, args)
+    """
+    Usage: hfs rename `file` `new`
+
+    Renames all hard links to `file` to `new`.
+
+    """
+    logger.debug('rename(%r, %r)', fs, args)
     parser = argparse.ArgumentParser(prog="hfs rename", add_help=False)
-    parser.add_argument('source')
-    parser.add_argument('dest')
+    parser.add_argument('file')
+    parser.add_argument('new')
     args = parser.parse_args(args)
     fs.rename(args.source, args.dest)
 
 
+def convert(fs, *args):
+    """
+    Usage: hfs convert `dir1` [`dir2` [...]]
+
+    Converts directories so they can be tagged.  (Moves directories to special
+    location '.hitagifs/dirs' and replaces the original with a symlink pointing
+    to the absolute path)
+
+    """
+    logger.debug('convert(%r, %r)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs convert", add_help=False)
+    parser.add_argument('dir', nargs="+")
+    args = parser.parse_args(args)
+    for dir in args.dir:
+        try:
+            fs.convert(dir)
+        except NotADirectoryError:
+            logger.warn('%r is not a directory; skipping', dir)
+        except FileExistsError:
+            logger.warn('Name conflict %r; skipping', dir)
+
+
 def init(*args):
-    logger.debug('init(%s)', args)
+    """
+    Usage: hfs convert [`dir`]
+
+    Creates a hitagifs in `dir` (for internal tracking purposes).  If `dir` is
+    omitted, creates a hitagifs in the current directory.
+
+    """
+    logger.debug('init(%r)', args)
     parser = argparse.ArgumentParser(prog="hfs init", add_help=False)
     parser.add_argument('root', nargs="?", default=os.getcwd())
     args = parser.parse_args(args)
