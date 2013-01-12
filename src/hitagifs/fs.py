@@ -161,6 +161,7 @@ class HitagiFS:
         logger.debug('convert(%r, %r)', dir, alt)
         assert isinstance(dir, str)
         assert alt is None or isinstance(alt, str)
+        dir = os.path.abspath(dir)
 
         logger.info("Checking %r is a dir", dir)
         if not os.path.isdir(dir):
