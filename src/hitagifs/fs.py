@@ -174,15 +174,15 @@ class HitagiFS:
 
         logger.info("Checking %r is not in dirs", dir)
         dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
-        dir = os.path.dirname(os.path.abspath(dir))
-        if samefile(dir, dirs_dir):
-            raise FSError("{} is in special directory".format(dir))
+        dirname, basename = os.path.split(os.path.abspath(dir))
+        if samefile(dirname, dirs_dir):
+            raise FSError("{} is in special directory".format(dirname))
         logger.info("Check okay")
 
         if alt is not None:
             assert isinstance(alt, str)
-            dirname = alt
-        new = os.path.join(dirs_dir, dirname)
+            basename = alt
+        new = os.path.join(dirs_dir, basename)
         logger.info("Checking name conflict")
         if os.path.exists(new):
             raise FileExistsError('{} exists'.format(new))
