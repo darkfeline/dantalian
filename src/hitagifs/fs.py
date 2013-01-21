@@ -77,10 +77,10 @@ class HitagiFS:
 
     def __init__(self, root=None):
         """
-        If `root` is ``None``, HitagiFS will search up the directory tree for
-        the first hitagifs (a directory that contains ``.hitagifs``) it finds
-        and use that.  If none are found, raises :exc:`FSError`.  Otherwise,
-        `root` will be used.  If `root` is not a directory,
+        If `root` is :data:`None`, HitagiFS will search up the directory tree
+        for the first hitagifs (a directory that contains ``.hitagifs``) it
+        finds and use that.  If none are found, raises :exc:`FSError`.
+        Otherwise, `root` will be used.  If `root` is not a directory,
         :exc:`NotADirectoryError` will be raised.
 
         """
@@ -254,7 +254,7 @@ class HitagiFS:
         `file` is a path relative to the current dir.  If `file` is not tagged,
         nothing happens.  If a file cannot be removed, it is skipped, a
         warning is logged, and :meth:`rm` returns ``1``.  Otherwise, returns
-        ``None``.
+        :data:`None`.
 
         .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
