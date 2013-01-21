@@ -153,7 +153,7 @@ class HitagiFS:
     def listpaths(self, file):
         """Return a list of all paths to `file`
 
-        :rtype: :cls:`list`
+        :rtype: :class:`list`
 
         """
         assert isinstance(file, str)
@@ -162,7 +162,7 @@ class HitagiFS:
     def listtags(self, file):
         """Return a list of all tags of `file`
 
-        :rtype: :cls:`list`
+        :rtype: :class:`list`
 
         """
         assert isinstance(file, str)
@@ -226,7 +226,7 @@ class HitagiFS:
         paths are absolute and are paths to the hard link under the first tag
         given.
 
-        :rtype: :cls:`list`
+        :rtype: :class:`list`
 
         """
         tags = list(tags)
@@ -260,7 +260,7 @@ class HitagiFS:
             In essence, this removes all tracked hard links to `file`!  If no
             other hard links exist, `file` is deleted.
 
-        :rtype: :data:`None` or :cls:`int`
+        :rtype: :data:`None` or :class:`int`
 
         """
         assert isinstance(file, str)
@@ -306,7 +306,7 @@ class HitagiFS:
         be found, :exc:`DependencyError` is raised.  Output paths are absolute.
         Trims out any '.hitagifs/dirs/' entries.
 
-        :rtype: :cls:`list`
+        :rtype: :class:`list`
 
         """
         try:
@@ -350,7 +350,7 @@ class HitagiFS:
     def _get_tag_path(self, tag):
         """Get absolute path of `tag`.
 
-        :rtype: :cls:`str`
+        :rtype: :class:`str`
 
         """
         path = os.path.join(self.root, tag)
@@ -365,7 +365,7 @@ class HitagiFS:
 
         If none are found, raises :exc:`FSError`.
 
-        :rtype: :cls:`str
+        :rtype: :class:`str
 
         """
         assert os.path.isdir(dir)
@@ -383,7 +383,7 @@ class HitagiFS:
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 
-    :rtype: :cls:`bool`
+    :rtype: :class:`bool`
 
     """
     return os.path.samestat(os.lstat(f1), os.lstat(f2))
