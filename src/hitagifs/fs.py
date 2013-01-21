@@ -151,7 +151,11 @@ class HitagiFS:
                 os.unlink(f)
 
     def listtags(self, file):
-        """Return a list of all tags of `file`"""
+        """Return a list of all tags of `file`
+
+        :rtype: :cls:`list`
+
+        """
         assert isinstance(file, str)
         files = self._get_all(file)
         return [os.path.dirname(file).replace(self.root + '/', '') for file in
@@ -213,6 +217,8 @@ class HitagiFS:
         paths are absolute and are paths to the hard link under the first tag
         given.
 
+        :rtype: :cls:`list`
+
         """
         tags = list(tags)
         tag = tags.pop(0)
@@ -244,6 +250,8 @@ class HitagiFS:
         .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
             other hard links exist, `file` is deleted.
+
+        :rtype: :data:`None` or :cls:`int`
 
         """
         assert isinstance(file, str)
@@ -289,6 +297,8 @@ class HitagiFS:
         be found, :exc:`DependencyError` is raised.  Output paths are absolute.
         Trims out any '.hitagifs/dirs/' entries.
 
+        :rtype: :cls:`list`
+
         """
         try:
             output = subprocess.check_output(
@@ -329,7 +339,11 @@ class HitagiFS:
         return result
 
     def _get_tag_path(self, tag):
-        """Get absolute path of `tag`."""
+        """Get absolute path of `tag`.
+
+        :rtype: :cls:`str`
+
+        """
         path = os.path.join(self.root, tag)
         if not os.path.isdir(path):
             raise NotADirectoryError(
@@ -341,6 +355,8 @@ class HitagiFS:
         """Find the first hitagiFS root directory above `dir`.
 
         If none are found, raises :exc:`FSError`.
+
+        :rtype: :cls:`str
 
         """
         assert os.path.isdir(dir)
