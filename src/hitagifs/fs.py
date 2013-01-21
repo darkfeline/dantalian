@@ -107,7 +107,8 @@ class HitagiFS:
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        `file` is already tagged, nothing happens.  If `file` is an unconverted
+        `file` is already tagged, nothing happens.  This includes if the file
+        is hardlinked under another name.  If `file` is an unconverted
         directory, :exc:`IsADirectoryError` will be raised.  If there's a name
         collision, :exc:`FileExistsError` is raised.
 
