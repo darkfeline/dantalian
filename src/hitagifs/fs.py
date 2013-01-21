@@ -150,6 +150,15 @@ class HitagiFS:
                 logger.debug('unlinking %r', f)
                 os.unlink(f)
 
+    def listpaths(self, file):
+        """Return a list of all paths to `file`
+
+        :rtype: :cls:`list`
+
+        """
+        assert isinstance(file, str)
+        return self._get_all(file)
+
     def listtags(self, file):
         """Return a list of all tags of `file`
 
