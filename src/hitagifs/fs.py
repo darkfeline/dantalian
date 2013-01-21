@@ -54,8 +54,7 @@ class HitagiFS:
         If `root` is ``None``, HitagiFS will search up the directory tree for
         the first hitagifs (a directory that contains ``.hitagifs``) it finds
         and use that.  If none are found, raises :exc:`FSError`.  Otherwise,
-        `root` will be used.  Either way, the path will be normalized with
-        :func:`os.path.abspath`.  If `root` is not a directory,
+        `root` will be used.  If `root` is not a directory,
         :exc:`NotADirectoryError` will be raised.
 
         """
