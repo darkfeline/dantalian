@@ -29,6 +29,7 @@ class HitagiFS:
         """
 
         logger.debug('init(%r)', root)
+        root = os.path.abspath(root)
         root_dir = os.path.join(root, cls._root_dir)
         logger.debug('mkdir %r', root_dir)
         try:
