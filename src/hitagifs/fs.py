@@ -49,6 +49,32 @@ class HitagiFS:
 
         return cls(root)
 
+    @property
+    def _moved(self):
+        with open(os.path.join(self.root, self.__class__._root_file)) as f:
+            old_root = f.read()
+        if old_root == self.root:
+            return False
+        else:
+            return True
+
+    def _fix_move(self):
+        newdir = os.path.join(self.root, self.__class__._dirs_dir)
+        files = self._get_symlinks()
+        logger.debug('found symlinks %r', files)
+        for set in files:
+            f = set.pop(0)
+            new = os.path.join(newdir, os.path.basename(os.readlink(f)))
+            logger.debug("unlinking %r", f)
+            os.unlink(f)
+            logger.debug("symlinking %r to %r", f, new)
+            os.symlink(new, f)
+            for file in set:
+                logger.debug("unlinking %r", file)
+                os.unlink(file)
+                logger.debug("linking %r to %r", file, f)
+                os.link(f, file)
+
     def __init__(self, root=None):
         """
         If `root` is ``None``, HitagiFS will search up the directory tree for
@@ -66,27 +92,11 @@ class HitagiFS:
         logger.info('HitagiFS initialized')
         logger.debug('root is %r', self.root)
         logger.info('Checking if moved')
-        with open(os.path.join(self.root, self.__class__._root_file)) as f:
-            old_root = f.read()
-        if old_root == self.root:
+        if not self._moved:
             logger.info('All clear')
         else:
             logger.info('Move detected; fixing')
-            newdir = os.path.join(self.root, self.__class__._dirs_dir)
-            files = self._get_symlinks()
-            logger.debug('found symlinks %r', files)
-            for set in files:
-                f = set.pop(0)
-                new = os.path.join(newdir, os.path.basename(os.readlink(f)))
-                logger.debug("unlinking %r", f)
-                os.unlink(f)
-                logger.debug("symlinking %r to %r", f, new)
-                os.symlink(new, f)
-                for file in set:
-                    logger.debug("unlinking %r", file)
-                    os.unlink(file)
-                    logger.debug("linking %r to %r", file, f)
-                    os.link(f, file)
+            self._fix_move()
             logger.info('finished fixing')
             root_file = os.path.join(self.root, self.__class__._root_file)
             logger.debug('writing %r', root_file)
