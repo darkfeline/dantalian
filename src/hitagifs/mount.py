@@ -79,11 +79,18 @@ class HitagiMount(Operations):
         #return attrs.keys()
         raise OSError(ENODATA)
 
-    # not done
     def mkdir(self, path, mode):
-        self.files[path] = dict(st_mode=(S_IFDIR | mode), st_nlink=2,
-                st_size=0, st_ctime=time(), st_mtime=time(), st_atime=time())
-        self.files['/']['st_nlink'] += 1
+        node, path = self._getnode(path)
+        if path:
+            t = list(node.tags)
+            path = os.path.join(self.root.tagpath(t.pop(0)), *path)
+            fd = os.mkdir(path, mode)
+            self.root.convert(path)
+            for tag in t:
+                self.root.tag(path, tag)
+            return fd
+        else:
+            raise OSError(EPERM)
 
     # not done
     def open(self, path, flags):
