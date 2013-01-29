@@ -2,7 +2,7 @@
 
 from fuse3 import FUSE, Operations
 
-from errno import ENOENT, EPERM
+from errno import ENOENT, EPERM, ENODATA
 from stat import S_IFDIR, S_IFLNK
 from sys import argv, exit
 from time import time
@@ -65,18 +65,18 @@ class HitagiMount(Operations):
             #        st_size=st.st_size)
             raise OSError(EPERM)
 
-    # not done
     def getxattr(self, path, name, position=0):
-        attrs = self.files[path].get('attrs', {})
-        try:
-            return attrs[name]
-        except KeyError:
-            return ''       # Should return ENOATTR
+        #attrs = self.files[path].get('attrs', {})
+        #try:
+        #    return attrs[name]
+        #except KeyError:
+        #    return ''       # Should return ENOATTR
+        raise OSError(ENODATA)
 
-    # not done
     def listxattr(self, path):
-        attrs = self.files[path].get('attrs', {})
-        return attrs.keys()
+        #attrs = self.files[path].get('attrs', {})
+        #return attrs.keys()
+        raise OSError(ENODATA)
 
     # not done
     def mkdir(self, path, mode):
