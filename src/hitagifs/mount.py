@@ -2,7 +2,7 @@
 
 from fuse3 import FUSE, Operations
 
-from errno import ENOENT, EPERM, ENODATA
+from errno import ENOENT, EPERM, ENODATA, EINVAL
 from stat import S_IFDIR, S_IFLNK
 from sys import argv, exit
 from time import time
@@ -110,9 +110,12 @@ class HitagiMount(Operations):
         else:
             return ['.', '..'] + [node[x] for x in iter(node)]
 
-    # not done
     def readlink(self, path):
-        return self.data[path].decode('utf-8')
+        node, path = self._getnode(path)
+        if path:
+            return ['.', '..'] + os.lsdir(_getpath(node, path))
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def removexattr(self, path, name):
