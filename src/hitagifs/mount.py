@@ -39,9 +39,10 @@ class HitagiMount(Operations):
     def create(self, path, mode):
         node, path = self._getnode(path)
         if path:
-            path = _getpath(node, path)
+            t = list(node.tags)
+            path = os.path.join(self.root.tagpath(t.pop(0)), *path)
             fd = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
-            for tag in node.tags:
+            for tag in t:
                 self.root.tag(path, tag)
             return fd
         else:
