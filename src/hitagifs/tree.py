@@ -6,6 +6,9 @@ class FSNode:
     def __init__(self):
         self.children = {}
 
+    def __iter__(self):
+        return iter(self.children)
+
     def __getitem__(self, key):
         return self.children[key]
 
