@@ -103,9 +103,12 @@ class HitagiMount(Operations):
         os.lseek(fh, offset, 0)
         return os.read(fh, size)
 
-    # not done
     def readdir(self, path, fh):
-        return ['.', '..'] + [x[1:] for x in self.files if x != '/']
+        node, path = self._getnode(path)
+        if path:
+            return ['.', '..'] + os.lsdir(_getpath(node, path))
+        else:
+            return ['.', '..'] + [node[x] for x in iter(node)]
 
     # not done
     def readlink(self, path):
