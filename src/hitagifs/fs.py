@@ -112,7 +112,7 @@ class HitagiFS:
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        dest = self._get_tag_path(tag)
+        dest = self.get_tagpath(tag)
         name = os.path.basename(file)
         logger.info('checking if %r already tagged with %r', file, tag)
         for f in listdir(dest):
@@ -136,7 +136,7 @@ class HitagiFS:
         """
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        dest = self._get_tag_path(tag)
+        dest = self.get_tagpath(tag)
         inode = os.lstat(file)
         for f in listdir(dest):
             logger.debug('checking %r', f)
@@ -226,12 +226,12 @@ class HitagiFS:
         tags = list(tags)
         tag = tags.pop(0)
         logger.debug('filter tag %r', tag)
-        path = self._get_tag_path(tag)
+        path = self.get_tagpath(tag)
         files = list(listdir(path))
         logger.debug('found set %r', files)
         for tag in tags:
             logger.debug('filter tag %r', tag)
-            path = self._get_tag_path(tag)
+            path = self.get_tagpath(tag)
             good = []
             for file in files:
                 for f in listdir(path):
@@ -341,7 +341,7 @@ class HitagiFS:
                 result.append([file])
         return result
 
-    def _get_tag_path(self, tag):
+    def get_tagpath(self, tag):
         """Get absolute path of `tag`.
 
         :rtype: :class:`str`
