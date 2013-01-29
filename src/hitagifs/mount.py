@@ -9,6 +9,7 @@ from time import time
 
 import logging
 import os
+import tempfile
 
 from hitagifs import tree
 
@@ -125,9 +126,25 @@ class HitagiMount(Operations):
         #    pass        # Should return ENOATTR
         raise OSError(ENODATA)
 
-    # not done
     def rename(self, old, new):
-        self.files[new] = self.files.pop(old)
+        onode, opath = self._getnode(old)
+        nnode, npath = self._getnode(new)
+        if opath is None or npath is None:
+            raise OSError(EINVAL)
+        ofpath = _getpath(onode, opath)
+        nfpath = _getpath(nnode, npath)
+        if len(opath) > 1:
+            pass
+        else:
+            ofpath = _tmplink(ofpath)
+            for tag in list(onode.tags):
+                self.root.untag(ofpath, tag)
+        if len(npath) > 1:
+            os.rename(ofpath, nfpath)
+        else:
+            for tag in list(nnode.tags):
+                self.root.tag(ofpath, tag)
+            os.rm(ofpath)
 
     # not done
     def rmdir(self, path):
@@ -206,6 +223,19 @@ def _getpath(node, path):
 def _splitpath(path):
     """Split path into list"""
     return os.path.split(path.lstrip('/'))
+
+
+def _tmplink(target):
+    while True:
+        fh, path = tempfile.mkstemp()
+        os.close(fh)
+        os.remove(path)
+        try:
+            os.link(target, path)
+        except FileExistsError:
+            continue
+        else:
+            return path
 
 
 if __name__ == "__main__":
