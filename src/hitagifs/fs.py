@@ -52,7 +52,7 @@ class HitagiFS:
 
     @property
     def _moved(self):
-        with open(os.path.join(self.root, self.__class__._root_file)) as f:
+        with open(os.path.join(self.root, self._root_file)) as f:
             old_root = f.read()
         if old_root == self.root:
             return False
@@ -60,8 +60,7 @@ class HitagiFS:
             return True
 
     def _fix_move(self):
-        cls = self.__class__
-        newdir = os.path.join(self.root, cls._dirs_dir)
+        newdir = os.path.join(self.root, self._dirs_dir)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
         for set in files:
@@ -76,7 +75,7 @@ class HitagiFS:
                 os.unlink(file)
                 logger.debug("linking %r to %r", file, f)
                 os.link(f, file)
-        root_file = os.path.join(self.root, cls._root_file)
+        root_file = os.path.join(self.root, self._root_file)
         logger.debug('writing %r', root_file)
         with open(root_file, 'w') as f:
             f.write(self.root)
@@ -201,7 +200,7 @@ class HitagiFS:
         logger.info("Check okay")
 
         logger.info("Checking %r is not in dirs", dir)
-        dirs_dir = os.path.join(self.root, self.__class__._dirs_dir)
+        dirs_dir = os.path.join(self.root, self._dirs_dir)
         dirname, basename = os.path.split(os.path.abspath(dir))
         if samefile(dirname, dirs_dir):
             raise FSError("{} is in special directory".format(dirname))
