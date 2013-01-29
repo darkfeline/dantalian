@@ -92,10 +92,12 @@ class HitagiMount(Operations):
         else:
             raise OSError(EPERM)
 
-    # not done
     def open(self, path, flags):
-        self.fd += 1
-        return self.fd
+        node, path = self._getnode(path)
+        if path:
+            return os.open(_getpath(node, path), flags)
+        else:
+            raise OSError(EPERM)
 
     # not done
     def read(self, path, size, offset, fh):
