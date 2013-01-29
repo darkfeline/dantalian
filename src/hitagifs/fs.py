@@ -8,13 +8,6 @@ logger = logging.getLogger(__name__)
 
 class HitagiFS:
 
-    """
-    HitagiFS virtual file system.
-
-    .. automethod:: __init__
-
-    """
-
     _root_dir = '.hitagifs'
     _root_file = os.path.join(_root_dir, 'root')
     _dirs_dir = os.path.join(_root_dir, 'dirs')
