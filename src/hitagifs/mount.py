@@ -117,13 +117,13 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def removexattr(self, path, name):
-        attrs = self.files[path].get('attrs', {})
-        try:
-            del attrs[name]
-        except KeyError:
-            pass        # Should return ENOATTR
+        #attrs = self.files[path].get('attrs', {})
+        #try:
+        #    del attrs[name]
+        #except KeyError:
+        #    pass        # Should return ENOATTR
+        raise OSError(ENODATA)
 
     # not done
     def rename(self, old, new):
