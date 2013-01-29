@@ -99,9 +99,9 @@ class HitagiMount(Operations):
         else:
             raise OSError(EPERM)
 
-    # not done
     def read(self, path, size, offset, fh):
-        return bytes(self.data[path][offset:offset + size])
+        os.lseek(fh, offset, 0)
+        return os.read(fh, size)
 
     # not done
     def readdir(self, path, fh):
