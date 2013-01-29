@@ -2,7 +2,7 @@
 
 from fuse3 import FUSE, Operations
 
-from errno import ENOENT, EPERM, ENODATA, EINVAL
+from errno import ENOENT, ENODATA, EINVAL
 from stat import S_IFDIR, S_IFLNK
 from sys import argv, exit
 from time import time
@@ -27,14 +27,14 @@ class HitagiMount(Operations):
         if path:
             os.chmod(_getpath(node, path), mode)
         else:
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def chown(self, path, uid, gid):
         node, path = self._getnode(path)
         if path:
             os.chown(_getpath(node, path), uid, gid)
         else:
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def create(self, path, mode):
         node, path = self._getnode(path)
@@ -46,7 +46,7 @@ class HitagiMount(Operations):
                 self.root.tag(path, tag)
             return fd
         else:
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def getattr(self, path, fh=None):
         node, path = self._getnode(path)
@@ -64,7 +64,7 @@ class HitagiMount(Operations):
             #        st_mode=st.st_mode,
             #        st_nlink,
             #        st_size=st.st_size)
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def getxattr(self, path, name, position=0):
         #attrs = self.files[path].get('attrs', {})
@@ -90,14 +90,14 @@ class HitagiMount(Operations):
                 self.root.tag(path, tag)
             return fd
         else:
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def open(self, path, flags):
         node, path = self._getnode(path)
         if path:
             return os.open(_getpath(node, path), flags)
         else:
-            raise OSError(EPERM)
+            raise OSError(EINVAL)
 
     def read(self, path, size, offset, fh):
         os.lseek(fh, offset, 0)
