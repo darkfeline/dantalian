@@ -146,10 +146,12 @@ class HitagiMount(Operations):
                 self.root.tag(ofpath, tag)
             os.rm(ofpath)
 
-    # not done
     def rmdir(self, path):
-        self.files.pop(path)
-        self.files['/']['st_nlink'] -= 1
+        node, path = self._getnode(path)
+        if path:
+            os.rmdir(_getpath(node, path))
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def setxattr(self, path, name, value, options, position=0):
