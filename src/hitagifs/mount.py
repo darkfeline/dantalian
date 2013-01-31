@@ -153,11 +153,11 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def setxattr(self, path, name, value, options, position=0):
-        # Ignore options
-        attrs = self.files[path].setdefault('attrs', {})
-        attrs[name] = value
+        ## Ignore options
+        #attrs = self.files[path].setdefault('attrs', {})
+        #attrs[name] = value
+        raise OSError(EPERM)
 
     # not done
     def statfs(self, path):
