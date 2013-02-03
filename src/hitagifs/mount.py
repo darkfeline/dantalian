@@ -196,9 +196,12 @@ class HitagiMount(Operations):
     def _getnode(self, path):
         """Get node and path components
 
-        node is the furthest FSNode along the path.  path is a list.  If path
-        is not empty, the first item maps to a string under node.  If path is
-        broken, raise OSError(ENOENT).
+        path is a list of strings pointing to a path under the FUSE vfs.  If
+        path is broken, raise OSError(ENOENT).
+
+        Returns a tuple (cur, path).  cur is the furthest FSNode along the
+        path.  path is a list of strings indicating the path from the given
+        node.  If node is the last file in the path, path is None.
         """
         assert len(path) > 0
         path = _splitpath(path)
