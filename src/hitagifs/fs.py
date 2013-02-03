@@ -8,13 +8,6 @@ logger = logging.getLogger(__name__)
 
 class HitagiFS:
 
-    """
-    HitagiFS virtual file system.
-
-    .. automethod:: __init__
-
-    """
-
     _root_dir = '.hitagifs'
     _root_file = os.path.join(_root_dir, 'root')
     _dirs_dir = os.path.join(_root_dir, 'dirs')
@@ -59,7 +52,8 @@ class HitagiFS:
         else:
             return True
 
-    def _fix_move(self):
+    def fix(self):
+        assert self._moved
         newdir = os.path.join(self.root, self._dirs_dir)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
@@ -101,7 +95,7 @@ class HitagiFS:
             logger.info('All clear')
         else:
             logger.info('Move detected; fixing')
-            self._fix_move()
+            self.fix()
             logger.info('finished fixing')
 
     def tag(self, file, tag):
@@ -119,7 +113,7 @@ class HitagiFS:
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        dest = self._get_tag_path(tag)
+        dest = self.tagpath(tag)
         name = os.path.basename(file)
         logger.info('checking if %r already tagged with %r', file, tag)
         for f in listdir(dest):
@@ -143,7 +137,7 @@ class HitagiFS:
         """
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        dest = self._get_tag_path(tag)
+        dest = self.tagpath(tag)
         inode = os.lstat(file)
         for f in listdir(dest):
             logger.debug('checking %r', f)
@@ -233,12 +227,12 @@ class HitagiFS:
         tags = list(tags)
         tag = tags.pop(0)
         logger.debug('filter tag %r', tag)
-        path = self._get_tag_path(tag)
+        path = self.tagpath(tag)
         files = list(listdir(path))
         logger.debug('found set %r', files)
         for tag in tags:
             logger.debug('filter tag %r', tag)
-            path = self._get_tag_path(tag)
+            path = self.tagpath(tag)
             good = []
             for file in files:
                 for f in listdir(path):
@@ -348,7 +342,7 @@ class HitagiFS:
                 result.append([file])
         return result
 
-    def _get_tag_path(self, tag):
+    def tagpath(self, tag):
         """Get absolute path of `tag`.
 
         :rtype: :class:`str`
