@@ -193,12 +193,13 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def write(self, path, data, offset, fh):
-        del self.data[path][offset:]
-        self.data[path].extend(data)
-        self.files[path]['st_size'] = len(self.data[path])
-        return len(data)
+        node, path = self._getnode(path)
+        if path:
+            os.lseek(fh, offset, 0)
+            return os.write(fh, data)
+        else:
+            raise OSError(EINVAL)
 
     def _getnode(self, path):
         """Get node and path components
