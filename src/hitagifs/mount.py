@@ -1,9 +1,7 @@
 from fuse3 import FUSE, Operations
 
 from errno import ENOENT, EPERM, EINVAL
-from stat import S_IFLNK
 from sys import argv, exit
-from time import time
 
 import logging
 import os
