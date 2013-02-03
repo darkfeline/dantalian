@@ -52,7 +52,8 @@ class HitagiFS:
         else:
             return True
 
-    def _fix_move(self):
+    def fix(self):
+        assert self._moved
         newdir = os.path.join(self.root, self._dirs_dir)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
@@ -94,7 +95,7 @@ class HitagiFS:
             logger.info('All clear')
         else:
             logger.info('Move detected; fixing')
-            self._fix_move()
+            self.fix()
             logger.info('finished fixing')
 
     def tag(self, file, tag):
