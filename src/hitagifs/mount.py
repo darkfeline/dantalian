@@ -163,12 +163,15 @@ class HitagiMount(Operations):
             'f_bavail', 'f_bfree', 'f_blocks', 'f_bsize', 'f_favail',
             'f_ffree', 'f_files', 'f_flag', 'f_frsize', 'f_namemax'))
 
-    # not done
     def symlink(self, target, source):
-        target = target.encode('utf-8')
-        self.files[source] = dict(st_mode=(S_IFLNK | 0o777), st_nlink=1,
-            st_size=len(target))
-        self.data[source] = bytearray(target)
+        node, path = self._getnode(source)
+        if path:
+            os.symlink(target, _getpath(node, path))
+            t = list(node.tags)
+            for tag in t:
+                self.root.tag(_getpath(node, path), tag)
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def truncate(self, path, length, fh=None):
