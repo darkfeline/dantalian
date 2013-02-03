@@ -181,9 +181,12 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def unlink(self, path):
-        self.files.pop(path)
+        node, path = self._getnode(path)
+        if path:
+            os.unlink(_getpath(node, path))
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def utimens(self, path, times=None):
