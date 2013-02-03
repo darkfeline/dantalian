@@ -173,10 +173,13 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def truncate(self, path, length, fh=None):
-        del self.data[path][length:]
-        self.files[path]['st_size'] = length
+        node, path = self._getnode(path)
+        if path:
+            with open(_getpath(node, path), 'r+') as f:
+                f.truncate(length)
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def unlink(self, path):
