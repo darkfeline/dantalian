@@ -188,12 +188,12 @@ class HitagiMount(Operations):
         else:
             raise OSError(EINVAL)
 
-    # not done
     def utimens(self, path, times=None):
-        now = time()
-        atime, mtime = times if times else (now, now)
-        self.files[path]['st_atime'] = atime
-        self.files[path]['st_mtime'] = mtime
+        node, path = self._getnode(path)
+        if path:
+            os.utime(_getpath(node, path), times)
+        else:
+            raise OSError(EINVAL)
 
     # not done
     def write(self, path, data, offset, fh):
