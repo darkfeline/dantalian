@@ -1,5 +1,7 @@
 import os.path
 
+__all__ = ['FSNode', 'TagNode']
+
 
 class FSNode:
 
