@@ -165,9 +165,10 @@ class HitagiMount(Operations):
         node, path = self._getnode(source)
         if path:
             os.symlink(target, _getpath(node, path))
-            t = list(node.tags)
-            for tag in t:
-                self.root.tag(_getpath(node, path), tag)
+            if len(path) == 1:
+                t = list(node.tags)
+                for tag in t:
+                    self.root.tag(_getpath(node, path), tag)
         else:
             raise OSError(EINVAL)
 
