@@ -9,6 +9,7 @@ class FSNode:
     Basically works like a dictionary mapping names to nodes.
 
     Implements:
+
     - __iter__
     - __getitem__
     - __setitem__
