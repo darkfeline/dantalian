@@ -86,6 +86,12 @@ For example, a file which is tagged ``tag1/file1``, ``tag2/file2``, and
 ``file1.2`` and so on.  A file with an extension, e.g. ``file.mp3``, will be
 renamed ``file.1.mp3``, ``file.2.mp3``, and so on.
 
+In addition to the configuration file above, the user may create his own custom
+script at ``.hitagifs/mount_custom``.  If this file exists, it will be run in
+order to mount the FUSE file system, allowing the user to come up with his or
+her own automatically generated mount list.  See :mod:`hitagifs.fuse` for an
+example of how to set up the FUSE file system.
+
 FUSE Operations
 ---------------
 
