@@ -8,8 +8,10 @@ hitagiFS is still in development.
 Contents:
 
 .. toctree::
-    :maxdepth: 2
+   :maxdepth: 2
 
-    quickstart
-    specs
-    api
+   quickstart
+   commands
+   specs
+   fuse
+   api
