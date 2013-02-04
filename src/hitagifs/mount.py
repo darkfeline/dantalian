@@ -20,6 +20,12 @@ class HitagiMount(Operations):
         self.tree = tree
 
     def chmod(self, path, mode):
+        """chmod
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             os.chmod(_getpath(node, path), mode)
@@ -27,6 +33,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def chown(self, path, uid, gid):
+        """chown
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             os.chown(_getpath(node, path), uid, gid)
@@ -34,6 +46,13 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def create(self, path, mode):
+        """create
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Once a file is created, it is tagged with all of
+        the tags of the furthest node and return the file's file descriptor.
+        Otherwise the operation is invalid and raises EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             t = list(node.tags)
@@ -46,6 +65,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def getattr(self, path, fh=None):
+        """getattr
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             st = os.lstat(path)
@@ -64,6 +89,10 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def getxattr(self, path, name, position=0):
+        """getxattr
+
+        Not implemented.  Raises EPERM.
+        """
         #attrs = self.files[path].get('attrs', {})
         #try:
         #    return attrs[name]
@@ -72,11 +101,22 @@ class HitagiMount(Operations):
         raise OSError(EPERM)
 
     def listxattr(self, path):
+        """listxattr
+
+        Not implemented.  Raises EPERM.
+        """
         #attrs = self.files[path].get('attrs', {})
         #return attrs.keys()
         raise OSError(EPERM)
 
     def mkdir(self, path, mode):
+        """mkdir
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Once a directory is created, it is converted and
+        tagged with all of the tags of the furthest node.  Otherwise the
+        operation is invalid and raises EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             t = list(node.tags)
@@ -90,6 +130,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def open(self, path, flags):
+        """open
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             return os.open(_getpath(node, path), flags)
@@ -97,10 +143,23 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def read(self, path, size, offset, fh):
+        """read
+
+        `path` is ignored.  Forward the request to the OS (via built-in os
+        module) with the file descriptor.
+        """
         os.lseek(fh, offset, 0)
         return os.read(fh, size)
 
     def readdir(self, path, fh):
+        """readdir
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the result is generated as an empty
+        directory plus others depending on the type of the furthest node.  If
+        it is an FSNode, its children nodes are added.  If it is additionally a
+        TagNode, its files are calculated according to its rules and added.
+        """
         node, path = self._getnode(path)
         if path:
             return ['.', '..'] + os.lsdir(_getpath(node, path))
@@ -108,6 +167,12 @@ class HitagiMount(Operations):
             return ['.', '..'] + [node[x] for x in iter(node)]
 
     def readlink(self, path):
+        """readlink
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             return os.readlink(_getpath(node, path))
@@ -115,6 +180,10 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def removexattr(self, path, name):
+        """removexattr
+
+        Not implemented.  Raises EPERM.
+        """
         #attrs = self.files[path].get('attrs', {})
         #try:
         #    del attrs[name]
@@ -123,6 +192,15 @@ class HitagiMount(Operations):
         raise OSError(EPERM)
 
     def rename(self, old, new):
+        """rename
+
+        This one is tricky.  If either path points to a node, raise EINVAL.  If
+        `old` points only and not more than one directory deep beyond a node,
+        all of that node's tags are removed from `old`.  If `new` points to a
+        path not more than one directory deep beyond a node, all of that node's
+        tags are added to `old`.  Whichever combination of the above, `old` is
+        then renamed to `new` via built-in os module.
+        """
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
         if opath is None or npath is None:
@@ -143,6 +221,12 @@ class HitagiMount(Operations):
             os.rm(ofpath)
 
     def rmdir(self, path):
+        """rmdir
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             os.rmdir(_getpath(node, path))
@@ -150,18 +234,33 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def setxattr(self, path, name, value, options, position=0):
+        """setxattr
+
+        Not implemented.  Raises EPERM.
+        """
         ## Ignore options
         #attrs = self.files[path].setdefault('attrs', {})
         #attrs[name] = value
         raise OSError(EPERM)
 
     def statfs(self, path):
+        """statfs
+
+        Forward the request to the OS (via built-in os module).
+        """
         stv = os.statvfs(path)
         return dict((key, getattr(stv, key)) for key in (
             'f_bavail', 'f_bfree', 'f_blocks', 'f_bsize', 'f_favail',
             'f_ffree', 'f_files', 'f_flag', 'f_frsize', 'f_namemax'))
 
     def symlink(self, target, source):
+        """symlink
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  If `path` points not more than one directory deep
+        beyond the node, add all of the node's tags to it.  Otherwise the
+        operation is invalid and raises EINVAL.
+        """
         node, path = self._getnode(source)
         if path:
             os.symlink(target, _getpath(node, path))
@@ -173,6 +272,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def truncate(self, path, length, fh=None):
+        """truncate
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.  `path` is used; `fh` is ignored.
+        """
         node, path = self._getnode(path)
         if path:
             with open(_getpath(node, path), 'r+') as f:
@@ -181,6 +286,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def unlink(self, path):
+        """unlink
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             os.unlink(_getpath(node, path))
@@ -188,6 +299,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def utimens(self, path, times=None):
+        """utimens
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.
+        """
         node, path = self._getnode(path)
         if path:
             os.utime(_getpath(node, path), times)
@@ -195,6 +312,12 @@ class HitagiMount(Operations):
             raise OSError(EINVAL)
 
     def write(self, path, data, offset, fh):
+        """write
+
+        If `path` points beyond a node, forward the request to the OS (via
+        built-in os module).  Otherwise the operation is invalid and raises
+        EINVAL.  `fh` is used; `path` is ignored.
+        """
         node, path = self._getnode(path)
         if path:
             os.lseek(fh, offset, 0)
@@ -229,7 +352,11 @@ class HitagiMount(Operations):
 
 
 def _getpath(node, path):
-    """Get real path"""
+    """Get real path
+
+    Calculate and return the real path given TagNode `node` and list of strings
+    `path`.  If `node` is not a TagNode, raise OSError(EINVAL).
+    """
     if not isinstance(node, tree.TagNode):
         raise OSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
