@@ -25,6 +25,11 @@ class TagNode(FSNode):
         self.root = fs_root
         self.tags = tags
 
+    def __iter__(self):
+        files = list(super().__iter__(self.children))
+        files.add(self.tagged().keys())
+        return iter(files)
+
     def __getitem__(self, key):
         try:
             super().__getitem__(key)
