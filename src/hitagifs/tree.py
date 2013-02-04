@@ -5,6 +5,15 @@ __all__ = ['FSNode', 'TagNode']
 
 class FSNode:
 
+    """
+    Basically works like a dictionary mapping names to nodes.
+
+    Implements:
+    - __iter__
+    - __getitem__
+    - __setitem__
+    """
+
     def __init__(self):
         self.children = {}
 
@@ -19,6 +28,12 @@ class FSNode:
 
 
 class TagNode(FSNode):
+
+    """
+    TagNode subclasses FSNode.  TagNode adds a method, tagged(), which returns
+    a generated dict mapping names to files that satisfy the TagNode's tags
+    criteria, and adds these to __iter__ and __getitem__
+    """
 
     def __init__(self, fs_root, tags):
         super().__init__()
