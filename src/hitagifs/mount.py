@@ -1,4 +1,4 @@
-from fuse3 import FUSE, Operations
+from hitagifs.fuse3 import FUSE, Operations
 
 from errno import ENOENT, EPERM, EINVAL
 from sys import argv, exit
