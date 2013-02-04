@@ -229,7 +229,8 @@ class HitagiMount(Operations):
 
 def _getpath(node, path):
     """Get real path"""
-    assert isinstance(node, tree.TagNode)
+    if not isinstance(node, tree.TagNode):
+        raise OSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
 
 
