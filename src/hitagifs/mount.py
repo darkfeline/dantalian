@@ -110,7 +110,7 @@ class HitagiMount(Operations):
     def readlink(self, path):
         node, path = self._getnode(path)
         if path:
-            return ['.', '..'] + os.lsdir(_getpath(node, path))
+            return os.readlink(_getpath(node, path))
         else:
             raise OSError(EINVAL)
 
