@@ -87,7 +87,9 @@ For example, a file which is tagged ``tag1/file1``, ``tag2/file2``, and
 renamed ``file.1.mp3``, ``file.2.mp3``, and so on.
 
 FUSE Operations
-^^^^^^^^^^^^^^^
+---------------
+
+.. module:: hitagifs.mount
 
 FUSE intercepts calls to the kernel to perform file system operations, allowing
 it to present a file system API in user space.  How it behaves depends on how
@@ -95,3 +97,6 @@ these operations are implemented.  As a rule of thumb, most operations
 performed beyond the designated mount points are forwarded to the underlying
 file system and are not permitted on the virtual directories before the
 designated mount points.
+
+.. autoclass:: HitagiMount
+   :members:
