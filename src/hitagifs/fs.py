@@ -1,19 +1,35 @@
 import os
 import subprocess
 import logging
+from collections import namedtuple
+from functools import lru_cache
 
 __all__ = ['HitagiFS', 'FSError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
+_FakeFS = namedtuple('_FakeFS', ['root'])
+
 
 class HitagiFS:
 
-    _root_dir = '.hitagifs'
-    _root_file = os.path.join(_root_dir, 'root')
-    _dirs_dir = os.path.join(_root_dir, 'dirs')
+    @property
+    @lru_cache
+    def _root_dir(self):
+        return os.path.join(self.root, '.hitagifs')
+
+    @property
+    @lru_cache
+    def _root_file(self):
+        return os.path.join(self._root_dir, 'root')
+
+    @property
+    @lru_cache
+    def _dirs_dir(self):
+        return os.path.join(self._root_dir, 'dirs')
 
     @classmethod
     def init(cls, root):
+
         """Initialize a hitagiFS at `root`
 
         Calling :meth:`init` on an existing hitagiFS does no harm.  Returns an
@@ -23,29 +39,33 @@ class HitagiFS:
 
         logger.debug('init(%r)', root)
         root = os.path.abspath(root)
-        root_dir = os.path.join(root, cls._root_dir)
+        fakefs = _FakeFS(root)
+
+        root_dir = cls._root_dir.fget(fakefs)
         logger.debug('mkdir %r', root_dir)
         try:
             os.mkdir(root_dir)
         except FileExistsError:
             logger.debug('skipping %r; exists', root_dir)
-        root_file = os.path.join(root, cls._root_file)
+
+        root_file = cls._root_file.fget(fakefs)
         if not os.path.exists(root_file):
             logger.debug('writing %r', root_file)
             with open(root_file, 'w') as f:
                 f.write(root)
 
-        dirs = os.path.join(root, cls._dirs_dir)
+        dirs_dir = cls._dirs_dir.fget(fakefs)
+        logger.debug('mkdir %r', dirs_dir)
         try:
-            dirs = os.mkdir(dirs)
+            os.mkdir(dirs_dir)
         except FileExistsError:
-            logger.debug('skipping %r; exists', dirs)
+            logger.debug('skipping %r; exists', dirs_dir)
 
         return cls(root)
 
     @property
     def _moved(self):
-        with open(os.path.join(self.root, self._root_file)) as f:
+        with open(self._root_file) as f:
             old_root = f.read()
         if old_root == self.root:
             return False
@@ -183,16 +203,15 @@ class HitagiFS:
         logger.info("Check okay")
 
         logger.info("Checking %r is not in dirs", dir)
-        dirs_dir = os.path.join(self.root, self._dirs_dir)
         dirname, basename = os.path.split(os.path.abspath(dir))
-        if samefile(dirname, dirs_dir):
+        if samefile(dirname, self.dirs_dir):
             raise FSError("{} is in special directory".format(dirname))
         logger.info("Check okay")
 
         if alt is not None:
             assert isinstance(alt, str)
             basename = alt
-        new = os.path.join(dirs_dir, basename)
+        new = os.path.join(self.dirs_dir, basename)
         logger.info("Checking name conflict")
         if os.path.exists(new):
             raise FileExistsError('{} exists'.format(new))
@@ -329,7 +348,7 @@ class HitagiFS:
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        newdir = os.path.join(self.root, self._dirs_dir)
+        newdir = self._dirs_dir
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
         for set in files:
@@ -344,8 +363,7 @@ class HitagiFS:
                 os.unlink(file)
                 logger.debug("linking %r to %r", file, f)
                 os.link(f, file)
-        root_file = os.path.join(self.root, self._root_file)
-        logger.debug('writing %r', root_file)
+        logger.debug('writing %r', self._root_file)
         with open(root_file, 'w') as f:
             f.write(self.root)
         logger.info('finished fixing')
