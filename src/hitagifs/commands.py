@@ -9,13 +9,21 @@ Usage: hfs `command` `args` ...
 import argparse
 import logging
 import os
+import sys
 
 from hitagifs.fs import HitagiFS
 
-__all__ = ['tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'init']
 logger = logging.getLogger(__name__)
 
 
+def public(f):
+    all = sys.modules[f.__module__].__dict__.setdefault('__all__', [])
+    if f.__name__ not in all:
+        all.append(f.__name__)
+    return f
+
+
+@public
 def tag(fs, *args):
     """
     Usage: hfs tag `tag` `file1` [`file2`, [...]]
@@ -37,6 +45,7 @@ def tag(fs, *args):
             logger.warn('skipped %r; convert it first', file)
 
 
+@public
 def untag(fs, *args):
     """
     Usage: hfs untag `tag` `file1` [`file2`, [...]]
@@ -54,6 +63,7 @@ def untag(fs, *args):
         fs.untag(file, args.tag)
 
 
+@public
 def tags(fs, *args):
     """
     Usage: hfs tags `file`
@@ -71,6 +81,7 @@ def tags(fs, *args):
         print(tag)
 
 
+@public
 def find(fs, *args):
     """
     Usage: hfs find `tag1` [`tag2` [...]]
@@ -88,6 +99,7 @@ def find(fs, *args):
         print(file)
 
 
+@public
 def rm(fs, *args):
     """
     Usage: hfs rm `file1` [`file2` [...]]
@@ -104,6 +116,7 @@ def rm(fs, *args):
         fs.rm(file)
 
 
+@public
 def rename(fs, *args):
     """
     Usage: hfs rename `file` `new`
@@ -119,6 +132,7 @@ def rename(fs, *args):
     fs.rename(args.source, args.dest)
 
 
+@public
 def convert(fs, *args):
     """
     Usage: hfs convert `dir1` [`dir2` [...]]
@@ -141,6 +155,7 @@ def convert(fs, *args):
             logger.warn('Name conflict %r; skipping', dir)
 
 
+@public
 def init(*args):
     """
     Usage: hfs convert [`dir`]
