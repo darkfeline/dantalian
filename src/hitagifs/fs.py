@@ -52,33 +52,6 @@ class HitagiFS:
         else:
             return True
 
-    def fix(self):
-        logger.info('Checking if moved')
-        if not self._moved:
-            logger.info('Not moved so doing nothing')
-            return
-        logger.info('Move detected; fixing')
-        newdir = os.path.join(self.root, self._dirs_dir)
-        files = self._get_symlinks()
-        logger.debug('found symlinks %r', files)
-        for set in files:
-            f = set.pop(0)
-            new = os.path.join(newdir, os.path.basename(os.readlink(f)))
-            logger.debug("unlinking %r", f)
-            os.unlink(f)
-            logger.debug("symlinking %r to %r", f, new)
-            os.symlink(new, f)
-            for file in set:
-                logger.debug("unlinking %r", file)
-                os.unlink(file)
-                logger.debug("linking %r to %r", file, f)
-                os.link(f, file)
-        root_file = os.path.join(self.root, self._root_file)
-        logger.debug('writing %r', root_file)
-        with open(root_file, 'w') as f:
-            f.write(self.root)
-        logger.info('finished fixing')
-
     def __init__(self, root=None):
         """
         If `root` is :data:`None`, HitagiFS will search up the directory tree
@@ -357,6 +330,33 @@ class HitagiFS:
             raise NotADirectoryError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         return os.path.abspath(path)
+
+    def fix(self):
+        logger.info('Checking if moved')
+        if not self._moved:
+            logger.info('Not moved so doing nothing')
+            return
+        logger.info('Move detected; fixing')
+        newdir = os.path.join(self.root, self._dirs_dir)
+        files = self._get_symlinks()
+        logger.debug('found symlinks %r', files)
+        for set in files:
+            f = set.pop(0)
+            new = os.path.join(newdir, os.path.basename(os.readlink(f)))
+            logger.debug("unlinking %r", f)
+            os.unlink(f)
+            logger.debug("symlinking %r to %r", f, new)
+            os.symlink(new, f)
+            for file in set:
+                logger.debug("unlinking %r", file)
+                os.unlink(file)
+                logger.debug("linking %r to %r", file, f)
+                os.link(f, file)
+        root_file = os.path.join(self.root, self._root_file)
+        logger.debug('writing %r', root_file)
+        with open(root_file, 'w') as f:
+            f.write(self.root)
+        logger.info('finished fixing')
 
     @classmethod
     def _find_root(cls, dir):
