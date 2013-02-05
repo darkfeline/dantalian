@@ -132,8 +132,8 @@ class HitagiFS:
         """Remove `tag` from `file`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is not tagged, nothing happens.  Removes all hard links to `file`
-        with `tag`.
+        file is not tagged, nothing happens.  Removes *all* hard links to
+        `file` with `tag`.
 
         """
         assert isinstance(file, str)
