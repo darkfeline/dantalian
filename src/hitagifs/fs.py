@@ -53,7 +53,11 @@ class HitagiFS:
             return True
 
     def fix(self):
-        assert self._moved
+        logger.info('Checking if moved')
+        if not self._moved:
+            logger.info('Not moved so doing nothing')
+            return
+        logger.info('Move detected; fixing')
         newdir = os.path.join(self.root, self._dirs_dir)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
@@ -73,6 +77,7 @@ class HitagiFS:
         logger.debug('writing %r', root_file)
         with open(root_file, 'w') as f:
             f.write(self.root)
+        logger.info('finished fixing')
 
     def __init__(self, root=None):
         """
@@ -90,13 +95,6 @@ class HitagiFS:
         self.root = os.path.abspath(root)
         logger.info('HitagiFS initialized')
         logger.debug('root is %r', self.root)
-        logger.info('Checking if moved')
-        if not self._moved:
-            logger.info('All clear')
-        else:
-            logger.info('Move detected; fixing')
-            self.fix()
-            logger.info('finished fixing')
 
     def tag(self, file, tag):
         """Tag `file` with `tag`.

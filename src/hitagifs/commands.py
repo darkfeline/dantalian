@@ -156,6 +156,21 @@ def convert(fs, *args):
 
 
 @public
+def fix(fs, *args):
+    """
+    Usage: hfs fix
+
+    Fixes symlinks after the hitagiFS has been moved.  If it hasn't been moved,
+    does nothing.
+
+    """
+    logger.debug('fix(%r, %r)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs fix", add_help=False)
+    args = parser.parse_args(args)
+    fs.fix()
+
+
+@public
 def init(*args):
     """
     Usage: hfs convert [`dir`]
