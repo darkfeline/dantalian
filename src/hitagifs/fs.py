@@ -96,7 +96,7 @@ class HitagiFS:
         logger.info('HitagiFS initialized')
         logger.debug('root is %r', self.root)
 
-    def tag(self, file, tag):
+    def tag(self, file, tag, alt=None):
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to FS root.  If
@@ -112,6 +112,9 @@ class HitagiFS:
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
         dest = self.tagpath(tag)
+        if alt is not None:
+            assert isinstance(alt, str)
+            dest = os.path.join(dest, alt)
         name = os.path.basename(file)
         logger.info('checking if %r already tagged with %r', file, tag)
         for f in listdir(dest):
