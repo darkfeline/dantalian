@@ -120,13 +120,27 @@ class HitagiFS:
                 os.unlink(f)
 
     def listpaths(self, file):
-        """Return a list of all paths to `file`
+        """Return a list of paths to all hard links to `file`
+
+        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
+        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
+        Trims out any '.hitagifs/dirs/' entries.
 
         :rtype: :class:`list`
 
         """
         assert isinstance(file, str)
-        return self._get_all(file)
+        try:
+            output = subprocess.check_output(
+                ['find', '-L', self.root, '-samefile', file])
+        except FileNotFoundError:
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
+        output = output.decode().rstrip().split('\n')
+        for x in iter(output):
+            if '.hitagifs/dirs/' in x:
+                output.remove(x)
+        return output
 
     def listtags(self, file):
         """Return a list of all tags of `file`
@@ -135,7 +149,7 @@ class HitagiFS:
 
         """
         assert isinstance(file, str)
-        files = self._get_all(file)
+        files = self.listpaths(file)
         return [os.path.dirname(file).replace(self.root + '/', '') for file in
                 files]
 
@@ -235,7 +249,7 @@ class HitagiFS:
         """
         assert isinstance(file, str)
         error = 0
-        for file in self._get_all(file):
+        for file in self.listpaths(file):
             logger.debug('unlinking %r', file)
             try:
                 os.unlink(file)
@@ -255,7 +269,7 @@ class HitagiFS:
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
-        files = self._get_all(file)
+        files = self.listpaths(file)
         logger.debug('found to rename %r', files)
         for file in files:
             head = os.path.dirname(file)
@@ -268,28 +282,6 @@ class HitagiFS:
             new = os.path.join(head, new)
             logger.debug('renaming %r %r', file, new)
             os.rename(file, new)
-
-    def _get_all(self, file):
-        """Get all tracked hard links of `file`.
-
-        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
-        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
-        Trims out any '.hitagifs/dirs/' entries.
-
-        :rtype: :class:`list`
-
-        """
-        try:
-            output = subprocess.check_output(
-                ['find', '-L', self.root, '-samefile', file])
-        except FileNotFoundError:
-            raise DependencyError("find could not be found; \
-                probably findutils is not installed")
-        output = output.decode().rstrip().split('\n')
-        for x in iter(output):
-            if '.hitagifs/dirs/' in x:
-                output.remove(x)
-        return output
 
     def _get_symlinks(self):
         """Get all tracked symlinks.
