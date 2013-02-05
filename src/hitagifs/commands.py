@@ -121,7 +121,7 @@ def rename(fs, *args):
     """
     Usage: hfs rename `file` `new`
 
-    Renames all hard links to `file` to `new`.
+    Renames all hard links of `file` to `new`.
 
     """
     logger.debug('rename(%r, %r)', fs, args)
@@ -173,10 +173,10 @@ def fix(fs, *args):
 @public
 def init(*args):
     """
-    Usage: hfs convert [`dir`]
+    Usage: hfs init [`dir`]
 
-    Creates a hitagifs in `dir` (for internal tracking purposes).  If `dir` is
-    omitted, creates a hitagifs in the current directory.
+    Creates a hitagifs in `dir`.  If `dir` is omitted, creates a hitagifs in
+    the current directory.
 
     """
     logger.debug('init(%r)', args)
