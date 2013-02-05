@@ -12,7 +12,7 @@ Contents:
 
    quickstart
    depends
-   commands
    specs
    fuse
    api
+   manpage
