@@ -310,7 +310,8 @@ class HitagiFS:
             output = subprocess.check_output(
                 ['find', '-L', self.root, '-samefile', file])
         except FileNotFoundError:
-            raise DependencyError("'find' could not be found")
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
         output = output.decode().rstrip().split('\n')
         for x in iter(output):
             if '.hitagifs/dirs/' in x:
@@ -330,7 +331,8 @@ class HitagiFS:
             output = subprocess.check_output(
                 ['find', self.root, '-type', 'l'])
         except FileNotFoundError:
-            raise DependencyError("'find' could not be found")
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
         output = output.decode().rstrip().split('\n')
         result = []
         for file in output:
