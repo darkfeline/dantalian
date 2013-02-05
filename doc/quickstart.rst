@@ -9,11 +9,6 @@ Installing is as easy as::
 
    python setup.py install
 
-No dependencies! Except the following:
-
-* ``find`` utility should be installed (I can't imagine why not, but...)
-* You need Sphinx to build the documentation (It's already built, though)
-
 Create a new directory to hold your hitagifs::
 
    $ mkdir test

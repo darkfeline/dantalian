@@ -36,7 +36,8 @@ will be interacting with are separate.  Thus, if there's a naming conflict, the
 actual directory can be renamed, and the symbolic links follow the naming rules
 as above.  This feature imposes an extra requirement on the hitagiFS root
 directory.  When the root directory path is changed, the symbolic links of all
-converted directories must be fixed.  hitagiFS provides this functionality.
+converted directories must be fixed.  hitagiFS provides this functionality, but
+``hfs fix`` must be called each time.
 
 FUSE Mount
 ----------
