@@ -191,6 +191,7 @@ class HitagiFS:
 
         logger.info("Checking %r is not a symlink", dir)
         if os.path.islink(dir):
+            logger.info("%r is symlink; skipping", dir)
             return
         logger.info("Check okay")
 
