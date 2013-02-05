@@ -249,19 +249,19 @@ class HitagiFS:
         """Removes all tags from `file`.
 
         `file` is a path relative to the current dir.  If `file` is not tagged,
-        nothing happens.  If a file cannot be removed, it is skipped, a
-        warning is logged, and :meth:`rm` returns ``1``.  Otherwise, returns
-        :data:`None`.
+        nothing happens.  If a file cannot be removed (for whatever reason), it
+        is skipped, a warning is logged, and :meth:`rm` returns ``1``.
+        Otherwise, returns ``0``.
 
         .. warning::
             In essence, this removes all tracked hard links to `file`!  If no
             other hard links exist, `file` is deleted.
 
-        :rtype: :data:`None` or :class:`int`
+        :rtype: :class:`int`
 
         """
         assert isinstance(file, str)
-        error = None
+        error = 0
         for file in self._get_all(file):
             logger.debug('unlinking %r', file)
             try:
