@@ -154,3 +154,14 @@ def init(*args):
     parser.add_argument('root', nargs="?", default=os.getcwd())
     args = parser.parse_args(args)
     HitagiFS.init(args.root)
+
+
+@public
+def mount(fs, *args):
+    """
+    Mount FUSE according to config files.
+    """
+    logger.debug('mount(%r, %r)', fs, args)
+    parser = argparse.ArgumentParser(prog="hfs mount", add_help=False)
+    args = parser.parse_args(args)
+    fs.mount()

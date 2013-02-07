@@ -86,3 +86,14 @@ init
 
    Creates a hitagifs in DIR.  If DIR is omitted, creates a hitagifs in the
    current directory.
+
+mount
+   Usage: **hfs mount**
+
+   Mounts the FUSE file system according to the configuration files
+
+CONFIGURATION FILES
+-------------------
+
+| *.hitagifs/mount*
+| *.hitagifs/mount_custom*
