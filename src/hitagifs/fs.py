@@ -406,8 +406,9 @@ class HitagiFS:
         """
         assert os.path.isdir(dir)
         dir = os.path.abspath(dir)
+        root_dir = cls._root_dir.fget(_FakeFS(''))
         while dir:
-            if cls._root_dir in os.listdir(dir):
+            if root_dir in os.listdir(dir):
                 return dir
             else:
                 if dir == '/':
