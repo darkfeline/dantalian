@@ -12,36 +12,6 @@ logger = logging.getLogger(__name__)
 
 class HitagiFS:
 
-    @property
-    @lru_cache()
-    def _root_dir(self):
-        return os.path.join(self.root, '.hitagifs')
-
-    @property
-    @lru_cache()
-    def _root_file(self):
-        return os.path.join(self._root_dir, 'root')
-
-    @property
-    @lru_cache()
-    def _dirs_dir(self):
-        return os.path.join(self._root_dir, 'dirs')
-
-    @property
-    @lru_cache()
-    def _tree_file(self):
-        return os.path.join(self._root_dir, 'mount')
-
-    @property
-    @lru_cache()
-    def _ctree_file(self):
-        return os.path.join(self._root_dir, 'mount_custom')
-
-    @property
-    @lru_cache()
-    def _mount_dir(self):
-        return os.path.join(self._root_dir, 'fuse')
-
     @classmethod
     def init(cls, root):
 
@@ -54,22 +24,21 @@ class HitagiFS:
 
         logger.debug('init(%r)', root)
         root = os.path.abspath(root)
-        fakefs = _FakeFS(root)
 
-        root_dir = cls._root_dir.fget(fakefs)
+        root_dir = rootdir(root)
         logger.debug('mkdir %r', root_dir)
         try:
             os.mkdir(root_dir)
         except FileExistsError:
             logger.debug('skipping %r; exists', root_dir)
 
-        root_file = cls._root_file.fget(fakefs)
+        root_file = rootfile(root)
         if not os.path.exists(root_file):
             logger.debug('writing %r', root_file)
             with open(root_file, 'w') as f:
                 f.write(root)
 
-        dirs_dir = cls._dirs_dir.fget(fakefs)
+        dirs_dir = dirsdir(root)
         logger.debug('mkdir %r', dirs_dir)
         try:
             os.mkdir(dirs_dir)
@@ -80,7 +49,7 @@ class HitagiFS:
 
     @property
     def _moved(self):
-        with open(self._root_file) as f:
+        with open(rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
             return False
@@ -219,14 +188,14 @@ class HitagiFS:
 
         logger.info("Checking %r is not in dirs", dir)
         dirname, basename = os.path.split(os.path.abspath(dir))
-        if samefile(dirname, self.dirs_dir):
+        if samefile(dirname, dirsdir(self.root)):
             raise FSError("{} is in special directory".format(dirname))
         logger.info("Check okay")
 
         if alt is not None:
             assert isinstance(alt, str)
             basename = alt
-        new = os.path.join(self.dirs_dir, basename)
+        new = os.path.join(dirsdir(self.root), basename)
         logger.info("Checking name conflict")
         if os.path.exists(new):
             raise FileExistsError('{} exists'.format(new))
@@ -363,7 +332,7 @@ class HitagiFS:
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        newdir = self._dirs_dir
+        newdir = dirsdir(self.root)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
         for set in files:
@@ -378,22 +347,22 @@ class HitagiFS:
                 os.unlink(file)
                 logger.debug("linking %r to %r", file, f)
                 os.link(f, file)
-        logger.debug('writing %r', self._root_file)
-        with open(self._root_file, 'w') as f:
+        logger.debug('writing %r', rootfile(self))
+        with open(rootfile(self), 'w') as f:
             f.write(self.root)
         logger.info('finished fixing')
 
     def maketree(self):
-        if os.path.exists(self._ctree_file):
+        if os.path.exists(ctreefile(self.root)):
             x = {}
-            with open(self._ctree_file) as f:
-                exec(compile(f, self._ctree_file, 'exec'), x)
+            with open(ctreefile(self.root)) as f:
+                exec(compile(f, ctreefile(self.root), 'exec'), x)
             return x['tree']
         else:
-            return tree.maketree(self, self._tree_file)
+            return tree.maketree(self, treefile(self.root))
 
     def mount(self):
-        return mount.mount(self._mount_dir, self, self.maketree())
+        return mount.mount(mountdir(self.root), self, self.maketree())
 
     @classmethod
     def _find_root(cls, dir):
@@ -406,7 +375,7 @@ class HitagiFS:
         """
         assert os.path.isdir(dir)
         dir = os.path.abspath(dir)
-        root_dir = cls._root_dir.fget(_FakeFS(''))
+        root_dir = rootdir('')
         while dir:
             if root_dir in os.listdir(dir):
                 return dir
@@ -415,6 +384,36 @@ class HitagiFS:
                     break
                 dir = os.path.dirname(dir)
         raise FSError('No root found')
+
+
+@lru_cache()
+def rootdir(root):
+    return os.path.join(root, '.hitagifs')
+
+
+@lru_cache()
+def rootfile(root):
+    return os.path.join(rootdir(root), 'root')
+
+
+@lru_cache()
+def dirsdir(root):
+    return os.path.join(rootdir(root), 'dirs')
+
+
+@lru_cache()
+def treefile(root):
+    return os.path.join(rootdir(root), 'mount')
+
+
+@lru_cache()
+def ctreefile(root):
+    return os.path.join(rootdir(root), 'mount_custom')
+
+
+@lru_cache()
+def mountdir(root):
+    return os.path.join(rootdir(root), 'fuse')
 
 
 class _FakeFS(HitagiFS):
