@@ -74,8 +74,7 @@ def maketree(root, config):
         dat = json.load(f)
     r = FSNode()
     for x in dat:
-        mount = x['mount']
-        tags = x['tags']
+        mount, tags = x['mount'], x['tags']
         mount = mount.lstrip('/').split('/')
         y = r
         for x in mount[:-1]:
