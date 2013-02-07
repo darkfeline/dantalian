@@ -14,6 +14,9 @@ ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
 class HitagiMount(Operations):
 
     def __init__(self, root, tree):
+        """
+        root is HitagiFS instance
+        """
         self.root = root
         self.tree = tree
 
