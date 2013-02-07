@@ -16,32 +16,32 @@ _FakeFS = namedtuple('_FakeFS', ['root'])
 class HitagiFS:
 
     @property
-    @lru_cache
+    @lru_cache()
     def _root_dir(self):
         return os.path.join(self.root, '.hitagifs')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _root_file(self):
         return os.path.join(self._root_dir, 'root')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _dirs_dir(self):
         return os.path.join(self._root_dir, 'dirs')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _tree_file(self):
         return os.path.join(self._root_dir, 'mount')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _ctree_file(self):
         return os.path.join(self._root_dir, 'mount_custom')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _mount_dir(self):
         return os.path.join(self._root_dir, 'fuse')
 
