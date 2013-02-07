@@ -419,7 +419,7 @@ def ctreefile(root):
 
 @lru_cache()
 def mountdir(root):
-    return os.path.join(rootdir(root), 'fuse')
+    return os.path.join(root, 'fuse')
 
 
 class _FakeFS(HitagiFS):
