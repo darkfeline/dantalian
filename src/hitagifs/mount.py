@@ -6,7 +6,7 @@ import tempfile
 
 from hitagifs import tree
 
-__all__ = ['HitagiMount']
+__all__ = ['HitagiMount', 'mount']
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
          'st_nlink', 'st_size')
 
@@ -381,3 +381,5 @@ def _tmplink(target):
             return path
 
 
+def mount(path, root, tree):
+    return FUSE(HitagiMount(root, tree), path, foreground=False)
