@@ -364,7 +364,7 @@ class HitagiFS:
                 logger.debug("linking %r to %r", file, f)
                 os.link(f, file)
         logger.debug('writing %r', self._root_file)
-        with open(root_file, 'w') as f:
+        with open(self._root_file, 'w') as f:
             f.write(self.root)
         logger.info('finished fixing')
 
