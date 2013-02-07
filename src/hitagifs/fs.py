@@ -1,7 +1,6 @@
 import os
 import subprocess
 import logging
-from collections import namedtuple
 from functools import lru_cache
 
 from hitagifs import tree
@@ -9,8 +8,6 @@ from hitagifs import mount
 
 __all__ = ['HitagiFS', 'FSError', 'DependencyError']
 logger = logging.getLogger(__name__)
-
-_FakeFS = namedtuple('_FakeFS', ['root'])
 
 
 class HitagiFS:
@@ -417,6 +414,12 @@ class HitagiFS:
                     break
                 dir = os.path.dirname(dir)
         raise FSError('No root found')
+
+
+class _FakeFS(HitagiFS):
+
+    def __init__(self, root):
+        self.root = root
 
 
 def samefile(f1, f2):
