@@ -285,6 +285,7 @@ class FUSE(object):
         args.append(','.join(key if val == True else '%s=%s' % (key, val)
             for key, val in kwargs.items()))
         args.append(mountpoint)
+        args = [s.encode() for s in args]
         argv = (c_char_p * len(args))(*args)
 
         fuse_ops = fuse_operations()
