@@ -1,6 +1,7 @@
 import os.path
+import json
 
-__all__ = ['FSNode', 'TagNode']
+__all__ = ['FSNode', 'TagNode', 'maketree', 'fs2tag']
 
 
 class FSNode:
@@ -57,6 +58,37 @@ class TagNode(FSNode):
 
     def tagged(self):
         return _uniqmap(self.root.find(self.tags))
+
+
+def fs2tag(node, root, tags):
+    x = TagNode(root, tags)
+    x.children = dict(node.children)
+
+
+def maketree(root, config):
+    """Make a FSNode tree
+
+    root is a HitagiFS instance.  config is file path.
+    """
+    with open(config) as f:
+        dat = json.load(f)
+    r = FSNode()
+    for x in dat:
+        mount = x['mount']
+        tags = x['tags']
+        mount = mount.lstrip('/').split('/')
+        y = r
+        for x in mount[:-1]:
+            try:
+                y = y[x]
+            except KeyError:
+                y[x] = FSNode()
+        x = mount[-1]
+        if x not in y:
+            y[x] = TagNode(root, tags)
+        else:
+            y[x] = fs2tag(y[x])
+    return r
 
 
 def _uniqmap(files):
