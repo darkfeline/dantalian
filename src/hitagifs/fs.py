@@ -4,6 +4,9 @@ import logging
 from collections import namedtuple
 from functools import lru_cache
 
+from hitagifs import tree
+from hitagifs import mount
+
 __all__ = ['HitagiFS', 'FSError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,21 @@ class HitagiFS:
     @lru_cache
     def _dirs_dir(self):
         return os.path.join(self._root_dir, 'dirs')
+
+    @property
+    @lru_cache
+    def _tree_file(self):
+        return os.path.join(self._root_dir, 'mount')
+
+    @property
+    @lru_cache
+    def _ctree_file(self):
+        return os.path.join(self._root_dir, 'mount_custom')
+
+    @property
+    @lru_cache
+    def _mount_dir(self):
+        return os.path.join(self._root_dir, 'fuse')
 
     @classmethod
     def init(cls, root):
@@ -367,6 +385,18 @@ class HitagiFS:
         with open(self._root_file, 'w') as f:
             f.write(self.root)
         logger.info('finished fixing')
+
+    def maketree(self):
+        if os.path.exists(self._ctree_file):
+            x = {}
+            with open(self._ctree_file) as f:
+                exec(compile(f, self._ctree_file, 'exec'), x)
+            return x['tree']
+        else:
+            return tree.maketree(self, self._tree_file)
+
+    def mount(self):
+        return mount.mount(self._mount_dir, self, self.maketree())
 
     @classmethod
     def _find_root(cls, dir):
