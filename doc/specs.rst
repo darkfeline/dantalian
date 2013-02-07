@@ -89,9 +89,10 @@ renamed ``file.1.mp3``, ``file.2.mp3``, and so on.
 
 In addition to the configuration file above, the user may create his own custom
 script at ``.hitagifs/mount_custom``.  If this file exists, it will be run
-instead, allowing the user to come up with his or her own automatically
-generated mount list.  See :mod:`hitagifs.fuse` for an example of how to set up
-the FUSE file system.
+to generate the node tree instead, allowing the user to come up with his or her
+own automatically generated mount list.  The global variable ``tree`` at the
+end of the script's execution will be used.  See :func:`hitagifs.tree.maketree`
+for an example of how to set up the node tree.
 
 FUSE Operations
 ---------------
