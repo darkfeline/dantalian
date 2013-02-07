@@ -65,6 +65,7 @@ class HitagiFS:
         :exc:`NotADirectoryError` will be raised.
 
         """
+        logger.debug("open hitagifs root %r", root)
         if root is None:
             root = self._find_root(os.getcwd())
         if not os.path.isdir(root):
@@ -353,12 +354,15 @@ class HitagiFS:
         logger.info('finished fixing')
 
     def maketree(self):
+        logger.info("making tree")
         if os.path.exists(ctreefile(self.root)):
+            logger.info("using custom")
             x = {}
             with open(ctreefile(self.root)) as f:
                 exec(compile(f, ctreefile(self.root), 'exec'), x)
             return x['tree']
         else:
+            logger.info("using auto")
             return tree.maketree(self, treefile(self.root))
 
     def mount(self):
@@ -376,7 +380,9 @@ class HitagiFS:
         assert os.path.isdir(dir)
         dir = os.path.abspath(dir)
         root_dir = rootdir('')
+        logger.debug("finding root; starting with %r", dir)
         while dir:
+            logger.debug("trying %r", dir)
             if root_dir in os.listdir(dir):
                 return dir
             else:

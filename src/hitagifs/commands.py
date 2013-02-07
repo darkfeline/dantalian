@@ -165,3 +165,4 @@ def mount(fs, *args):
     parser = argparse.ArgumentParser(prog="hfs mount", add_help=False)
     args = parser.parse_args(args)
     fs.mount()
+    logger.debug('exit')

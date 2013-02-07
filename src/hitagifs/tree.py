@@ -1,7 +1,9 @@
 import os.path
 import json
+import logging
 
 __all__ = ['FSNode', 'TagNode', 'maketree', 'fs2tag']
+logger = logging.getLogger(__name__)
 
 
 class FSNode:
@@ -70,27 +72,34 @@ def maketree(root, config):
 
     root is a HitagiFS instance.  config is file path.
     """
+    logger.debug("maketree(%r, %r)", root, config)
     with open(config) as f:
         dat = json.load(f)
     r = FSNode()
     for x in dat:
         mount, tags = x['mount'], x['tags']
+        logger.debug("doing %r, %r", mount, tags)
         mount = mount.lstrip('/').split('/')
         y = r
         for x in mount[:-1]:
+            logger.debug("trying %r", x)
             try:
                 y = y[x]
             except KeyError:
+                logger.debug("making FSNode at %r", x)
                 y[x] = FSNode()
         x = mount[-1]
         if x not in y:
+            logger.debug("making TagNode at %r", x)
             y[x] = TagNode(root, tags)
         else:
+            logger.debug("replacing node at %r", x)
             y[x] = fs2tag(y[x])
     return r
 
 
 def _uniqmap(files):
+    logger.debug("_uniqmap(%r)", files)
     map = {}
     unique = set(os.path.basename(f) for f in files)
     files = dict((f, os.path.basename(f)) for f in files)
@@ -107,4 +116,5 @@ def _uniqmap(files):
                 continue
             else:
                 map[newi] = files[f]
+    logger.debug("calculated %r", files)
     return map

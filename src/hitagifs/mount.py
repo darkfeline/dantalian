@@ -3,12 +3,14 @@ from hitagifs.fuse3 import FUSE, Operations
 from errno import ENOENT, EPERM, EINVAL
 import os
 import tempfile
+import logging
 
 from hitagifs import tree
 
 __all__ = ['HitagiMount', 'mount']
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
          'st_nlink', 'st_size')
+logger = logging.getLogger(__name__)
 
 
 class HitagiMount(Operations):
@@ -27,10 +29,12 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("chmod(%r, %r)", mode)
         node, path = self._getnode(path)
         if path:
             os.chmod(_getpath(node, path), mode)
         else:
+            logger.warn("is node")
             raise OSError(EINVAL)
 
     def chown(self, path, uid, gid):
@@ -40,10 +44,12 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("chown(%r, %r, %r)", path, uid, gid)
         node, path = self._getnode(path)
         if path:
             os.chown(_getpath(node, path), uid, gid)
         else:
+            logger.warn("is node")
             raise OSError(EINVAL)
 
     def create(self, path, mode):
@@ -338,16 +344,21 @@ class HitagiMount(Operations):
         """
         assert len(path) > 0
         assert path[0] == "/"
+        logger.debug("resolving path %r", path)
         path = path.lstrip('/').split('/')
         cur = self.tree[path.pop(0)]
         while path:
+            logger.debug("resolving %r", path[0])
             try:
                 a = self.tree[path[0]]
             except KeyError:
+                logger.warn("path broken")
                 raise OSError(ENOENT)
             if isinstance(a, str):
+                logger.debug("leaf TagNode found")
                 return (cur, path)
             else:
+                logger.debug("next node")
                 cur = a
                 del path[0]
         return (cur, None)
@@ -365,15 +376,19 @@ def _getpath(node, path):
 
 
 def _tmplink(target):
+    logger.debug("_tmplink(%r)", target)
     while True:
         fh, path = tempfile.mkstemp()
+        logger.debug("trying %r", path)
         os.close(fh)
         os.remove(path)
         try:
             os.link(target, path)
         except FileExistsError:
+            logger.debug("no good")
             continue
         else:
+            logger.debug("%r tmpfile works", path)
             return path
 
 
