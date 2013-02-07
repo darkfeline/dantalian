@@ -329,15 +329,16 @@ class HitagiMount(Operations):
     def _getnode(self, path):
         """Get node and path components
 
-        path is a list of strings pointing to a path under the FUSE vfs.  If
-        path is broken, raise OSError(ENOENT).
+        path is a string pointing to a path under the FUSE vfs.  If path is
+        broken, raise OSError(ENOENT).
 
         Returns a tuple (cur, path).  cur is the furthest FSNode along the
         path.  path is a list of strings indicating the path from the given
         node.  If node is the last file in the path, path is None.
         """
         assert len(path) > 0
-        path = _splitpath(path)
+        assert path[0] == "/"
+        path = path.lstrip('/').split('/')
         cur = self.tree[path.pop(0)]
         while path:
             try:
@@ -361,11 +362,6 @@ def _getpath(node, path):
     if not isinstance(node, tree.TagNode):
         raise OSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
-
-
-def _splitpath(path):
-    """Split path into list"""
-    return os.path.split(path.lstrip('/'))
 
 
 def _tmplink(target):
