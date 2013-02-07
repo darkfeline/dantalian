@@ -1,9 +1,6 @@
 from hitagifs.fuse3 import FUSE, Operations
 
 from errno import ENOENT, EPERM, EINVAL
-from sys import argv, exit
-
-import logging
 import os
 import tempfile
 
@@ -381,9 +378,3 @@ def _tmplink(target):
             return path
 
 
-if __name__ == "__main__":
-    if len(argv) != 2:
-        print('usage: %s <mountpoint>' % argv[0])
-        exit(1)
-    logging.getLogger().setLevel(logging.DEBUG)
-    fuse = FUSE(HitagiMount(), argv[1], foreground=True)
