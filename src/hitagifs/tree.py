@@ -118,6 +118,7 @@ def maketree(root, config):
             except KeyError:
                 logger.debug("making FSNode at %r[%r]", y, x)
                 y[x] = FSNode()
+                y = y[x]
         x = mount[-1]
         if x not in y:
             logger.debug("making TagNode at %r[%r]", y, x)
