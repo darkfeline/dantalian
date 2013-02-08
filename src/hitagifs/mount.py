@@ -8,13 +8,13 @@ from time import time
 
 from hitagifs import tree
 
-__all__ = ['HitagiMount', 'mount']
+__all__ = ['HitagiOps', 'mount']
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
          'st_nlink', 'st_size')
 logger = logging.getLogger(__name__)
 
 
-class HitagiMount(Operations):
+class HitagiOps(Operations):
 
     def __init__(self, root, tree):
         """
@@ -408,4 +408,4 @@ def _tmplink(target):
 
 
 def mount(path, root, tree):
-    return FUSE(HitagiMount(root, tree), path, foreground=False)
+    return FUSE(HitagiOps(root, tree), path, foreground=False)

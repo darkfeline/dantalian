@@ -115,5 +115,5 @@ performed beyond the designated mount points are forwarded to the underlying
 file system and are not permitted on the virtual directories before the
 designated mount points.
 
-.. autoclass:: HitagiMount
+.. autoclass:: HitagiOps
    :members:
