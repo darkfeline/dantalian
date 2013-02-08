@@ -66,6 +66,7 @@ def fs2tag(node, root, tags):
     """Convert a FSNode instance to a TagNode instance"""
     x = TagNode(root, tags)
     x.children = dict(node.children)
+    return x
 
 
 def maketree(root, config):
