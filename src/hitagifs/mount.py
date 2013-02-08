@@ -84,7 +84,7 @@ class HitagiOps(Operations):
         node, path = self._getnode(path)
         if path:
             logger.debug("getting from file system")
-            st = os.lstat(path)
+            st = os.lstat(_getpath(node, path))
             return dict((key, getattr(st, key)) for key in ATTRS)
         else:
             logger.debug("getting from node")
