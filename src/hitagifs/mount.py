@@ -4,6 +4,7 @@ from errno import ENOENT, EPERM, EINVAL
 import os
 import tempfile
 import logging
+from time import time
 
 from hitagifs import tree
 
@@ -76,8 +77,8 @@ class HitagiMount(Operations):
         """getattr
 
         If `path` points beyond a node, forward the request to the OS (via
-        built-in os module).  Otherwise the operation is invalid and raises
-        EINVAL.
+        built-in os module).  Otherwise if path is a node, return the node's
+        tracked attributes.
         """
         logger.debug("getattr(%r, %r)", path, fh)
         node, path = self._getnode(path)
@@ -85,17 +86,7 @@ class HitagiMount(Operations):
             st = os.lstat(path)
             return dict((key, getattr(st, key)) for key in ATTRS)
         else:
-            #st = os.stat(self.root.root)
-            #    return dict(
-            #        st_atime,
-            #        st_ctime,
-            #        st_mtime,
-            #        st_uid=st.st_uid,
-            #        st_gid=st.st_gid,
-            #        st_mode=st.st_mode,
-            #        st_nlink,
-            #        st_size=st.st_size)
-            raise OSError(EINVAL)
+            return node.attr
 
     def getxattr(self, path, name, position=0):
         """getxattr
@@ -179,6 +170,7 @@ class HitagiMount(Operations):
         if path:
             return ['.', '..'] + os.lsdir(_getpath(node, path))
         else:
+            node.attr['st_atime'] = time()
             return ['.', '..'] + [node[x] for x in iter(node)]
 
     def readlink(self, path):
