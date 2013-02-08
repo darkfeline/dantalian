@@ -1,4 +1,4 @@
-from hitagifs.fuse import FUSE, Operations
+from hitagifs.fuse import FUSE, Operations, FuseOSError, LoggingMixIn
 
 from errno import ENOENT, EPERM, EINVAL
 import os
@@ -14,7 +14,7 @@ ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
 logger = logging.getLogger(__name__)
 
 
-class HitagiOps(Operations):
+class HitagiOps(LoggingMixIn, Operations):
 
     def __init__(self, root, tree):
         """
@@ -36,7 +36,7 @@ class HitagiOps(Operations):
             os.chmod(_getpath(node, path), mode)
         else:
             logger.warn("is node")
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def chown(self, path, uid, gid):
         """chown
@@ -51,7 +51,7 @@ class HitagiOps(Operations):
             os.chown(_getpath(node, path), uid, gid)
         else:
             logger.warn("is node")
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def create(self, path, mode):
         """create
@@ -71,7 +71,7 @@ class HitagiOps(Operations):
                 self.root.tag(path, tag)
             return fd
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def getattr(self, path, fh=None):
         """getattr
@@ -101,7 +101,7 @@ class HitagiOps(Operations):
         #    return attrs[name]
         #except KeyError:
         #    return ''       # Should return ENOATTR
-        raise OSError(EPERM)
+        raise FuseOSError(EPERM)
 
     def listxattr(self, path):
         """listxattr
@@ -111,7 +111,7 @@ class HitagiOps(Operations):
         logger.debug("listxattr(%r)", path)
         #attrs = self.files[path].get('attrs', {})
         #return attrs.keys()
-        raise OSError(EPERM)
+        raise FuseOSError(EPERM)
 
     def mkdir(self, path, mode):
         """mkdir
@@ -132,7 +132,7 @@ class HitagiOps(Operations):
                 self.root.tag(path, tag)
             return fd
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def open(self, path, flags):
         """open
@@ -146,7 +146,7 @@ class HitagiOps(Operations):
         if path:
             return os.open(_getpath(node, path), flags)
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def read(self, path, size, offset, fh):
         """read
@@ -187,7 +187,7 @@ class HitagiOps(Operations):
         if path:
             return os.readlink(_getpath(node, path))
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def removexattr(self, path, name):
         """removexattr
@@ -200,7 +200,7 @@ class HitagiOps(Operations):
         #    del attrs[name]
         #except KeyError:
         #    pass        # Should return ENOATTR
-        raise OSError(EPERM)
+        raise FuseOSError(EPERM)
 
     def rename(self, old, new):
         """rename
@@ -216,7 +216,7 @@ class HitagiOps(Operations):
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
         if opath is None or npath is None:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
         ofpath = _getpath(onode, opath)
         nfpath = _getpath(nnode, npath)
         if len(opath) > 1:
@@ -244,7 +244,7 @@ class HitagiOps(Operations):
         if path:
             os.rmdir(_getpath(node, path))
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def setxattr(self, path, name, value, options, position=0):
         """setxattr
@@ -257,7 +257,7 @@ class HitagiOps(Operations):
         ## Ignore options
         #attrs = self.files[path].setdefault('attrs', {})
         #attrs[name] = value
-        raise OSError(EPERM)
+        raise FuseOSError(EPERM)
 
     def statfs(self, path):
         """statfs
@@ -287,7 +287,7 @@ class HitagiOps(Operations):
                 for tag in t:
                     self.root.tag(_getpath(node, path), tag)
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def truncate(self, path, length, fh=None):
         """truncate
@@ -302,7 +302,7 @@ class HitagiOps(Operations):
             with open(_getpath(node, path), 'r+') as f:
                 f.truncate(length)
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def unlink(self, path):
         """unlink
@@ -316,7 +316,7 @@ class HitagiOps(Operations):
         if path:
             os.unlink(_getpath(node, path))
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def utimens(self, path, times=None):
         """utimens
@@ -330,7 +330,7 @@ class HitagiOps(Operations):
         if path:
             os.utime(_getpath(node, path), times)
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def write(self, path, data, offset, fh):
         """write
@@ -345,13 +345,13 @@ class HitagiOps(Operations):
             os.lseek(fh, offset, 0)
             return os.write(fh, data)
         else:
-            raise OSError(EINVAL)
+            raise FuseOSError(EINVAL)
 
     def _getnode(self, path):
         """Get node and path components
 
         path is a string pointing to a path under the FUSE vfs.  If path is
-        broken, raise OSError(ENOENT).
+        broken, raise FuseOSError(ENOENT).
 
         Returns a tuple (cur, path).  cur is the furthest FSNode along the
         path.  path is a list of strings indicating the path from the given
@@ -369,7 +369,7 @@ class HitagiOps(Operations):
                 a = self.tree[path[0]]
             except KeyError:
                 logger.warn("path broken")
-                raise OSError(ENOENT)
+                raise FuseOSError(ENOENT)
             if isinstance(a, str):
                 logger.debug("leaf TagNode found, %r, %r", cur, path)
                 return (cur, path)
@@ -385,10 +385,10 @@ def _getpath(node, path):
     """Get real path
 
     Calculate and return the real path given TagNode `node` and list of strings
-    `path`.  If `node` is not a TagNode, raise OSError(EINVAL).
+    `path`.  If `node` is not a TagNode, raise FuseOSError(EINVAL).
     """
     if not isinstance(node, tree.TagNode):
-        raise OSError(EINVAL)
+        raise FuseOSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
 
 
