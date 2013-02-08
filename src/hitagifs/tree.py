@@ -1,25 +1,52 @@
-import os.path
+import os
 import json
 import logging
+from time import time
 
 __all__ = ['FSNode', 'TagNode', 'maketree', 'fs2tag']
 logger = logging.getLogger(__name__)
+UMASK = os.umask(0)
+os.umask(UMASK)
 
 
 class FSNode:
 
     """
-    Basically works like a dictionary mapping names to nodes.
+    Mock directory.  FSNode works like a dictionary mapping names to nodes and
+    keeps some internal file attributes.
 
     Implements:
 
     - __iter__
     - __getitem__
     - __setitem__
+
+    File Attributes:
+
+    atime, ctime, mtime
+        Defaults to current time
+    uid, gid
+        Defaults to process's uid, gid
+    mode
+        0o777 minus umask
+    nlinks
+        Only keeps track of nodes, not TagNode directories
+    size
+        constant 4096
     """
 
     def __init__(self):
         self.children = {}
+        now = time()
+        self.attr = dict(
+            st_atime=now,
+            st_ctime=now,
+            st_mtime=now,
+            st_uid=os.getuid(),
+            st_gid=os.getgid(),
+            st_mode=0o777 & ~UMASK,
+            st_nlink=2,
+            st_size=4096)
 
     def __iter__(self):
         return iter(self.children)
@@ -29,6 +56,7 @@ class FSNode:
 
     def __setitem__(self, key, value):
         self.children[key] = value
+        self.attr['st_nlink'] += 1
 
 
 class TagNode(FSNode):
