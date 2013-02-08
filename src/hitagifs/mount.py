@@ -83,9 +83,11 @@ class HitagiOps(Operations):
         logger.debug("getattr(%r, %r)", path, fh)
         node, path = self._getnode(path)
         if path:
+            logger.debug("getting from file system")
             st = os.lstat(path)
             return dict((key, getattr(st, key)) for key in ATTRS)
         else:
+            logger.debug("getting from node")
             return node.attr
 
     def getxattr(self, path, name, position=0):
