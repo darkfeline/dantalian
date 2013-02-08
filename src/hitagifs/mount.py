@@ -342,6 +342,7 @@ class HitagiMount(Operations):
         path.  path is a list of strings indicating the path from the given
         node.  If node is the last file in the path, path is None.
         """
+        path = path.decode()
         assert len(path) > 0
         assert path[0] == "/"
         logger.debug("resolving path %r", path)
