@@ -94,6 +94,15 @@ own automatically generated mount list.  The global variable ``tree`` at the
 end of the script's execution will be used.  See :func:`hitagifs.tree.maketree`
 for an example of how to set up the node tree.
 
+Nodes
+-----
+
+hitagiFS uses a tree internally to keep track of the virtual FUSE directories.
+The two nodes are :class:`FSNode` and its subclass :class:`TagNode`.  FSNode is
+simply a mock directory, keeping a mapping of child nodes and some basic file
+attributes.  TagNode additionally transparently maps to the files satisfying
+its tag requirements as well.
+
 FUSE Operations
 ---------------
 

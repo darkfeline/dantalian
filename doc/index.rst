@@ -16,3 +16,4 @@ Contents:
    fuse
    api
    manpage
+   term
