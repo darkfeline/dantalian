@@ -23,23 +23,10 @@ from platform import machine, system
 from signal import signal, SIGINT, SIG_DFL
 from stat import S_IFDIR
 from traceback import print_exc
+from functools import partial
 
 import logging
 
-try:
-    from functools import partial
-except ImportError:
-    # http://docs.python.org/library/functools.html#functools.partial
-    def partial(func, *args, **keywords):
-        def newfunc(*fargs, **fkeywords):
-            newkeywords = keywords.copy()
-            newkeywords.update(fkeywords)
-            return func(*(args + fargs), **newkeywords)
-
-        newfunc.func = func
-        newfunc.args = args
-        newfunc.keywords = keywords
-        return newfunc
 
 try:
     basestring
