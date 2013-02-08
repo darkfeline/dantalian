@@ -346,8 +346,8 @@ class HitagiMount(Operations):
         assert len(path) > 0
         assert path[0] == "/"
         logger.debug("resolving path %r", path)
-        path = path.lstrip('/').split('/')
-        cur = self.tree[path.pop(0)]
+        path = [x for x in path.lstrip('/').split('/') if x != ""]
+        cur = self.tree
         while path:
             logger.debug("resolving %r", path[0])
             try:
