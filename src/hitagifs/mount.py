@@ -60,6 +60,7 @@ class HitagiMount(Operations):
         the tags of the furthest node and return the file's file descriptor.
         Otherwise the operation is invalid and raises EINVAL.
         """
+        logger.debug("create(%r, %r)", path, mode)
         node, path = self._getnode(path)
         if path:
             t = list(node.tags)
@@ -78,6 +79,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("getattr(%r, %r)", path, fh)
         node, path = self._getnode(path)
         if path:
             st = os.lstat(path)
@@ -100,6 +102,7 @@ class HitagiMount(Operations):
 
         Not implemented.  Raises EPERM.
         """
+        logger.debug("getxattr(%r, %r, %r)", path, name, position)
         #attrs = self.files[path].get('attrs', {})
         #try:
         #    return attrs[name]
@@ -112,6 +115,7 @@ class HitagiMount(Operations):
 
         Not implemented.  Raises EPERM.
         """
+        logger.debug("listxattr(%r)", path)
         #attrs = self.files[path].get('attrs', {})
         #return attrs.keys()
         raise OSError(EPERM)
@@ -124,6 +128,7 @@ class HitagiMount(Operations):
         tagged with all of the tags of the furthest node.  Otherwise the
         operation is invalid and raises EINVAL.
         """
+        logger.debug("mkdir(%r, %r)", path, mode)
         node, path = self._getnode(path)
         if path:
             t = list(node.tags)
@@ -143,6 +148,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("open(%r, %r)", path, flags)
         node, path = self._getnode(path)
         if path:
             return os.open(_getpath(node, path), flags)
@@ -155,6 +161,7 @@ class HitagiMount(Operations):
         `path` is ignored.  Forward the request to the OS (via built-in os
         module) with the file descriptor.
         """
+        logger.debug("read(%r, %r, %r, %r)", path, size, offset, fh)
         os.lseek(fh, offset, 0)
         return os.read(fh, size)
 
@@ -167,6 +174,7 @@ class HitagiMount(Operations):
         it is an FSNode, its children nodes are added.  If it is additionally a
         TagNode, its files are calculated according to its rules and added.
         """
+        logger.debug("readdir(%r, %r)", path, fh)
         node, path = self._getnode(path)
         if path:
             return ['.', '..'] + os.lsdir(_getpath(node, path))
@@ -180,6 +188,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("readlink(%r)", path)
         node, path = self._getnode(path)
         if path:
             return os.readlink(_getpath(node, path))
@@ -191,6 +200,7 @@ class HitagiMount(Operations):
 
         Not implemented.  Raises EPERM.
         """
+        logger.debug("removexattr(%r, %r)", path, name)
         #attrs = self.files[path].get('attrs', {})
         #try:
         #    del attrs[name]
@@ -208,6 +218,7 @@ class HitagiMount(Operations):
         tags are added to `old`.  Whichever combination of the above, `old` is
         then renamed to `new` via built-in os module.
         """
+        logger.debug("rename(%r, %r)", old, new)
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
         if opath is None or npath is None:
@@ -234,6 +245,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("rmdir(%r)", path)
         node, path = self._getnode(path)
         if path:
             os.rmdir(_getpath(node, path))
@@ -245,6 +257,9 @@ class HitagiMount(Operations):
 
         Not implemented.  Raises EPERM.
         """
+        logger.debug(
+            "setxattr(%r, %r, %r, %r, %r)", path, name, value, options,
+            position)
         ## Ignore options
         #attrs = self.files[path].setdefault('attrs', {})
         #attrs[name] = value
@@ -255,6 +270,7 @@ class HitagiMount(Operations):
 
         Forward the request to the OS (via built-in os module).
         """
+        logger.debug("statfs(%r)", path)
         stv = os.statvfs(path)
         return dict((key, getattr(stv, key)) for key in (
             'f_bavail', 'f_bfree', 'f_blocks', 'f_bsize', 'f_favail',
@@ -268,6 +284,7 @@ class HitagiMount(Operations):
         beyond the node, add all of the node's tags to it.  Otherwise the
         operation is invalid and raises EINVAL.
         """
+        logger.debug("symlink(%r, %r)", target, source)
         node, path = self._getnode(source)
         if path:
             os.symlink(target, _getpath(node, path))
@@ -285,6 +302,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.  `path` is used; `fh` is ignored.
         """
+        logger.debug("truncate(%r, %r, %r)", path, length, fh)
         node, path = self._getnode(path)
         if path:
             with open(_getpath(node, path), 'r+') as f:
@@ -299,6 +317,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("unlink(%r)", path)
         node, path = self._getnode(path)
         if path:
             os.unlink(_getpath(node, path))
@@ -312,6 +331,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.
         """
+        logger.debug("utimens(%r, %r)", path, times)
         node, path = self._getnode(path)
         if path:
             os.utime(_getpath(node, path), times)
@@ -325,6 +345,7 @@ class HitagiMount(Operations):
         built-in os module).  Otherwise the operation is invalid and raises
         EINVAL.  `fh` is used; `path` is ignored.
         """
+        logger.debug("write(%r, %r, %r, %r)", path, data, offset, fh)
         node, path = self._getnode(path)
         if path:
             os.lseek(fh, offset, 0)
@@ -342,11 +363,11 @@ class HitagiMount(Operations):
         path.  path is a list of strings indicating the path from the given
         node.  If node is the last file in the path, path is None.
         """
-        path = path.decode()
         assert len(path) > 0
         assert path[0] == "/"
         logger.debug("resolving path %r", path)
         path = [x for x in path.lstrip('/').split('/') if x != ""]
+        logger.debug("path list %r", path)
         cur = self.tree
         while path:
             logger.debug("resolving %r", path[0])
@@ -356,12 +377,13 @@ class HitagiMount(Operations):
                 logger.warn("path broken")
                 raise OSError(ENOENT)
             if isinstance(a, str):
-                logger.debug("leaf TagNode found")
+                logger.debug("leaf TagNode found, %r, %r", cur, path)
                 return (cur, path)
             else:
                 logger.debug("next node")
                 cur = a
                 del path[0]
+        logger.debug("found node %r", cur)
         return (cur, None)
 
 
