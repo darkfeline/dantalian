@@ -1,4 +1,4 @@
-from hitagifs.fuse import FUSE, Operations, FuseOSError, LoggingMixIn
+from dantalian.fuse import FUSE, Operations, FuseOSError, LoggingMixIn
 
 from errno import ENOENT, EPERM, EINVAL
 import os
@@ -6,19 +6,19 @@ import tempfile
 import logging
 from time import time
 
-from hitagifs import tree
+from dantalian import tree
 
-__all__ = ['HitagiOps', 'mount']
+__all__ = ['TagOperations', 'mount']
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
          'st_nlink', 'st_size')
 logger = logging.getLogger(__name__)
 
 
-class HitagiOps(LoggingMixIn, Operations):
+class TagOperations(LoggingMixIn, Operations):
 
     def __init__(self, root, tree):
         """
-        root is HitagiFS instance
+        root is Library instance
         """
         self.root = root
         self.tree = tree
@@ -410,4 +410,4 @@ def _tmplink(target):
 
 
 def mount(path, root, tree):
-    return FUSE(HitagiOps(root, tree), path, foreground=False)
+    return FUSE(TagOperations(root, tree), path, foreground=False)
