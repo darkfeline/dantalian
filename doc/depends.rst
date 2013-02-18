@@ -3,8 +3,8 @@ Dependencies
 
 - GNU findutils, specifically ``find``.  This is something I debated over.  In
   order to find hard links, iteration is the only option.  While a database
-  could be kept to keep track of hard links, changes not made through hitagiFS
-  would then require rebuilding the database, which doesn't help, as hitagiFS
+  could be kept to keep track of hard links, changes not made through dantalian
+  would then require rebuilding the database, which doesn't help, as dantalian
   aims to be transparent.  Thus, we must walk the entire directory tree every
   time we want to do something, which is resource intensive.  Thus, I decided
   to use findutils, as an optimized binary will run much faster than a recursive

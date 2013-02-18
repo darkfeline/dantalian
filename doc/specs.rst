@@ -1,50 +1,50 @@
 Specification
 =============
 
-hitagiFS
---------
+Libraries
+---------
 
-A hitagiFS is created on a directory.  This directory becomes the root
-directory for the hitagifs.  A special ``.hitagifs`` directory is created in
+A library is created on a directory.  This directory becomes the root
+directory for the library.  A special ``.dantalian`` directory is created in
 the root directory.  The root directory must be located on a POSIX filesystem
 that supports hard links (e.g., ``ext4``).  Everything under the root directory
 must be on one file system.
 
-hitagiFS uses a conceptual abstraction of files and tags.  All directories
-(except ``.hitagifs``) under the root directory is a tag and is referred to
+Libraries use a conceptual abstraction of files and tags.  All directories
+(except ``.dantalian``) under the root directory is a tag and is referred to
 with its path relative to the root directory.  All files (not directories, but
-including symbolic links) are files that can be tagged under the hitagiFS
+including symbolic links) are files that can be tagged under the library
 abstraction.
 
 Files are hard linked under the tags that it possesses.  The file may have
 different names in each of the directories, e.g. to avoid name conflicts.
-hitagiFS provides "partial" support for files having different names.  The
-hitagiFS abstraction is completely sound in this case, but certain features may
-not work, or may be less useful or harder to work with.  hitagiFS finds files
+dantalian provides "partial" support for files having different names.  The
+library abstraction is completely sound in this case, but certain features may
+not work, or may be less useful or harder to work with.  dantalian finds files
 by the path to one of its hard links and manages them internally by hard link
 references and inodes.  If you are using different names for a single file,
 carefully read the documentation to see how hitagiFS handles paths in different
 situations.
 
-Because directories cannot be hard linked, hitagiFS must first convert them
+Because directories cannot be hard linked, dantalian must first convert them
 before directories can be tagged.  Converting a directory moves it to a special
-location under ``.hitagifs`` and replaces it with an absolute symbolic link to
+location under ``.dantalian`` and replaces it with an absolute symbolic link to
 its new location.  Because converted directories are all kept in one location,
 no converted directory may have the same name.  However, the name of the
 directory hitagiFS keeps track of and the name of the symbolic link that users
 will be interacting with are separate.  Thus, if there's a naming conflict, the
 actual directory can be renamed, and the symbolic links follow the naming rules
-as above.  This feature imposes an extra requirement on the hitagiFS root
-directory.  When the root directory path is changed, the symbolic links of all
-converted directories must be fixed.  hitagiFS provides this functionality, but
-``hfs fix`` must be called each time.
+as above.  This feature imposes an extra requirement on the library root
+directory.  Namely, when the root directory path is changed, the symbolic links
+of all converted directories must be fixed.  dantalian provides this
+functionality, but ``dantalian fix`` must be called each time.
 
 FUSE Mount
 ----------
 
-hitagiFS offers a FUSE mounts feature.  Currently, this allows you to "mount"
+dantalian offers a FUSE mounts feature.  Currently, this allows you to "mount"
 a FUSE file system that contains files with certain combinations of tags.  The
-configuration file for FUSE is at ``.hitagifs/mount``.  The FUSE file system
+configuration file for FUSE is at ``.dantalian/mount``.  The FUSE file system
 will be mounted under ``fuse`` under the root directory.  The configuration
 file is in JSON, and should look as follows::
 
