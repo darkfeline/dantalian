@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 
-from hitagifs.fs import HitagiFS
+from dantalian.library import Library
 
 logger = logging.getLogger(__name__)
 
@@ -21,110 +21,110 @@ def public(f):
 
 
 @public
-def tag(fs, *args):
+def tag(lib, *args):
     """
     Tags `file` with `tag` (Hard links `file` under `tag` directory with the
     same name).  If `file` is already tagged, does nothing.  If `file` is a
     directory, you'll need to convert it first.
     """
-    logger.debug('tag(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs tag", add_help=False)
+    logger.debug('tag(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian tag", add_help=False)
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
     for file in args.file:
         try:
-            fs.tag(file, args.tag)
+            lib.tag(file, args.tag)
         except IsADirectoryError:
             logger.warn('skipped %r; convert it first', file)
 
 
 @public
-def untag(fs, *args):
+def untag(lib, *args):
     """
     Removes tag `tag` from `file` (Removes the hard link to `file` under `tag`
     directory).  If `file` isn't tagged, does nothing.
     """
-    logger.debug('untag(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs utag", add_help=False)
+    logger.debug('untag(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian utag", add_help=False)
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
     for file in args.file:
-        fs.untag(file, args.tag)
+        lib.untag(file, args.tag)
 
 
 @public
-def tags(fs, *args):
+def tags(lib, *args):
     """
     Lists all the tags of `file` (Lists the directories that have hard links to
     `file`).
     """
-    logger.debug('tags(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs tags", add_help=False)
+    logger.debug('tags(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian tags", add_help=False)
     parser.add_argument('file')
     args = parser.parse_args(args)
-    r = fs.listtags(args.file)
+    r = lib.listtags(args.file)
     for tag in r:
         print(tag)
 
 
 @public
-def find(fs, *args):
+def find(lib, *args):
     """
     Intersect tag search.  Lists all files that have all of the given tags.
     Lists files by the path to the hard link under the first tag given.
     """
-    logger.debug('find(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs find", add_help=False)
+    logger.debug('find(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian find", add_help=False)
     parser.add_argument('tags', nargs='+')
     args = parser.parse_args(args)
-    r = fs.find(args.tags)
+    r = lib.find(args.tags)
     for file in r:
         print(file)
 
 
 @public
-def rm(fs, *args):
+def rm(lib, *args):
     """
     Removes the files given (Removes all hard links to the files under the root
     directory).
     """
-    logger.debug('rm(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs rm", add_help=False)
+    logger.debug('rm(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian rm", add_help=False)
     parser.add_argument('files', nargs='+')
     args = parser.parse_args(args)
     for file in args.files:
-        fs.rm(file)
+        lib.rm(file)
 
 
 @public
-def rename(fs, *args):
+def rename(lib, *args):
     """
     Renames all hard links of `file` to `new`.
     """
-    logger.debug('rename(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs rename", add_help=False)
+    logger.debug('rename(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian rename", add_help=False)
     parser.add_argument('file')
     parser.add_argument('new')
     args = parser.parse_args(args)
-    fs.rename(args.source, args.dest)
+    lib.rename(args.source, args.dest)
 
 
 @public
-def convert(fs, *args):
+def convert(lib, *args):
     """
     Converts directories so they can be tagged.  (Moves directories to special
-    location '.hitagifs/dirs' and replaces the original with a symlink pointing
-    to the absolute path)
+    location '.dantalian/dirs' and replaces the original with a symlink
+    pointing to the absolute path)
     """
-    logger.debug('convert(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs convert", add_help=False)
+    logger.debug('convert(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian convert", add_help=False)
     parser.add_argument('dir', nargs="+")
     args = parser.parse_args(args)
     for dir in args.dir:
         try:
-            fs.convert(dir)
+            lib.convert(dir)
         except NotADirectoryError:
             logger.warn('%r is not a directory; skipping', dir)
         except FileExistsError:
@@ -132,37 +132,37 @@ def convert(fs, *args):
 
 
 @public
-def fix(fs, *args):
+def fix(lib, *args):
     """
-    Fixes symlinks after the hitagiFS has been moved.  If it hasn't been moved,
+    Fixes symlinks after the library has been moved.  If it hasn't been moved,
     does nothing.
     """
-    logger.debug('fix(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs fix", add_help=False)
+    logger.debug('fix(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian fix", add_help=False)
     args = parser.parse_args(args)
-    fs.fix()
+    lib.fix()
 
 
 @public
 def init(*args):
     """
-    Creates a hitagifs in `dir`.  If `dir` is omitted, creates a hitagifs in
+    Creates a library in `dir`.  If `dir` is omitted, creates a library in
     the current directory.
     """
     logger.debug('init(%r)', args)
-    parser = argparse.ArgumentParser(prog="hfs init", add_help=False)
+    parser = argparse.ArgumentParser(prog="dantalian init", add_help=False)
     parser.add_argument('root', nargs="?", default=os.getcwd())
     args = parser.parse_args(args)
-    HitagiFS.init(args.root)
+    Library.init(args.root)
 
 
 @public
-def mount(fs, *args):
+def mount(lib, *args):
     """
     Mount FUSE according to config files.
     """
-    logger.debug('mount(%r, %r)', fs, args)
-    parser = argparse.ArgumentParser(prog="hfs mount", add_help=False)
+    logger.debug('mount(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian mount", add_help=False)
     args = parser.parse_args(args)
-    fs.mount()
+    lib.mount()
     logger.debug('exit')

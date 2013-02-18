@@ -3,12 +3,12 @@
 import argparse
 import logging
 
-from hitagifs import commands
-from hitagifs.fs import HitagiFS
+from dantalian import commands
+from dantalian.library import Library
 
 parser = argparse.ArgumentParser(
     prog="hfs", add_help=False,
-    description="hitagiFS CLI tool.  Check docs for usage.")
+    description="dantalian CLI tool.  Check docs for usage.")
 parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
 parser.add_argument('--loglevel', action='store', default='warn')
@@ -32,5 +32,5 @@ if args.logfilter:
 if args.command in ('init'):
     getattr(commands, args.command)(*args.args)
 else:
-    fs = HitagiFS(getattr(args, 'root', None))
-    getattr(commands, args.command)(fs, *args.args)
+    lib = Library(getattr(args, 'root', None))
+    getattr(commands, args.command)(lib, *args.args)

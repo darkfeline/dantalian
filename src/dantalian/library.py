@@ -3,22 +3,22 @@ import subprocess
 import logging
 from functools import lru_cache
 
-from hitagifs import tree
-from hitagifs import mount
+from dantalian import tree
+from dantalian import mount
 
-__all__ = ['HitagiFS', 'FSError', 'DependencyError']
+__all__ = ['Library', 'LibraryError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
 
-class HitagiFS:
+class Library:
 
     @classmethod
     def init(cls, root):
 
-        """Initialize a hitagiFS at `root`
+        """Initialize a library at `root`
 
-        Calling :meth:`init` on an existing hitagiFS does no harm.  Returns an
-        instance of :class:`HitagiFS`.
+        Calling :meth:`init` on an existing library does no harm.  Returns an
+        instance of :class:`Library`.
 
         """
 
@@ -58,28 +58,28 @@ class HitagiFS:
 
     def __init__(self, root=None):
         """
-        If `root` is :data:`None`, HitagiFS will search up the directory tree
-        for the first hitagifs (a directory that contains ``.hitagifs``) it
-        finds and use that.  If none are found, raises :exc:`FSError`.
+        If `root` is :data:`None`, Library will search up the directory tree
+        for the first library (a directory that contains ``.dantalian``) it
+        finds and use that.  If none are found, raises :exc:`LibraryError`.
         Otherwise, `root` will be used.  If `root` is not a directory,
         :exc:`NotADirectoryError` will be raised.
 
         """
-        logger.debug("open hitagifs root %r", root)
+        logger.debug("open library root %r", root)
         if root is None:
             root = self._find_root(os.getcwd())
         if not os.path.isdir(root):
             raise NotADirectoryError("Root {} isn't a directory".format(root))
         self.root = os.path.abspath(root)
-        logger.info('HitagiFS initialized')
+        logger.info('Library initialized')
         logger.debug('root is %r', self.root)
 
     def tag(self, file, tag, alt=None):
         """Tag `file` with `tag`.
 
-        `file` is relative to current dir. `tag` is relative to FS root.  If
-        `file` is already tagged, nothing happens.  This includes if the file
-        is hardlinked under another name.  If `file` is an unconverted
+        `file` is relative to current dir. `tag` is relative to library root.
+        If `file` is already tagged, nothing happens.  This includes if the
+        file is hardlinked under another name.  If `file` is an unconverted
         directory, :exc:`IsADirectoryError` will be raised.  If there's a name
         collision, :exc:`FileExistsError` is raised.
 
@@ -109,8 +109,8 @@ class HitagiFS:
     def untag(self, file, tag):
         """Remove `tag` from `file`.
 
-        `file` is relative to current dir. `tag` is relative to FS root.  If
-        file is not tagged, nothing happens.  Removes *all* hard links to
+        `file` is relative to current dir. `tag` is relative to library root.
+        If file is not tagged, nothing happens.  Removes *all* hard links to
         `file` with `tag`.
 
         """
@@ -162,12 +162,12 @@ class HitagiFS:
 
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.hitagifs/dirs`` (smartassery), :meth:`convert` raises
-        :exc:`FSError`.  If `dir` is a symlink (probably already converted),
+        If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert` raises
+        :exc:`LibraryError`.  If `dir` is a symlink (probably already converted),
         :meth:`convert` returns without doing anything.  If its name conflicts,
         :exc:`FileExistsError` will be raised.  If `dir` is not a directory,
         :exc:`NotADirectoryError` will be raised.  If `alt` is given, the
-        alternate name will be used for the copy kept in ``.hitagifs/dirs``.
+        alternate name will be used for the copy kept in ``.dantalian/dirs``.
 
         """
 
@@ -190,7 +190,7 @@ class HitagiFS:
         logger.info("Checking %r is not in dirs", dir)
         dirname, basename = os.path.split(os.path.abspath(dir))
         if samefile(dirname, dirsdir(self.root)):
-            raise FSError("{} is in special directory".format(dirname))
+            raise LibraryError("{} is in special directory".format(dirname))
         logger.info("Check okay")
 
         if alt is not None:
@@ -372,7 +372,7 @@ class HitagiFS:
     def _find_root(cls, dir):
         """Find the first hitagiFS root directory above `dir`.
 
-        If none are found, raises :exc:`FSError`.
+        If none are found, raises :exc:`LibraryError`.
 
         :rtype: :class:`str
 
@@ -389,12 +389,12 @@ class HitagiFS:
                 if dir == '/':
                     break
                 dir = os.path.dirname(dir)
-        raise FSError('No root found')
+        raise LibraryError('No root found')
 
 
 @lru_cache()
 def rootdir(root):
-    return os.path.join(root, '.hitagifs')
+    return os.path.join(root, '.dantalian')
 
 
 @lru_cache()
@@ -422,12 +422,6 @@ def mountdir(root):
     return os.path.join(root, 'fuse')
 
 
-class _FakeFS(HitagiFS):
-
-    def __init__(self, root):
-        self.root = root
-
-
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 
@@ -446,8 +440,8 @@ def listdir(path):
     return iter(os.path.join(path, f) for f in os.listdir(path))
 
 
-class FSError(Exception):
-    """File system error"""
+class LibraryError(Exception):
+    """Library error"""
 
 
 class DependencyError(Exception):

@@ -67,12 +67,12 @@ class TagNode(FSNode):
     criteria, and adds these to __iter__ and __getitem__
     """
 
-    def __init__(self, fs_root, tags):
+    def __init__(self, lib, tags):
         """
-        tags is list of tags.  fs_root is a HitagiFS instance.
+        tags is list of tags.  lib is a HitagiFS instance.
         """
         super().__init__()
-        self.root = fs_root
+        self.root = lib
         self.tags = tags
 
     def __iter__(self):
@@ -100,7 +100,7 @@ def fs2tag(node, root, tags):
 def maketree(root, config):
     """Make a FSNode tree
 
-    root is a HitagiFS instance.  config is file path.
+    root is an instance of Library.  config is file path.
     """
     logger.debug("maketree(%r, %r)", root, config)
     with open(config) as f:

@@ -14,6 +14,4 @@ Contents:
    depends
    specs
    fuse
-   api
    manpage
-   term
