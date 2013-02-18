@@ -3,12 +3,12 @@
 from distutils.core import setup
 
 setup(
-    name='hitagifs',
+    name='dantalian',
     version='0.3',
     author='Allen Li',
     author_email='darkfeline@abagofapples.com',
     url='http://abagofapples.com/',
     package_dir={'': 'src'},
-    packages=['hitagifs'],
-    scripts=['src/bin/hfs'],
+    packages=['dantalian'],
+    scripts=['src/bin/dantalian'],
 )
