@@ -93,6 +93,26 @@ class TagOperations(LoggingMixIn, Operations):
     getxattr = None
     listxattr = None
 
+    def link(self, source, target):
+        """link
+
+        If `path` points beyond a node, forward the request to the OS/parent
+        file system (via built-in os module).  If `path` points not more than
+        one directory deep beyond the node, add all of the node's tags to it.
+        Otherwise the operation is invalid and raises EINVAL.
+        """
+        logger.debug("link(%r, %r)", source, target)
+        node, path = self._getnode(target)
+        if path:
+            os.link(source, _getpath(node, path))
+            if len(path) == 1:
+                t = list(node.tags)
+                for tag in t:
+                    self.root.tag(_getpath(node, path), tag)
+        else:
+            raise FuseOSError(EINVAL)
+
+
     def mkdir(self, path, mode):
         """mkdir
 
