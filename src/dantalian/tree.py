@@ -130,7 +130,12 @@ def maketree(root, config):
 
 
 def _uniqmap(files):
+    """Create a unique map from a list of files.
+
+    Given a list of files, map unique basename strings to each file and return
+    a dictionary."""
     logger.debug("_uniqmap(%r)", files)
+    assert isinstance(files, list)
     map = {}
     unique = set(os.path.basename(f) for f in files)
     files = dict((f, os.path.basename(f)) for f in files)
