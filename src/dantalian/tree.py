@@ -140,7 +140,7 @@ class RootNode(BorderNode):
 def fs2tag(node, root, tags):
     """Convert a FSNode instance to a TagNode instance"""
     x = TagNode(root, tags)
-    x.children = dict(node.children)
+    x.children.update(dict(node.children))
     return x
 
 
