@@ -62,10 +62,14 @@ class TagOperations(LoggingMixIn, Operations):
         Otherwise the operation is invalid and raises EINVAL.
         """
         logger.debug("create(%r, %r)", path, mode)
-        node, path = self._getnode(path)
+        file = os.path.basename(path)
+        node, path = self._getnode(os.path.dirname(path))
         if path:
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
+            return fd
+        elif isinstance(node, tree.TagNode):
             t = list(node.tags)
-            path = os.path.join(self.root.tagpath(t.pop(0)), *path)
+            path = os.path.join(self.root.tagpath(t.pop(0)), file)
             fd = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
             for tag in t:
                 self.root.tag(path, tag)
