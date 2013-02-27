@@ -22,6 +22,8 @@ import stat
 import abc
 from time import time
 
+from dantalian.library import path as libpath
+
 __all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'maketree', 'fs2tag']
 logger = logging.getLogger(__name__)
 UMASK = 0o007
@@ -91,13 +93,14 @@ class TagNode(BorderNode):
     __iter__ and __getitem__
     """
 
-    def __init__(self, lib, tags):
+    def __init__(self, root, tags):
         """
-        tags is list of tags.  lib is a library.
+        tags is list of tags.  root is a library.
         """
         super().__init__()
-        self.root = lib
+        self.root = root
         self.tags = tags
+        self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
         files = list(super().__iter__())

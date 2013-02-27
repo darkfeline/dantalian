@@ -21,6 +21,12 @@ def rootdir(root):
 
 @public
 @lru_cache()
+def fuserootdir(root):
+    return os.path.join(root, '.dantalian-fuse')
+
+
+@public
+@lru_cache()
 def rootfile(root):
     return os.path.join(rootdir(root), 'root')
 
