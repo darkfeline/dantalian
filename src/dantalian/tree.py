@@ -100,7 +100,6 @@ class TagNode(BorderNode):
         super().__init__()
         self.root = root
         self.tags = tags
-        self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
         files = list(super().__iter__())
@@ -127,6 +126,7 @@ class RootNode(BorderNode):
     def __init__(self, root):
         super().__init__()
         self.root = root
+        self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
         files = list(super().__iter__())
