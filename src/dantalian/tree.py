@@ -82,7 +82,7 @@ class TagNode(FSNode):
 
     def __getitem__(self, key):
         try:
-            super().__getitem__(key)
+            return super().__getitem__(key)
         except KeyError:
             return self.tagged()[key]
 
