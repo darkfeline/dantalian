@@ -137,21 +137,20 @@ def _uniqmap(files):
     logger.debug("_uniqmap(%r)", files)
     assert isinstance(files, list)
     map = {}
-    unique = set(os.path.basename(f) for f in files)
-    files = dict((f, os.path.basename(f)) for f in files)
-    for f in unique:
-        map[f] = files[f]
-        del files[f]
     for f in files:
-        file, ext = os.path.splitext(f)
-        new = ''.join([file, ".{}", ext])
-        i = 1
-        while True:
-            newi = new.format(i)
-            if newi in map:
-                i += 1
-                continue
-            else:
-                map[newi] = files[f]
+        base = os.path.basename(f)
+        if base not in map:
+            map[base] = f
+        else:
+            file, ext = os.path.splitext(f)
+            new = ''.join([file, ".{}", ext])
+            i = 1
+            while True:
+                newi = new.format(i)
+                if newi not in map:
+                    map[newi] = f
+                    break
+                else:
+                    i += 1
     logger.debug("calculated %r", files)
     return map
