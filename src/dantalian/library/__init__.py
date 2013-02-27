@@ -1,10 +1,10 @@
 import os
 import subprocess
 import logging
-from functools import lru_cache
 
 from dantalian import tree
 from dantalian import mount
+from dantalian.library import path as libpath
 
 __all__ = ['Library', 'LibraryError', 'DependencyError']
 logger = logging.getLogger(__name__)
@@ -25,20 +25,20 @@ class Library:
         logger.debug('init(%r)', root)
         root = os.path.abspath(root)
 
-        root_dir = rootdir(root)
+        root_dir = libpath.rootdir(root)
         logger.debug('mkdir %r', root_dir)
         try:
             os.mkdir(root_dir)
         except FileExistsError:
             logger.debug('skipping %r; exists', root_dir)
 
-        root_file = rootfile(root)
+        root_file = libpath.rootfile(root)
         if not os.path.exists(root_file):
             logger.debug('writing %r', root_file)
             with open(root_file, 'w') as f:
                 f.write(root)
 
-        dirs_dir = dirsdir(root)
+        dirs_dir = libpath.dirsdir(root)
         logger.debug('mkdir %r', dirs_dir)
         try:
             os.mkdir(dirs_dir)
@@ -49,7 +49,7 @@ class Library:
 
     @property
     def _moved(self):
-        with open(rootfile(self.root)) as f:
+        with open(libpath.rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
             return False
@@ -95,8 +95,8 @@ class Library:
             dest = os.path.join(dest, alt)
         name = os.path.basename(file)
         logger.info('checking if %r already tagged with %r', file, tag)
-        for f in listdir(dest):
-            if samefile(f, file):
+        for f in libpath.listdir(dest):
+            if libpath.samefile(f, file):
                 return
         logger.info('check okay')
         dest = os.path.join(dest, name)
@@ -118,7 +118,7 @@ class Library:
         assert isinstance(tag, str)
         dest = self.tagpath(tag)
         inode = os.lstat(file)
-        for f in listdir(dest):
+        for f in libpath.listdir(dest):
             logger.debug('checking %r', f)
             if os.path.samestat(inode, os.lstat(f)):
                 logger.debug('unlinking %r', f)
@@ -162,12 +162,13 @@ class Library:
 
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert` raises
-        :exc:`LibraryError`.  If `dir` is a symlink (probably already converted),
-        :meth:`convert` returns without doing anything.  If its name conflicts,
-        :exc:`FileExistsError` will be raised.  If `dir` is not a directory,
-        :exc:`NotADirectoryError` will be raised.  If `alt` is given, the
-        alternate name will be used for the copy kept in ``.dantalian/dirs``.
+        If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert`
+        raises :exc:`LibraryError`.  If `dir` is a symlink (probably already
+        converted), :meth:`convert` returns without doing anything.  If its
+        name conflicts, :exc:`FileExistsError` will be raised.  If `dir` is not
+        a directory, :exc:`NotADirectoryError` will be raised.  If `alt` is
+        given, the alternate name will be used for the copy kept in
+        ``.dantalian/dirs``.
 
         """
 
@@ -189,14 +190,14 @@ class Library:
 
         logger.info("Checking %r is not in dirs", dir)
         dirname, basename = os.path.split(os.path.abspath(dir))
-        if samefile(dirname, dirsdir(self.root)):
+        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
             raise LibraryError("{} is in special directory".format(dirname))
         logger.info("Check okay")
 
         if alt is not None:
             assert isinstance(alt, str)
             basename = alt
-        new = os.path.join(dirsdir(self.root), basename)
+        new = os.path.join(libpath.dirsdir(self.root), basename)
         logger.info("Checking name conflict")
         if os.path.exists(new):
             raise FileExistsError('{} exists'.format(new))
@@ -221,15 +222,15 @@ class Library:
         tag = tags.pop(0)
         logger.debug('filter tag %r', tag)
         path = self.tagpath(tag)
-        files = list(listdir(path))
+        files = list(libpath.listdir(path))
         logger.debug('found set %r', files)
         for tag in tags:
             logger.debug('filter tag %r', tag)
             path = self.tagpath(tag)
             good = []
             for file in files:
-                for f in listdir(path):
-                    if samefile(file, f):
+                for f in libpath.listdir(path):
+                    if libpath.samefile(file, f):
                         good.append(file)
                         break
             files = good
@@ -307,7 +308,7 @@ class Library:
         for file in output:
             found = 0
             for set in result:
-                if samefile(set[0], file):
+                if libpath.samefile(set[0], file):
                     set.append(file)
                     found = 1
                     break
@@ -333,7 +334,7 @@ class Library:
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        newdir = dirsdir(self.root)
+        newdir = libpath.dirsdir(self.root)
         files = self._get_symlinks()
         logger.debug('found symlinks %r', files)
         for set in files:
@@ -348,22 +349,22 @@ class Library:
                 os.unlink(file)
                 logger.debug("linking %r to %r", file, f)
                 os.link(f, file)
-        logger.debug('writing %r', rootfile(self.root))
-        with open(rootfile(self.root), 'w') as f:
+        logger.debug('writing %r', libpath.rootfile(self.root))
+        with open(libpath.rootfile(self.root), 'w') as f:
             f.write(self.root)
         logger.info('finished fixing')
 
     def maketree(self):
         logger.info("making tree")
-        if os.path.exists(ctreefile(self.root)):
+        if os.path.exists(libpath.ctreefile(self.root)):
             logger.info("using custom")
             x = {}
-            with open(ctreefile(self.root)) as f:
-                exec(compile(f, ctreefile(self.root), 'exec'), x)
+            with open(libpath.ctreefile(self.root)) as f:
+                exec(compile(f, libpath.ctreefile(self.root), 'exec'), x)
             return x['tree']
         else:
             logger.info("using auto")
-            return tree.maketree(self, treefile(self.root))
+            return tree.maketree(self, libpath.treefile(self.root))
 
     def mount(self):
         return mount.mount(self.root, self, self.maketree())
@@ -379,7 +380,7 @@ class Library:
         """
         assert os.path.isdir(dir)
         dir = os.path.abspath(dir)
-        root_dir = rootdir('')
+        root_dir = libpath.rootdir('')
         logger.debug("finding root; starting with %r", dir)
         while dir:
             logger.debug("trying %r", dir)
@@ -390,49 +391,6 @@ class Library:
                     break
                 dir = os.path.dirname(dir)
         raise LibraryError('No root found')
-
-
-@lru_cache()
-def rootdir(root):
-    return os.path.join(root, '.dantalian')
-
-
-@lru_cache()
-def rootfile(root):
-    return os.path.join(rootdir(root), 'root')
-
-
-@lru_cache()
-def dirsdir(root):
-    return os.path.join(rootdir(root), 'dirs')
-
-
-@lru_cache()
-def treefile(root):
-    return os.path.join(rootdir(root), 'mount')
-
-
-@lru_cache()
-def ctreefile(root):
-    return os.path.join(rootdir(root), 'mount_custom')
-
-
-def samefile(f1, f2):
-    """If `f1` and `f2` refer to same inode.
-
-    :rtype: :class:`bool`
-
-    """
-    return os.path.samestat(os.lstat(f1), os.lstat(f2))
-
-
-def listdir(path):
-    """Return full paths of files in `path`.
-
-    :rtype: `iterator`
-
-    """
-    return iter(os.path.join(path, f) for f in os.listdir(path))
 
 
 class LibraryError(Exception):
