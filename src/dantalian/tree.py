@@ -133,6 +133,7 @@ def maketree(root, config):
     root is an instance of Library.  config is file path.
     """
     logger.debug("maketree(%r, %r)", root, config)
+    root = os.path.abspath(root)
     with open(config) as f:
         dat = json.load(f)
     r = RootNode(root)
