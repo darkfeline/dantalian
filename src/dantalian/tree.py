@@ -76,7 +76,7 @@ class TagNode(FSNode):
         self.tags = tags
 
     def __iter__(self):
-        files = list(super().__iter__(self.children))
+        files = list(super().__iter__())
         files.add(self.tagged().keys())
         return iter(files)
 
