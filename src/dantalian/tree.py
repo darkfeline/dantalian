@@ -1,12 +1,12 @@
 import os
 import json
 import logging
+import stat
 from time import time
 
 __all__ = ['FSNode', 'TagNode', 'maketree', 'fs2tag']
 logger = logging.getLogger(__name__)
-UMASK = os.umask(0)
-os.umask(UMASK)
+UMASK = 0o007
 
 
 class FSNode:
@@ -28,7 +28,7 @@ class FSNode:
     uid, gid
         Defaults to process's uid, gid
     mode
-        0o777 minus umask
+        Set directory, 0o777 minus umask
     nlinks
         Only keeps track of nodes, not TagNode directories
     size
@@ -44,7 +44,7 @@ class FSNode:
             st_mtime=now,
             st_uid=os.getuid(),
             st_gid=os.getgid(),
-            st_mode=0o777 & ~UMASK,
+            st_mode=stat.S_IFDIR | 0o770 & ~UMASK,
             st_nlink=2,
             st_size=4096)
 
