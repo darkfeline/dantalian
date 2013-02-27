@@ -90,28 +90,8 @@ class TagOperations(LoggingMixIn, Operations):
             logger.debug("getting from node")
             return node.attr
 
-    def getxattr(self, path, name, position=0):
-        """getxattr
-
-        Not implemented.  Raises EPERM.
-        """
-        logger.debug("getxattr(%r, %r, %r)", path, name, position)
-        #attrs = self.files[path].get('attrs', {})
-        #try:
-        #    return attrs[name]
-        #except KeyError:
-        #    return ''       # Should return ENOATTR
-        raise FuseOSError(EPERM)
-
-    def listxattr(self, path):
-        """listxattr
-
-        Not implemented.  Raises EPERM.
-        """
-        logger.debug("listxattr(%r)", path)
-        #attrs = self.files[path].get('attrs', {})
-        #return attrs.keys()
-        raise FuseOSError(EPERM)
+    getxattr = None
+    listxattr = None
 
     def mkdir(self, path, mode):
         """mkdir
@@ -191,18 +171,7 @@ class TagOperations(LoggingMixIn, Operations):
         else:
             raise FuseOSError(EINVAL)
 
-    def removexattr(self, path, name):
-        """removexattr
-
-        Not implemented.  Raises EPERM.
-        """
-        logger.debug("removexattr(%r, %r)", path, name)
-        #attrs = self.files[path].get('attrs', {})
-        #try:
-        #    del attrs[name]
-        #except KeyError:
-        #    pass        # Should return ENOATTR
-        raise FuseOSError(EPERM)
+    removexattr = None
 
     def rename(self, old, new):
         """rename
@@ -248,18 +217,7 @@ class TagOperations(LoggingMixIn, Operations):
         else:
             raise FuseOSError(EINVAL)
 
-    def setxattr(self, path, name, value, options, position=0):
-        """setxattr
-
-        Not implemented.  Raises EPERM.
-        """
-        logger.debug(
-            "setxattr(%r, %r, %r, %r, %r)", path, name, value, options,
-            position)
-        ## Ignore options
-        #attrs = self.files[path].setdefault('attrs', {})
-        #attrs[name] = value
-        raise FuseOSError(EPERM)
+    setxattr = None
 
     def statfs(self, path):
         """statfs
@@ -412,4 +370,4 @@ def _tmplink(target):
 
 
 def mount(path, root, tree):
-    return FUSE(TagOperations(root, tree), path, foreground=False)
+    return FUSE(TagOperations(root, tree), path, foreground=True)
