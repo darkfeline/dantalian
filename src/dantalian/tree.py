@@ -117,7 +117,7 @@ class RootNode(BorderNode):
         try:
             return super().__getitem__(key)
         except KeyError:
-            return os.listdir(self.root)[key]
+            return os.path.join(self.root, key)
 
 
 def fs2tag(node, root, tags):
