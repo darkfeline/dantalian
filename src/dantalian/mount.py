@@ -175,7 +175,7 @@ class TagOperations(LoggingMixIn, Operations):
         node, path = self._getnode(path)
         contents = ['.', '..']
         if path:
-            contents += os.lsdir(_getpath(node, path))
+            contents += os.listdir(_getpath(node, path))
         else:
             node.attr['st_atime'] = time()
             contents += [x for x in iter(node)]
