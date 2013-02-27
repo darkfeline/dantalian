@@ -169,11 +169,13 @@ class TagOperations(LoggingMixIn, Operations):
         """
         logger.debug("readdir(%r, %r)", path, fh)
         node, path = self._getnode(path)
+        contents = ['.', '..']
         if path:
-            return ['.', '..'] + os.lsdir(_getpath(node, path))
+            contents += os.lsdir(_getpath(node, path))
         else:
             node.attr['st_atime'] = time()
-            return ['.', '..'] + [node[x] for x in iter(node)]
+            contents += [x for x in iter(node)]
+        return contents
 
     def readlink(self, path):
         """readlink
