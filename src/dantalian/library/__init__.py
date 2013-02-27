@@ -1,13 +1,15 @@
 import os
 import subprocess
 import logging
+from functools import lru_cache
 
 from dantalian import tree
 from dantalian import mount
 from dantalian.library import path as libpath
 
 __all__ = [
-    'init_library', 'open', 'Library', 'LibraryError', 'DependencyError']
+    'init_library', 'open', 'Library', 'FUSELibrary', 'LibraryError',
+    'DependencyError']
 logger = logging.getLogger(__name__)
 
 
@@ -55,7 +57,10 @@ def open(root=None):
     """
     if root is None:
         root = _find_root(os.getcwd())
-    return Library(root)
+    if os.path.isdir(libpath.fuserootdir(root)):
+        return FUSELibrary(root)
+    else:
+        return Library(root)
 
 
 class Library:
@@ -397,6 +402,28 @@ def _find_root(dir):
     raise LibraryError('No root found')
 
 
+class FUSELibrary(Library):
+
+    def __init__(self, root):
+        logger.debug("open fuse library %r", root)
+        if not os.path.isdir(root) or not os.path.isdir(libpath.rootdir(root)):
+            raise LibraryError("{} isn't a library".format(root))
+        self._root = os.path.abspath(root)
+
+    def fix(self):
+        logger.warn("can't fix fuse library")
+        return
+
+    def mount(self, root):
+        logger.warn("can't mount fuse library")
+        return
+
+    @property
+    @lru_cache()
+    def root(self):
+        with open(libpath.rootfile(self._root)) as f:
+            root = f.read()
+        return root
 
 
 class LibraryError(Exception):
