@@ -144,7 +144,10 @@ def maketree(root, config):
         for x in mount[:-1]:
             logger.debug("trying %r", x)
             try:
-                y = y[x]
+                if not isinstance(y[x], str):
+                    y = y[x]
+                else:
+                    raise KeyError
             except KeyError:
                 logger.debug("making FSNode at %r[%r]", y, x)
                 y[x] = FSNode()
