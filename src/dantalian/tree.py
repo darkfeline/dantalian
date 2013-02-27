@@ -135,7 +135,8 @@ def _uniqmap(files):
     unique = set(os.path.basename(f) for f in files)
     files = dict((f, os.path.basename(f)) for f in files)
     for f in unique:
-        map[f] = files.pop(f)
+        map[f] = files[f]
+        del files[f]
     for f in files:
         file, ext = os.path.splitext(f)
         new = ''.join([file, ".{}", ext])
