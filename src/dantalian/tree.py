@@ -69,7 +69,7 @@ class TagNode(FSNode):
 
     def __init__(self, lib, tags):
         """
-        tags is list of tags.  lib is a HitagiFS instance.
+        tags is list of tags.  lib is a library.
         """
         super().__init__()
         self.root = lib
