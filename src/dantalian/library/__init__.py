@@ -6,46 +6,46 @@ from dantalian import tree
 from dantalian import mount
 from dantalian.library import path as libpath
 
-__all__ = ['Library', 'LibraryError', 'DependencyError']
+__all__ = ['init_library', 'Library', 'LibraryError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
 
+def init_library(root):
+
+    """Initialize a library at `root`
+
+    Calling :meth:`init` on an existing library does no harm.  Returns an
+    instance of :class:`Library`.
+
+    """
+
+    logger.debug('init(%r)', root)
+    root = os.path.abspath(root)
+
+    root_dir = libpath.rootdir(root)
+    logger.debug('mkdir %r', root_dir)
+    try:
+        os.mkdir(root_dir)
+    except FileExistsError:
+        logger.debug('skipping %r; exists', root_dir)
+
+    root_file = libpath.rootfile(root)
+    if not os.path.exists(root_file):
+        logger.debug('writing %r', root_file)
+        with open(root_file, 'w') as f:
+            f.write(root)
+
+    dirs_dir = libpath.dirsdir(root)
+    logger.debug('mkdir %r', dirs_dir)
+    try:
+        os.mkdir(dirs_dir)
+    except FileExistsError:
+        logger.debug('skipping %r; exists', dirs_dir)
+
+    return Library(root)
+
+
 class Library:
-
-    @classmethod
-    def init(cls, root):
-
-        """Initialize a library at `root`
-
-        Calling :meth:`init` on an existing library does no harm.  Returns an
-        instance of :class:`Library`.
-
-        """
-
-        logger.debug('init(%r)', root)
-        root = os.path.abspath(root)
-
-        root_dir = libpath.rootdir(root)
-        logger.debug('mkdir %r', root_dir)
-        try:
-            os.mkdir(root_dir)
-        except FileExistsError:
-            logger.debug('skipping %r; exists', root_dir)
-
-        root_file = libpath.rootfile(root)
-        if not os.path.exists(root_file):
-            logger.debug('writing %r', root_file)
-            with open(root_file, 'w') as f:
-                f.write(root)
-
-        dirs_dir = libpath.dirsdir(root)
-        logger.debug('mkdir %r', dirs_dir)
-        try:
-            os.mkdir(dirs_dir)
-        except FileExistsError:
-            logger.debug('skipping %r; exists', dirs_dir)
-
-        return cls(root)
 
     @property
     def _moved(self):

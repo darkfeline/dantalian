@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 
-from dantalian.library import Library
+from dantalian import library
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ def init(*args):
     parser = argparse.ArgumentParser(prog="dantalian init", add_help=False)
     parser.add_argument('root', nargs="?", default=os.getcwd())
     args = parser.parse_args(args)
-    Library.init(args.root)
+    library.init_library(args.root)
 
 
 @public
