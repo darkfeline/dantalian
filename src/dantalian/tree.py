@@ -22,6 +22,7 @@ import stat
 import abc
 from time import time
 
+from dantalian import library
 from dantalian.library import path as libpath
 
 __all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'maketree', 'fs2tag']
@@ -125,19 +126,20 @@ class RootNode(BorderNode):
 
     def __init__(self, root):
         super().__init__()
+        assert isinstance(root, library.Library)
         self.root = root
         self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
         files = list(super().__iter__())
-        files.extend(os.listdir(self.root))
+        files.extend(os.listdir(self.root.root))
         return iter(files)
 
     def __getitem__(self, key):
         try:
             return super().__getitem__(key)
         except KeyError:
-            return os.path.join(self.root, key)
+            return os.path.join(self.root.root, key)
 
 
 def fs2tag(node, root, tags):
@@ -155,7 +157,7 @@ def maketree(root, config):
     logger.debug("maketree(%r, %r)", root, config)
     with open(config) as f:
         dat = json.load(f)
-    r = RootNode(root.root)
+    r = RootNode(root)
     for x in dat:
         mount, tags = x['mount'], x['tags']
         logger.debug("doing %r, %r", mount, tags)
