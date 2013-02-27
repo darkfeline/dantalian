@@ -2,9 +2,10 @@ import os
 import json
 import logging
 import stat
+import abc
 from time import time
 
-__all__ = ['FSNode', 'TagNode', 'maketree', 'fs2tag']
+__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'maketree', 'fs2tag']
 logger = logging.getLogger(__name__)
 UMASK = 0o007
 
@@ -59,12 +60,18 @@ class FSNode:
         self.attr['st_nlink'] += 1
 
 
-class TagNode(FSNode):
+class BorderNode(FSNode, metaclass=abc.ABCMeta):
+    """
+    BorderNode is an abstract class for subclasses of FSNode which reach outsie
+    of the virtual space"""
+
+
+class TagNode(BorderNode):
 
     """
-    TagNode subclasses FSNode.  TagNode adds a method, tagged(), which returns
-    a generated dict mapping names to files that satisfy the TagNode's tags
-    criteria, and adds these to __iter__ and __getitem__
+    TagNode adds a method, tagged(), which returns a generated dict mapping
+    names to files that satisfy the TagNode's tags criteria, and adds these to
+    __iter__ and __getitem__
     """
 
     def __init__(self, lib, tags):
@@ -88,6 +95,29 @@ class TagNode(FSNode):
 
     def tagged(self):
         return _uniqmap(self.root.find(self.tags))
+
+
+class RootNode(BorderNode):
+
+    """
+    A special TagNode that doesn't actually look for tags, merely projecting
+    the library root into virtual space
+    """
+
+    def __init__(self, root):
+        super().__init__()
+        self.root = root
+
+    def __iter__(self):
+        files = list(super().__iter__())
+        files.extend(os.listdir(self.root))
+        return iter(files)
+
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            return os.listdir(self.root)[key]
 
 
 def fs2tag(node, root, tags):
