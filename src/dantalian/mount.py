@@ -355,7 +355,7 @@ class TagOperations(LoggingMixIn, Operations):
                 logger.warn("path broken")
                 raise FuseOSError(ENOENT)
             if isinstance(a, str):
-                logger.debug("leaf TagNode found, %r, %r", cur, path)
+                logger.debug("BorderNode found, %r, %r", cur, path)
                 return (cur, path)
             else:
                 logger.debug("next node")
