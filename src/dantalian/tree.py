@@ -1,3 +1,20 @@
+"""
+tree.py
+=======
+
+This module contains stuff used for managing FUSE virtual space.  The protocol
+for nodes is as follows.
+
+Nodes map strings to items.  The key strings are file names (similar to file
+systems).
+
+FSNodes are purely virtual.  Their children are other nodes.
+
+BorderNodes bridge into real file system space.  They may have also have
+strings as children, which are absolute paths into real file system space.
+
+"""
+
 import os
 import json
 import logging
