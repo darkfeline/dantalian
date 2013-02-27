@@ -44,12 +44,6 @@ def ctreefile(root):
 
 
 @public
-@lru_cache()
-def mountpath(root):
-    return os.path.join(rootdir(root), 'fuse')
-
-
-@public
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 

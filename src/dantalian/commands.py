@@ -163,6 +163,7 @@ def mount(lib, *args):
     """
     logger.debug('mount(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian mount", add_help=False)
+    parser.add_argument('path')
     args = parser.parse_args(args)
-    lib.mount()
+    lib.mount(args.path)
     logger.debug('exit')
