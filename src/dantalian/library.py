@@ -366,7 +366,7 @@ class Library:
             return tree.maketree(self, treefile(self.root))
 
     def mount(self):
-        return mount.mount(mountdir(self.root), self, self.maketree())
+        return mount.mount(self.root, self, self.maketree())
 
     @classmethod
     def _find_root(cls, dir):
@@ -415,11 +415,6 @@ def treefile(root):
 @lru_cache()
 def ctreefile(root):
     return os.path.join(rootdir(root), 'mount_custom')
-
-
-@lru_cache()
-def mountdir(root):
-    return os.path.join(root, 'fuse')
 
 
 def samefile(f1, f2):

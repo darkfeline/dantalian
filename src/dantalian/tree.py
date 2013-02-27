@@ -135,7 +135,7 @@ def maketree(root, config):
     logger.debug("maketree(%r, %r)", root, config)
     with open(config) as f:
         dat = json.load(f)
-    r = FSNode()
+    r = RootNode(root)
     for x in dat:
         mount, tags = x['mount'], x['tags']
         logger.debug("doing %r, %r", mount, tags)
