@@ -230,7 +230,7 @@ class TagOperations(LoggingMixIn, Operations):
             'f_bavail', 'f_bfree', 'f_blocks', 'f_bsize', 'f_favail',
             'f_ffree', 'f_files', 'f_flag', 'f_frsize', 'f_namemax'))
 
-    def symlink(self, target, source):
+    def symlink(self, source, target):
         """symlink
 
         If `path` points beyond a node, forward the request to the OS (via
@@ -238,10 +238,10 @@ class TagOperations(LoggingMixIn, Operations):
         beyond the node, add all of the node's tags to it.  Otherwise the
         operation is invalid and raises EINVAL.
         """
-        logger.debug("symlink(%r, %r)", target, source)
-        node, path = self._getnode(source)
+        logger.debug("symlink(%r, %r)", source, target)
+        node, path = self._getnode(target)
         if path:
-            os.symlink(target, _getpath(node, path))
+            os.symlink(source, _getpath(node, path))
             if len(path) == 1:
                 t = list(node.tags)
                 for tag in t:
