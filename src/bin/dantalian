@@ -4,7 +4,7 @@ import argparse
 import logging
 
 from dantalian import commands
-from dantalian.library import Library
+from dantalian import library
 
 parser = argparse.ArgumentParser(
     prog="hfs", add_help=False,
@@ -32,5 +32,5 @@ if args.logfilter:
 if args.command in ('init'):
     getattr(commands, args.command)(*args.args)
 else:
-    lib = Library(getattr(args, 'root', None))
+    lib = library.open(getattr(args, 'root', None))
     getattr(commands, args.command)(lib, *args.args)

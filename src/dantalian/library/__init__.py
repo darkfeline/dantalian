@@ -6,7 +6,8 @@ from dantalian import tree
 from dantalian import mount
 from dantalian.library import path as libpath
 
-__all__ = ['init_library', 'Library', 'LibraryError', 'DependencyError']
+__all__ = [
+    'init_library', 'open', 'Library', 'LibraryError', 'DependencyError']
 logger = logging.getLogger(__name__)
 
 
@@ -45,6 +46,18 @@ def init_library(root):
     return Library(root)
 
 
+def open(root=None):
+    """
+    If `root` is :data:`None`, search up the directory tree for the first
+    library (a directory that contains ``.dantalian``) we find and use that.
+    If none are found, raises :exc:`LibraryError`.  Otherwise, `root` will be
+    used.  Return a Library or subclass.
+    """
+    if root is None:
+        root = _find_root(os.getcwd())
+    return Library(root)
+
+
 class Library:
 
     @property
@@ -56,20 +69,11 @@ class Library:
         else:
             return True
 
-    def __init__(self, root=None):
-        """
-        If `root` is :data:`None`, Library will search up the directory tree
-        for the first library (a directory that contains ``.dantalian``) it
-        finds and use that.  If none are found, raises :exc:`LibraryError`.
-        Otherwise, `root` will be used.  If `root` is not a directory,
-        :exc:`NotADirectoryError` will be raised.
-
-        """
+    def __init__(self, root):
+        """If `root` is not a library, raise LibraryError."""
         logger.debug("open library root %r", root)
-        if root is None:
-            root = self._find_root(os.getcwd())
-        if not os.path.isdir(root):
-            raise NotADirectoryError("Root {} isn't a directory".format(root))
+        if not os.path.isdir(root) or not os.path.isdir(libpath.rootdir(root)):
+            raise LibraryError("{} isn't a library".format(root))
         self.root = os.path.abspath(root)
         logger.info('Library initialized')
         logger.debug('root is %r', self.root)
@@ -369,28 +373,30 @@ class Library:
     def mount(self, path):
         return mount.mount(path, self, self.maketree())
 
-    @classmethod
-    def _find_root(cls, dir):
-        """Find the first hitagiFS root directory above `dir`.
 
-        If none are found, raises :exc:`LibraryError`.
+def _find_root(dir):
+    """Find the first library above `dir`.
 
-        :rtype: :class:`str
+    If none are found, raises :exc:`LibraryError`.
 
-        """
-        assert os.path.isdir(dir)
-        dir = os.path.abspath(dir)
-        root_dir = libpath.rootdir('')
-        logger.debug("finding root; starting with %r", dir)
-        while dir:
-            logger.debug("trying %r", dir)
-            if root_dir in os.listdir(dir):
-                return dir
-            else:
-                if dir == '/':
-                    break
-                dir = os.path.dirname(dir)
-        raise LibraryError('No root found')
+    :rtype: :class:`str
+
+    """
+    assert os.path.isdir(dir)
+    dir = os.path.abspath(dir)
+    root_dir = libpath.rootdir('')
+    logger.debug("finding root; starting with %r", dir)
+    while dir:
+        logger.debug("trying %r", dir)
+        if root_dir in os.listdir(dir):
+            return dir
+        else:
+            if dir == '/':
+                break
+            dir = os.path.dirname(dir)
+    raise LibraryError('No root found')
+
+
 
 
 class LibraryError(Exception):
