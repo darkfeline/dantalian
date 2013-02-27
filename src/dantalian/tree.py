@@ -16,7 +16,6 @@ strings as children, which are absolute paths into real file system space.
 """
 
 import os
-import json
 import logging
 import stat
 import abc
@@ -25,7 +24,7 @@ from time import time
 from dantalian import library
 from dantalian.library import path as libpath
 
-__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'maketree', 'fs2tag']
+__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag']
 logger = logging.getLogger(__name__)
 UMASK = 0o007
 
@@ -147,41 +146,6 @@ def fs2tag(node, root, tags):
     x = TagNode(root, tags)
     x.children.update(dict(node.children))
     return x
-
-
-def maketree(root, config):
-    """Make a FSNode tree
-
-    root is an instance of Library.  config is file path.
-    """
-    logger.debug("maketree(%r, %r)", root, config)
-    with open(config) as f:
-        dat = json.load(f)
-    r = RootNode(root)
-    for x in dat:
-        mount, tags = x['mount'], x['tags']
-        logger.debug("doing %r, %r", mount, tags)
-        mount = mount.lstrip('/').split('/')
-        y = r
-        for x in mount[:-1]:
-            logger.debug("trying %r", x)
-            try:
-                if not isinstance(y[x], str):
-                    y = y[x]
-                else:
-                    raise KeyError
-            except KeyError:
-                logger.debug("making FSNode at %r[%r]", y, x)
-                y[x] = FSNode()
-                y = y[x]
-        x = mount[-1]
-        if x not in y:
-            logger.debug("making TagNode at %r[%r]", y, x)
-            y[x] = TagNode(root, tags)
-        else:
-            logger.debug("replacing node at %r[%r]", y, x)
-            y[x] = fs2tag(y[x])
-    return r
 
 
 def _uniqmap(files):

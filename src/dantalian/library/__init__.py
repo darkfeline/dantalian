@@ -1,10 +1,11 @@
 import os
 import subprocess
 import logging
+import json
 from functools import lru_cache
 
-from dantalian import tree
 from dantalian import mount
+from dantalian import tree
 from dantalian.library import path as libpath
 
 __all__ = [
@@ -373,10 +374,45 @@ class Library:
             return x['tree']
         else:
             logger.info("using auto")
-            return tree.maketree(self, libpath.treefile(self.root))
+            return _maketree(self, libpath.treefile(self.root))
 
     def mount(self, path):
         return mount.mount(path, self, self.maketree())
+
+
+def _maketree(root, config):
+    """Make a FSNode tree
+
+    root is an instance of Library.  config is file path.
+    """
+    logger.debug("maketree(%r, %r)", root, config)
+    with open(config) as f:
+        dat = json.load(f)
+    r = tree.RootNode(root)
+    for x in dat:
+        mount, tags = x['mount'], x['tags']
+        logger.debug("doing %r, %r", mount, tags)
+        mount = mount.lstrip('/').split('/')
+        y = r
+        for x in mount[:-1]:
+            logger.debug("trying %r", x)
+            try:
+                if not isinstance(y[x], str):
+                    y = y[x]
+                else:
+                    raise KeyError
+            except KeyError:
+                logger.debug("making FSNode at %r[%r]", y, x)
+                y[x] = tree.FSNode()
+                y = y[x]
+        x = mount[-1]
+        if x not in y:
+            logger.debug("making TagNode at %r[%r]", y, x)
+            y[x] = tree.TagNode(root, tags)
+        else:
+            logger.debug("replacing node at %r[%r]", y, x)
+            y[x] = tree.fs2tag(y[x])
+    return r
 
 
 def _find_root(dir):
