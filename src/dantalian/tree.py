@@ -21,7 +21,6 @@ import stat
 import abc
 from time import time
 
-from dantalian import library
 from dantalian.library import path as libpath
 
 __all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag']
@@ -125,7 +124,7 @@ class RootNode(BorderNode):
 
     def __init__(self, root):
         super().__init__()
-        assert isinstance(root, library.Library)
+        assert not isinstance(root, str)
         self.root = root
         self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
