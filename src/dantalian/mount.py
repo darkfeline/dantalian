@@ -368,7 +368,7 @@ class TagOperations(LoggingMixIn, Operations):
         while path:
             logger.debug("resolving %r", path[0])
             try:
-                a = self.tree[path[0]]
+                a = cur[path[0]]
             except KeyError:
                 logger.warn("path broken")
                 raise FuseOSError(ENOENT)
