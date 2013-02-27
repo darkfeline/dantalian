@@ -367,7 +367,7 @@ class Library:
             return tree.maketree(self, libpath.treefile(self.root))
 
     def mount(self):
-        return mount.mount(self.root, self, self.maketree())
+        return mount.mount(libpath.mountpath(self.root), self, self.maketree())
 
     @classmethod
     def _find_root(cls, dir):
