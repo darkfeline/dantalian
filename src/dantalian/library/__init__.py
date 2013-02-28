@@ -2,7 +2,6 @@ import os
 import subprocess
 import logging
 import json
-from functools import lru_cache
 
 from dantalian import mount
 from dantalian import tree
@@ -444,9 +443,10 @@ class FUSELibrary(Library):
 
     def __init__(self, root):
         logger.debug("open fuse library %r", root)
-        if not os.path.isdir(root) or not os.path.isdir(libpath.rootdir(root)):
-            raise LibraryError("{} isn't a library".format(root))
-        self._root = os.path.abspath(root)
+        super().__init__(root)
+        with open(libpath.rootfile(self.root)) as f:
+            self._realroot = f.read()
+        logger.debug("real library is %r", self._realroot)
 
     def fix(self):
         logger.warn("can't fix fuse library")
@@ -456,12 +456,9 @@ class FUSELibrary(Library):
         logger.warn("can't mount fuse library")
         return
 
-    @property
-    @lru_cache()
-    def root(self):
-        with open(libpath.rootfile(self._root)) as f:
-            root = f.read()
-        return root
+    def convert(self, dir, alt=None):
+        logger.warn("can't convert in fuse library")
+        return
 
 
 class LibraryError(Exception):
