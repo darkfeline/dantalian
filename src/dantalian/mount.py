@@ -381,9 +381,11 @@ def _getpath(node, path):
     """Get real path
 
     Calculate and return the real path given TagNode `node` and list of strings
-    `path`.  If `node` is not a TagNode, raise FuseOSError(EINVAL).
+    `path`.  If `node` is not a BorderNode or `path` is empty, raise
+    FuseOSError(EINVAL).  This is used internally when trying to resolve real,
+    non-virtual, outside paths.
     """
-    if not isinstance(node, tree.BorderNode):
+    if not isinstance(node, tree.BorderNode) or len(path) = 0:
         raise FuseOSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
 
