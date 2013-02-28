@@ -9,7 +9,7 @@ from dantalian import tree
 from dantalian.library import path as libpath
 
 __all__ = [
-    'init_library', 'open', 'Library', 'FUSELibrary', 'LibraryError',
+    'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError',
     'DependencyError']
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def init_library(root):
     return Library(root)
 
 
-def open(root=None):
+def open_library(root=None):
     """
     If `root` is :data:`None`, search up the directory tree for the first
     library (a directory that contains ``.dantalian``) we find and use that.
