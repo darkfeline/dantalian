@@ -100,13 +100,17 @@ class TagOperations(LoggingMixIn, Operations):
     def link(self, source, target):
         """link
 
+        Note that this is different from standard.  Usually link(a, b) creates
+        a link at a to b, but this link(source, target) creates a link at
+        source to target.
+
         This one is tricky.  Here's a handy chart; tag means the path points
         to a file exactly one directory deep beyond a TagNode, outside means
         the path points at least one directory beyond a RootNode or more than
         one directory beyond a TagNode.
 
         +---------+---------+-------------------+-------------------+
-        | Old     | To Node | To Tag            | To Outside        |
+        | Target  | To Node | To Tag            | To Outside        |
         +=========+=========+===================+===================+
         | Node    | EINVAL  | EINVAL            | EINVAL            |
         +---------+---------+-------------------+-------------------+
@@ -123,13 +127,13 @@ class TagOperations(LoggingMixIn, Operations):
         target = _getpath(tnode, tpath)
         source = _getpath(snode, spath)
         # to Tag
-        if len(tpath) == 1 and isinstance(tnode, tree.TagNode):
-            for tag in list(tnode.tags):
-                self.root.tag(source, tag)
+        if len(spath) == 1 and isinstance(snode, tree.TagNode):
+            for tag in list(snode.tags):
+                self.root.tag(target, tag)
         # to Outside
         else:
             logger.debug("linking %r to %r", target, source)
-            os.link(source, target)
+            os.link(target, source)
 
     def mkdir(self, path, mode):
         """mkdir
