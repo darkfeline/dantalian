@@ -234,25 +234,25 @@ class TagOperations(LoggingMixIn, Operations):
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
         # Nodes raise error here
-        ofpath = _getpath(onode, opath)
-        nfpath = _getpath(nnode, npath)
+        old = _getpath(onode, opath)
+        new = _getpath(nnode, npath)
         # to Tag
         if len(npath) == 1 and isinstance(nnode, tree.TagNode):
             # from Tag
             if len(opath) == 1 and isinstance(onode, tree.TagNode):
-                ofpath = _tmplink(ofpath)
+                old = _tmplink(old)
                 for tag in list(onode.tags):
-                    self.root.untag(ofpath, tag)
+                    self.root.untag(old, tag)
             for tag in list(nnode.tags):
-                self.root.tag(ofpath, tag)
-            os.remove(ofpath)
+                self.root.tag(old, tag)
+            os.remove(old)
         # to Outside
         else:
-            os.rename(ofpath, nfpath)
+            os.rename(old, new)
             # from Tag
             if len(opath) == 1 and isinstance(onode, tree.TagNode):
                 for tag in list(onode.tags):
-                    self.root.untag(nfpath, tag)
+                    self.root.untag(new, tag)
 
     def rmdir(self, path):
         """rmdir
