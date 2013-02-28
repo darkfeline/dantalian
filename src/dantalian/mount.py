@@ -400,7 +400,7 @@ def _getpath(node, path):
     FuseOSError(EINVAL).  This is used internally when trying to resolve real,
     non-virtual, outside paths.
     """
-    if not isinstance(node, tree.BorderNode) or len(path) = 0:
+    if not isinstance(node, tree.BorderNode) or len(path) == 0:
         raise FuseOSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
 
