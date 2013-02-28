@@ -127,13 +127,13 @@ class TagOperations(LoggingMixIn, Operations):
         snode, spath = self._getnode(source)
         spath.append(file)
         target = _getpath(tnode, tpath)
-        source = _getpath(snode, spath)
         # to Tag
         if len(spath) == 1 and isinstance(snode, tree.TagNode):
             for tag in list(snode.tags):
                 self.root.tag(target, tag)
         # to Outside
         else:
+            source = _getpath(snode, spath)
             logger.debug("linking %r to %r", target, source)
             os.link(target, source)
 
