@@ -429,4 +429,4 @@ def _tmplink(target):
 
 
 def mount(path, root, tree):
-    return FUSE(TagOperations(root, tree), path, foreground=True)
+    return FUSE(TagOperations(root, tree), path, foreground=True, use_ino=True)
