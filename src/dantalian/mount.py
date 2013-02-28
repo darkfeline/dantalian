@@ -324,16 +324,18 @@ class TagOperations(LoggingMixIn, Operations):
     def unlink(self, path):
         """unlink
 
-        If `path` points beyond a node, forward the request to the OS (via
-        built-in os module).  Otherwise the operation is invalid and raises
-        EINVAL.
+        If `path` points one beyond a TagNode, remove all tags.  If it points
+        outside, forward the request to the OS (via built-in os module).
+        Otherwise the operation is invalid and raises EINVAL.
         """
         logger.debug("unlink(%r)", path)
         node, path = self._getnode(path)
-        if path:
-            os.unlink(_getpath(node, path))
+        file = _getpath(node, path)
+        if len(path) == 1 and isinstance(node, tree.TagNode):
+            for tag in node.tags:
+                self.root.untag(file, tag)
         else:
-            raise FuseOSError(EINVAL)
+            os.unlink(file)
 
     def utimens(self, path, times=None):
         """utimens
