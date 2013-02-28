@@ -395,7 +395,7 @@ class TagOperations(LoggingMixIn, Operations):
                 cur = a
                 del path[0]
         logger.debug("found node %r", cur)
-        return (cur, None)
+        return (cur, [])
 
 
 def _getpath(node, path):
