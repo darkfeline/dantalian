@@ -159,7 +159,7 @@ def _uniqmap(files):
     Given a list of files, map unique basename strings to each file and return
     a dictionary."""
     logger.debug("_uniqmap(%r)", files)
-    files = list(files)
+    files = sorted(files)
     map = {}
     uniqmap = {}
     while len(files) > 0:
