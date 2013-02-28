@@ -200,12 +200,20 @@ class TagOperations(LoggingMixIn, Operations):
     def rename(self, old, new):
         """rename
 
-        This one is tricky.  If either path points to a node, raise EINVAL.  If
-        `old` points only and not more than one directory deep beyond a node,
-        all of that node's tags are removed from `old`.  If `new` points to a
-        path not more than one directory deep beyond a node, all of that node's
-        tags are added to `old`.  Whichever combination of the above, `old` is
-        then renamed to `new` via built-in os module.
+        This one is tricky.  Here's a handy chart; border means the path points
+        to a file exactly one directory deep beyond a node, outside means the
+        path points more than one directory beyond a node.
+
+        +---------+-------------------+-------------------+-------------------+
+        | Old     | To Node           | To Border         | To Outside        |
+        +---------+-------------------+-------------------+-------------------+
+        | Node    | EINVAL            | EINVAL            | EINVAL            |
+        +---------+-------------------+-------------------+-------------------+
+        | Border  | EINVAL            | untag, tag        | move, untag       |
+        +---------+-------------------+-------------------+-------------------+
+        | Outside | EINVAL            | tag, remove       | move              |
+        +---------+-------------------+-------------------+-------------------+
+
         """
         logger.debug("rename(%r, %r)", old, new)
         onode, opath = self._getnode(old)
@@ -215,14 +223,24 @@ class TagOperations(LoggingMixIn, Operations):
         ofpath = _getpath(onode, opath)
         nfpath = _getpath(nnode, npath)
         if len(opath) > 1:
-            pass
-        else:
-            ofpath = _tmplink(ofpath)
-            for tag in list(onode.tags):
-                self.root.untag(ofpath, tag)
-        if len(npath) > 1:
             os.rename(ofpath, nfpath)
+            if len(opath) == 1:
+                for tag in list(onode.tags):
+                    self.root.untag(nfpath, tag)
         else:
+            if len(npath) == 1:
+                ofpath = _tmplink(ofpath)
+                for tag in list(onode.tags):
+                    self.root.untag(ofpath, tag)
+            for tag in list(nnode.tags):
+                self.root.tag(ofpath, tag)
+            os.remove(ofpath)
+
+
+            if len(opath) == 1:
+                ofpath = _tmplink(ofpath)
+                for tag in list(onode.tags):
+                    self.root.untag(ofpath, tag)
             for tag in list(nnode.tags):
                 self.root.tag(ofpath, tag)
             os.rm(ofpath)
