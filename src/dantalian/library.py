@@ -6,7 +6,7 @@ import importlib
 
 from dantalian import mount
 from dantalian import tree
-from dantalian.library import path as libpath
+from dantalian import path as libpath
 
 __all__ = [
     'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError',

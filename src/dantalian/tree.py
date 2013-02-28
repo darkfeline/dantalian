@@ -21,7 +21,7 @@ import stat
 import abc
 from time import time
 
-from dantalian.library import path as libpath
+from dantalian import path as libpath
 
 __all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag']
 logger = logging.getLogger(__name__)
