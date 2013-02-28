@@ -315,8 +315,10 @@ class TagOperations(LoggingMixIn, Operations):
         node, path = self._getnode(path)
         file = _getpath(node, path)
         if len(path) == 1 and isinstance(node, tree.TagNode):
+            file = _tmplink(file)
             for tag in node.tags:
                 self.root.untag(file, tag)
+            os.remove(file)
         else:
             logger.debug("outside; unlinking %r", file)
             os.unlink(file)
