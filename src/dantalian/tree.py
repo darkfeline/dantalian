@@ -148,27 +148,38 @@ def fs2tag(node, root, tags):
 
 
 def _uniqmap(files):
-    """Create a unique map from a list of files.
+    """Create a unique map from an iterator of files.
 
     Given a list of files, map unique basename strings to each file and return
     a dictionary."""
     logger.debug("_uniqmap(%r)", files)
-    assert isinstance(files, list)
+    files = list(files)
     map = {}
-    for f in files:
+    uniqmap = {}
+    while len(files) > 0:
+        f = files[0]
+        logger.debug("doing %r", f)
         base = os.path.basename(f)
-        if base not in map:
+        if base not in map and base not in uniqmap:
+            logger.debug("no collision; adding")
             map[base] = f
+            del files[0]
         else:
-            file, ext = os.path.splitext(f)
-            new = ''.join([file, ".{}", ext])
-            i = 1
-            while True:
-                newi = new.format(i)
-                if newi not in map:
-                    map[newi] = f
-                    break
-                else:
-                    i += 1
-    logger.debug("calculated %r", files)
+            logger.debug("collision; changing")
+            new = _makeuniq(f)
+            assert new not in uniqmap
+            uniqmap[new] = f
+            del files[0]
+            if new in map:
+                logger.debug("collision with unchanged name; redoing later")
+                files.append(map[new])
+                del map[new]
     return map
+
+
+def _makeuniq(path):
+    """Return the base file name with inode added."""
+    base = os.path.basename(path)
+    file, ext = os.path.splitext(base)
+    inode = os.lstat(path).st_ino
+    return ''.join([base, '.', inode, ext])
