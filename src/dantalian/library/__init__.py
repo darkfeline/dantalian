@@ -2,6 +2,7 @@ import os
 import subprocess
 import logging
 import json
+import imp
 
 from dantalian import mount
 from dantalian import tree
@@ -373,10 +374,8 @@ class Library:
         logger.info("making tree")
         if os.path.exists(libpath.ctreefile(self.root)):
             logger.info("using custom")
-            x = {}
-            with open(libpath.ctreefile(self.root)) as f:
-                exec(compile(f, libpath.ctreefile(self.root), 'exec'), x)
-            return x['tree']
+            custom = imp.load_source('custom', libpath.ctreefile(self.root))
+            return custom.maketree(self.root)
         else:
             logger.info("using auto")
             return _maketree(self, libpath.treefile(self.root))
