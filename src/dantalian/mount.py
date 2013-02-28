@@ -122,8 +122,10 @@ class TagOperations(LoggingMixIn, Operations):
         (Actually, that's much better than rename())
         """
         logger.debug("link(%r, %r)", source, target)
+        source, file = os.path.split(source)
         tnode, tpath = self._getnode(target)
         snode, spath = self._getnode(source)
+        spath.append(file)
         target = _getpath(tnode, tpath)
         source = _getpath(snode, spath)
         # to Tag
