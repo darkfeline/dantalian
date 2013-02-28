@@ -129,9 +129,12 @@ class Library:
         assert isinstance(tag, str)
         dest = self.tagpath(tag)
         inode = os.lstat(file)
+        logger.debug('file inode is %r', inode)
         for f in libpath.listdir(dest):
             logger.debug('checking %r', f)
-            if os.path.samestat(inode, os.lstat(f)):
+            st = os.lstat(f)
+            logger.debug('inode is %r', st)
+            if os.path.samestat(inode, st):
                 logger.debug('unlinking %r', f)
                 os.unlink(f)
 
