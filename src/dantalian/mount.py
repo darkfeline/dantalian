@@ -100,21 +100,36 @@ class TagOperations(LoggingMixIn, Operations):
     def link(self, source, target):
         """link
 
-        If `path` points beyond a node, forward the request to the OS/parent
-        file system (via built-in os module).  If `path` points not more than
-        one directory deep beyond the node, add all of the node's tags to it.
-        Otherwise the operation is invalid and raises EINVAL.
+        This one is tricky.  Here's a handy chart; tag means the path points
+        to a file exactly one directory deep beyond a TagNode, outside means
+        the path points at least one directory beyond a RootNode or more than
+        one directory beyond a TagNode.
+
+        +---------+---------+-------------------+-------------------+
+        | Old     | To Node | To Tag            | To Outside        |
+        +=========+=========+===================+===================+
+        | Node    | EINVAL  | EINVAL            | EINVAL            |
+        +---------+---------+-------------------+-------------------+
+        | Tag     | EINVAL  | tag               | link              |
+        +---------+---------+-------------------+-------------------+
+        | Outside | EINVAL  | tag               | link              |
+        +---------+---------+-------------------+-------------------+
+
+        (Actually, that's much better than rename())
         """
         logger.debug("link(%r, %r)", source, target)
-        node, path = self._getnode(target)
-        if path:
-            os.link(source, _getpath(node, path))
-            if len(path) == 1:
-                t = list(node.tags)
-                for tag in t:
-                    self.root.tag(_getpath(node, path), tag)
+        tnode, tpath = self._getnode(target)
+        snode, spath = self._getnode(source)
+        target = _getpath(tnode, tpath)
+        source = _getpath(snode, spath)
+        # to Tag
+        if len(tpath) == 1 and isinstance(tnode, tree.TagNode):
+            for tag in list(tnode.tags):
+                self.root.tag(source, tag)
+        # to Outside
         else:
-            raise FuseOSError(EINVAL)
+            logger.debug("linking %r to %r", target, source)
+            os.link(source, target)
 
     def mkdir(self, path, mode):
         """mkdir
