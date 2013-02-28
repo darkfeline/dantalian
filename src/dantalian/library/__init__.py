@@ -125,6 +125,7 @@ class Library:
         `file` with `tag`.
 
         """
+        logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
         assert isinstance(tag, str)
         dest = self.tagpath(tag)

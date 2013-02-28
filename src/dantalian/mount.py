@@ -318,6 +318,7 @@ class TagOperations(LoggingMixIn, Operations):
             for tag in node.tags:
                 self.root.untag(file, tag)
         else:
+            logger.debug("outside; unlinking %r", file)
             os.unlink(file)
 
     def utimens(self, path, times=None):
