@@ -217,8 +217,6 @@ class TagOperations(LoggingMixIn, Operations):
         logger.debug("rename(%r, %r)", old, new)
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
-        if opath is None or npath is None:
-            raise FuseOSError(EINVAL)
         ofpath = _getpath(onode, opath)
         nfpath = _getpath(nnode, npath)
         if len(opath) > 1:
