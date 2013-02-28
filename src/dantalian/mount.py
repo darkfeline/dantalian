@@ -228,7 +228,7 @@ class TagOperations(LoggingMixIn, Operations):
         if len(npath) == 1 and isinstance(nnode, tree.TagNode):
             # from Tag
             if len(opath) == 1 and isinstance(onode, tree.TagNode):
-                old = _tmplink(old)
+                old = self._tmplink(old)
                 for tag in list(onode.tags):
                     self.root.untag(old, tag)
             for tag in list(nnode.tags):
@@ -315,7 +315,7 @@ class TagOperations(LoggingMixIn, Operations):
         node, path = self._getnode(path)
         file = _getpath(node, path)
         if len(path) == 1 and isinstance(node, tree.TagNode):
-            file = _tmplink(file)
+            file = self._tmplink(file)
             for tag in node.tags:
                 self.root.untag(file, tag)
             os.remove(file)
@@ -381,6 +381,27 @@ class TagOperations(LoggingMixIn, Operations):
         logger.debug("found node %r", cur)
         return (cur, [])
 
+    def _tmplink(self, target):
+        """Create a temporary hardlink to `target` and return the path to it.
+
+        Useful when untagging something and needing a constant path to it.
+        Make sure to delete it afterward.
+        """
+        logger.debug("_tmplink(%r)", target)
+        while True:
+            fh, path = tempfile.mkstemp(dir=self.root.root)
+            logger.debug("trying %r", path)
+            os.close(fh)
+            os.remove(path)
+            try:
+                os.link(target, path)
+            except FileExistsError:
+                logger.debug("no good")
+                continue
+            else:
+                logger.debug("%r tmpfile works", path)
+                return path
+
 
 def _getpath(node, path):
     """Get real path
@@ -393,29 +414,6 @@ def _getpath(node, path):
     if not isinstance(node, tree.BorderNode) or len(path) == 0:
         raise FuseOSError(EINVAL)
     return os.path.join(node[path[0]], *path[1:])
-
-
-def _tmplink(target):
-    """Create a temporary hardlink to `target` and return the path to it.
-
-    Useful when untagging something and needing a constant path to it.  Make
-    sure to delete it afterward.
-    """
-    logger.debug("_tmplink(%r)", target)
-    dir = os.path.dirname(target)
-    while True:
-        fh, path = tempfile.mkstemp(dir=dir)
-        logger.debug("trying %r", path)
-        os.close(fh)
-        os.remove(path)
-        try:
-            os.link(target, path)
-        except FileExistsError:
-            logger.debug("no good")
-            continue
-        else:
-            logger.debug("%r tmpfile works", path)
-            return path
 
 
 def mount(path, root, tree):
