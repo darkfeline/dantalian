@@ -1,3 +1,18 @@
+"""
+mount.py
+========
+
+This module defines the FUSE operations dantalian uses.  Thus, how FUSE behaves
+is defined here.
+
+For brevity, there are a few terms for referring to paths in virtual FUSE
+space.  "Node" means the path points to a Node, i.e. fully in virtual space.
+"Tag" means the path points to a file directly under a TagNode in real file
+system space.  Special tagging or untagging operations are perfomed on these.
+"Outside" means the path points fully outside virtual space, i.e. more than one
+directory beyond a TagNode or any files beyond the RootNode.
+
+"""
 from dantalian.fuse import FUSE, Operations, FuseOSError, LoggingMixIn
 
 from errno import ENOENT, EINVAL

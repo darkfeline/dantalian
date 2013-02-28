@@ -130,14 +130,20 @@ class RootNode(BorderNode):
 
     def __iter__(self):
         files = list(super().__iter__())
-        files.extend(os.listdir(self.root.root))
+        files.extend(self.files)
         return iter(files)
 
     def __getitem__(self, key):
         try:
             return super().__getitem__(key)
         except KeyError:
-            return os.path.join(self.root.root, key)
+            if key in self.files():
+                return os.path.join(self.root.root, key)
+            else:
+                raise KeyError("{!r} not found".format(key))
+
+    def files(self):
+        return os.listdir(self.root.root)
 
 
 def fs2tag(node, root, tags):
