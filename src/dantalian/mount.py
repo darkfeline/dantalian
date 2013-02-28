@@ -402,8 +402,9 @@ def _tmplink(target):
     sure to delete it afterward.
     """
     logger.debug("_tmplink(%r)", target)
+    dir = os.path.dirname(target)
     while True:
-        fh, path = tempfile.mkstemp()
+        fh, path = tempfile.mkstemp(dir=dir)
         logger.debug("trying %r", path)
         os.close(fh)
         os.remove(path)
