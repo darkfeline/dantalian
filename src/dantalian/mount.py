@@ -394,6 +394,11 @@ def _getpath(node, path):
 
 
 def _tmplink(target):
+    """Create a temporary hardlink to `target` and return the path to it.
+
+    Useful when untagging something and needing a constant path to it.  Make
+    sure to delete it afterward.
+    """
     logger.debug("_tmplink(%r)", target)
     while True:
         fh, path = tempfile.mkstemp()
