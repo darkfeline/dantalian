@@ -130,7 +130,7 @@ class RootNode(BorderNode):
 
     def __iter__(self):
         files = list(super().__iter__())
-        files.extend(self.files)
+        files.extend(self.files())
         return iter(files)
 
     def __getitem__(self, key):
