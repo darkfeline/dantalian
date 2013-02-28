@@ -1,3 +1,5 @@
+.. _manpage
+
 dantalian - dantalian cli script
 ================================
 
@@ -9,8 +11,8 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-**dantalian** is the command line utility for dantalian, a transparent tag-based file
-organization system.
+**dantalian** is the command line utility for dantalian, a transparent
+tag-based file organization system.
 
 Comprehensive documentation can be found online at
 https://dantalian.readthedocs.org/ (note which version of dantalian the
@@ -87,9 +89,9 @@ init
    current directory.
 
 mount
-   Usage: **dantalian mount**
+   Usage: **dantalian mount** *DIR*
 
-   Mounts the FUSE file system according to the configuration files
+   Mounts the FUSE file system at DIR according to the configuration files
 
 CONFIGURATION FILES
 -------------------

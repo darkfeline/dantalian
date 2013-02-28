@@ -1,17 +1,17 @@
-Welcome to hitagiFS's documentation!
-====================================
+Welcome to dantalian's documentation!
+=====================================
 
-HIerarchical TAG File System, or hitagiFS for short.
+dantalian is a transparent tag-based file organization system.
 
-hitagiFS is still in development.
+dantalian is still in active development.
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    quickstart
    depends
+   usage
    specs
-   fuse
    manpage
