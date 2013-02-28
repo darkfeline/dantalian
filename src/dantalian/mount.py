@@ -1,6 +1,6 @@
 from dantalian.fuse import FUSE, Operations, FuseOSError, LoggingMixIn
 
-from errno import ENOENT, EPERM, EINVAL
+from errno import ENOENT, EINVAL
 import os
 import tempfile
 import logging
@@ -115,7 +115,6 @@ class TagOperations(LoggingMixIn, Operations):
                     self.root.tag(_getpath(node, path), tag)
         else:
             raise FuseOSError(EINVAL)
-
 
     def mkdir(self, path, mode):
         """mkdir
@@ -235,15 +234,6 @@ class TagOperations(LoggingMixIn, Operations):
             for tag in list(nnode.tags):
                 self.root.tag(ofpath, tag)
             os.remove(ofpath)
-
-
-            if len(opath) == 1:
-                ofpath = _tmplink(ofpath)
-                for tag in list(onode.tags):
-                    self.root.untag(ofpath, tag)
-            for tag in list(nnode.tags):
-                self.root.tag(ofpath, tag)
-            os.rm(ofpath)
 
     def rmdir(self, path):
         """rmdir
