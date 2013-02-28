@@ -57,7 +57,9 @@ def open(root=None):
     used.  Return a Library or subclass.
     """
     if root is None:
+        logger.debug("Finding library...")
         root = _find_root(os.getcwd())
+        logger.debug("Found %r", root)
     if os.path.isdir(libpath.fuserootdir(root)):
         return FUSELibrary(root)
     else:
@@ -385,7 +387,7 @@ def _maketree(root, config):
 
     root is an instance of Library.  config is file path.
     """
-    logger.debug("maketree(%r, %r)", root, config)
+    logger.debug("_maketree(%r, %r)", root, config)
     with open(config) as f:
         dat = json.load(f)
     r = tree.RootNode(root)
