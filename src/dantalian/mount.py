@@ -199,39 +199,45 @@ class TagOperations(LoggingMixIn, Operations):
     def rename(self, old, new):
         """rename
 
-        This one is tricky.  Here's a handy chart; border means the path points
-        to a file exactly one directory deep beyond a node, outside means the
-        path points more than one directory beyond a node.
+        This one is tricky.  Here's a handy chart; tag means the path points
+        to a file exactly one directory deep beyond a TagNode, outside means
+        the path points at least one directory beyond a RootNode or more than
+        one directory beyond a TagNode.
 
-        +---------+-------------------+-------------------+-------------------+
-        | Old     | To Node           | To Border         | To Outside        |
-        +---------+-------------------+-------------------+-------------------+
-        | Node    | EINVAL            | EINVAL            | EINVAL            |
-        +---------+-------------------+-------------------+-------------------+
-        | Border  | EINVAL            | untag, tag        | move, untag       |
-        +---------+-------------------+-------------------+-------------------+
-        | Outside | EINVAL            | tag, remove       | move              |
-        +---------+-------------------+-------------------+-------------------+
+        +---------+---------+-------------------+-------------------+
+        | Old     | To Node | To Tag            | To Outside        |
+        +=========+=========+===================+===================+
+        | Node    | EINVAL  | EINVAL            | EINVAL            |
+        +---------+---------+-------------------+-------------------+
+        | Tag     | EINVAL  | untag, tag        | move, untag       |
+        +---------+---------+-------------------+-------------------+
+        | Outside | EINVAL  | tag, remove       | move              |
+        +---------+---------+-------------------+-------------------+
 
         """
         logger.debug("rename(%r, %r)", old, new)
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
+        # Nodes raise error here
         ofpath = _getpath(onode, opath)
         nfpath = _getpath(nnode, npath)
-        if len(opath) > 1:
-            os.rename(ofpath, nfpath)
-            if len(opath) == 1:
-                for tag in list(onode.tags):
-                    self.root.untag(nfpath, tag)
-        else:
-            if len(npath) == 1:
+        # to Tag
+        if len(npath) == 1 and isinstance(nnode, tree.TagNode):
+            # from Tag
+            if len(opath) == 1 and isinstance(onode, tree.TagNode):
                 ofpath = _tmplink(ofpath)
                 for tag in list(onode.tags):
                     self.root.untag(ofpath, tag)
             for tag in list(nnode.tags):
                 self.root.tag(ofpath, tag)
             os.remove(ofpath)
+        # to Outside
+        else:
+            os.rename(ofpath, nfpath)
+            # from Tag
+            if len(opath) == 1 and isinstance(onode, tree.TagNode):
+                for tag in list(onode.tags):
+                    self.root.untag(nfpath, tag)
 
     def rmdir(self, path):
         """rmdir
