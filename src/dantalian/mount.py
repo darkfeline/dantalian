@@ -10,7 +10,7 @@ from dantalian import tree
 
 __all__ = ['TagOperations', 'mount']
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
-         'st_nlink', 'st_size')
+         'st_nlink', 'st_size', 'st_ino')
 logger = logging.getLogger(__name__)
 
 
