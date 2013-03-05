@@ -175,6 +175,7 @@ class Library:
                 files]
 
     def convert(self, dir, alt=None):
+
         """Convert a directory to a symlink.
 
         If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert`
@@ -186,7 +187,42 @@ class Library:
         ``.dantalian/dirs``.
 
         """
-        _convert(self.root, dir, alt)
+
+        logger.debug('convert(%r, %r)', dir, alt)
+        assert isinstance(dir, str)
+        assert alt is None or isinstance(alt, str)
+        dir = os.path.abspath(dir)
+
+        logger.info("Checking %r is a dir", dir)
+        if not os.path.isdir(dir):
+            raise NotADirectoryError("{} is not a directory".format(dir))
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not a symlink", dir)
+        if os.path.islink(dir):
+            logger.info("%r is symlink; skipping", dir)
+            return
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not in dirs", dir)
+        dirname, basename = os.path.split(os.path.abspath(dir))
+        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
+            raise LibraryError("{} is in special directory".format(dirname))
+        logger.info("Check okay")
+
+        if alt is not None:
+            assert isinstance(alt, str)
+            basename = alt
+        new = os.path.join(libpath.dirsdir(self.root), basename)
+        logger.info("Checking name conflict")
+        if os.path.exists(new):
+            raise FileExistsError('{} exists'.format(new))
+        logger.info("Check okay")
+
+        logger.debug("moving %r to %r", dir, new)
+        os.rename(dir, new)
+        logger.debug("linking %r to %r", dir, new)
+        os.symlink(new, dir)
 
     def find(self, tags):
         """Return a list of files with all of the given tags.
@@ -409,50 +445,6 @@ def _find_root(dir):
     raise LibraryError('No root found')
 
 
-def _convert(root, dir, alt=None):
-    """Convert a directory to a symlink.
-
-    `root` is path to root.
-
-    """
-
-    logger.debug('convert(%r, %r)', dir, alt)
-    assert isinstance(dir, str)
-    assert alt is None or isinstance(alt, str)
-    dir = os.path.abspath(dir)
-
-    logger.info("Checking %r is a dir", dir)
-    if not os.path.isdir(dir):
-        raise NotADirectoryError("{} is not a directory".format(dir))
-    logger.info("Check okay")
-
-    logger.info("Checking %r is not a symlink", dir)
-    if os.path.islink(dir):
-        logger.info("%r is symlink; skipping", dir)
-        return
-    logger.info("Check okay")
-
-    logger.info("Checking %r is not in dirs", dir)
-    dirname, basename = os.path.split(os.path.abspath(dir))
-    if libpath.samefile(dirname, libpath.dirsdir(root)):
-        raise LibraryError("{} is in special directory".format(dirname))
-    logger.info("Check okay")
-
-    if alt is not None:
-        assert isinstance(alt, str)
-        basename = alt
-    new = os.path.join(libpath.dirsdir(root), basename)
-    logger.info("Checking name conflict")
-    if os.path.exists(new):
-        raise FileExistsError('{} exists'.format(new))
-    logger.info("Check okay")
-
-    logger.debug("moving %r to %r", dir, new)
-    os.rename(dir, new)
-    logger.debug("linking %r to %r", dir, new)
-    os.symlink(new, dir)
-
-
 class FUSELibrary(Library):
 
     def __init__(self, root):
@@ -471,7 +463,8 @@ class FUSELibrary(Library):
         return
 
     def convert(self, dir, alt=None):
-        _convert(self._realroot, dir, alt)
+        logger.warn("can't convert in fuse library")
+        return
 
 
 class LibraryError(Exception):
