@@ -14,4 +14,3 @@ Contents:
    depends
    usage
    specs
-   manpage

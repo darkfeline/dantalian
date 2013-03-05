@@ -2,5 +2,5 @@ Specification
 =============
 
 .. toctree::
-   library
-   fuse
+   specs/library
+   specs/fuse
