@@ -463,8 +463,42 @@ class FUSELibrary(Library):
         return
 
     def convert(self, dir, alt=None):
-        logger.warn("can't convert in fuse library")
-        return
+        logger.debug('convert(%r, %r)', dir, alt)
+        assert isinstance(dir, str)
+        assert alt is None or isinstance(alt, str)
+        dir = os.path.abspath(dir)
+
+        logger.info("Checking %r is a dir", dir)
+        if not os.path.isdir(dir):
+            raise NotADirectoryError("{} is not a directory".format(dir))
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not a symlink", dir)
+        if os.path.islink(dir):
+            logger.info("%r is symlink; skipping", dir)
+            return
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not in dirs", dir)
+        dirname, basename = os.path.split(os.path.abspath(dir))
+        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
+            raise LibraryError("{} is in special directory".format(dirname))
+        logger.info("Check okay")
+
+        if alt is not None:
+            assert isinstance(alt, str)
+            basename = alt
+        new = os.path.join(libpath.dirsdir(self.root), basename)
+        realnew = os.path.join(libpath.dirsdir(self._realroot), basename)
+        logger.info("Checking name conflict")
+        if os.path.exists(new):
+            raise FileExistsError('{} exists'.format(new))
+        logger.info("Check okay")
+
+        logger.debug("moving %r to %r", dir, new)
+        os.rename(dir, new)
+        logger.debug("linking %r to %r", dir, realnew)
+        os.symlink(realnew, dir)
 
 
 class LibraryError(Exception):
