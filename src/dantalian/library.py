@@ -299,6 +299,7 @@ class Library:
     def tagpath(self, tag):
         """Get absolute path of `tag`.
 
+        Raise NotADirectoryError if tag doesn't exist
         :rtype: :class:`str`
 
         """
