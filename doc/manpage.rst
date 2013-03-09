@@ -1,4 +1,4 @@
-.. _manpage
+.. _manpage:
 
 dantalian - dantalian cli script
 ================================
@@ -22,6 +22,9 @@ locally, in which case it can probably be found in the usual location.
 OPTIONS
 -------
 
+--root *ROOT*
+   Specify a specific library to use.
+
 --loglevel *LEVEL*
    Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN, ERROR,
    or CRITICAL, case insensitive.
@@ -30,7 +33,7 @@ OPTIONS
 --logfilter *MODULE*
    Show only messages from the given module
 
-These options are for debugging purposes.  If you run into a bug, run
+The last three options are for debugging purposes.  If you run into a bug, run
 **dantalian** with ``--loglevel=DEBUG --logfile=output.log`` and include the
 log with the bug report.
 
@@ -62,7 +65,8 @@ find
 rm
    Usage: **dantalian rm** *FILE*...
 
-   Removes the files given.
+   Removes the files given.  That is, removes all hard links to the given files
+   in the library.  Hard links outside of the library are unaffected.
 
 rename
    Usage: **dantalian rename** *FILE* *NEW*

@@ -8,9 +8,9 @@ dantalian is still in active development.
 Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
+   intro
    quickstart
-   depends
-   usage
-   specs
+   install
+   guide
