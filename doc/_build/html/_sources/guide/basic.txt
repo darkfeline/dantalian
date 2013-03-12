@@ -1,0 +1,49 @@
+Basic Usage
+===========
+
+dantalian is a tag-based file organization system.  It uses hard links, by
+creating hard links in subdirectories ("tags").  This provides a very flexible
+and transparent system.  It provides a number of distinct advantages over
+common database/metadata-based tagging system implementations.
+
+#) Tag data is "stored" in the directory structure.  dantalian need not be
+   installed to interact with it; dantalian merely provides a number of useful
+   commands and scripts for interacting with it.  dantalian libraries can be
+   freely copied to other systems.
+#) Data does not need to be recalculated.  Everything follows tagged files
+   dynamically.  Writing or adding tag data is cheap.
+#) File can be changed without affecting metadata.  
+#) Tagging is file-type oblivious.
+#) Even directories can be tagged, using symlinks.
+#) Tags can be read on the file system level, so finding files in other
+   applications, e.g. uploading a file in a web browser, opening a file in its
+   respective editor, is trivial.
+
+There are also a few disadvantages.
+
+#) Certain tag operations are relatively expensive, depending on library size.
+#) Tagging doesn't follow the file, only the library.
+
+I will be looking into adding some form of caching, as will as scripts to flush
+metadata to files, to dantalian to minimize its disadvantages, thus keeping the
+best of both worlds of data/metadata-based tagging and hard-link-based tagging.
+
+.. note::
+   dantalian uses hard links heavily.  Make sure you are familiar with how hard
+   links work.  They are very powerful, but can be messy and/or dangerous if
+   you are not familiar with them.  Especially take care not to accidently
+   break hard links, e.g. by copying and removing files.  dantalian
+   leverages the advantages hard links provide, but won't protect you from
+   yourself!
+
+dantalian works with libraries, which can be created in a directory using
+``dantalian init``.  Libraries form a collection for which dantalian tracks
+file tags.  It's probably wise *not* to create a library on your home
+directory, as that could get messy.  *Everything* in the library is tracked
+together, so common use cases would be to create libraries on Pictures and
+Documents directories, for example.
+
+Inside a library, you can easily manage it using the ``dantalian`` command line
+script.  Basic commands are such as tagging a file, untagging a file, getting
+all of a file's tags, and deleting a file (because tagged files are hard linked
+in multiple places, a separate ``rm`` is needed).

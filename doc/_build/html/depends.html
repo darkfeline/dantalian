@@ -1,0 +1,127 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dependencies &mdash; dantalian 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.3 documentation" href="index.html" />
+    <link rel="next" title="User Guide" href="guide.html" />
+    <link rel="prev" title="Quickstart Guide" href="quickstart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="guide.html" title="User Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>GNU findutils, specifically <tt class="docutils literal"><span class="pre">find</span></tt>.  This is something I debated over.  In
+order to find hard links, iteration is the only option.  While a database
+could be kept to keep track of hard links, changes not made through dantalian
+would then require rebuilding the database, which doesn&#8217;t help, as dantalian
+aims to be transparent.  Thus, we must walk the entire directory tree every
+time we want to do something, which is resource intensive.  Thus, I decided
+to use findutils, as an optimized binary will run much faster than a recursive
+Python search.  (It also saves me from writing extra code.)</li>
+<li>Sphinx, to build the documentation.  The documentation is built for each
+release, and it can be found online, so this is usually unnecessary, but if
+you want to build it yourself, or you&#8217;re using the latest development
+version, you&#8217;ll need Sphinx to build the docs.</li>
+<li>fuse, if you want to use FUSE mount features.</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="previous chapter">Quickstart Guide</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="guide.html"
+                        title="next chapter">User Guide</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/depends.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="guide.html" title="User Guide"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart Guide"
+             >previous</a> |</li>
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
