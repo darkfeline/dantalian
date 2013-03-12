@@ -2,10 +2,12 @@ import os
 import subprocess
 import logging
 import json
+import importlib
+import functools
 
 from dantalian import mount
 from dantalian import tree
-from dantalian.library import path as libpath
+from dantalian import path as libpath
 
 __all__ = [
     'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError',
@@ -233,24 +235,14 @@ class Library:
         :rtype: :class:`list`
 
         """
-        tags = list(tags)
-        tag = tags.pop(0)
-        logger.debug('filter tag %r', tag)
-        path = self.tagpath(tag)
-        files = list(libpath.listdir(path))
-        logger.debug('found set %r', files)
-        for tag in tags:
-            logger.debug('filter tag %r', tag)
-            path = self.tagpath(tag)
-            good = []
-            for file in files:
-                for f in libpath.listdir(path):
-                    if libpath.samefile(file, f):
-                        good.append(file)
-                        break
-            files = good
-            logger.debug('found set %r', files)
-        return files
+        assert len(tags) > 0
+        logger.debug("find(%r)", tags)
+        map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
+        logger.debug("using map %r", map)
+        inodes = functools.reduce(set.intersection, [
+            set(os.lstat(x) for x in libpath.listdir(y)) for y in tags])
+        logger.debug("found unique inodes %r", inodes)
+        return [map[x] for x in inodes]
 
     def rm(self, file):
         """Removes all tags from `file`.
@@ -334,6 +326,7 @@ class Library:
     def tagpath(self, tag):
         """Get absolute path of `tag`.
 
+        Raise NotADirectoryError if tag doesn't exist
         :rtype: :class:`str`
 
         """
@@ -373,10 +366,10 @@ class Library:
         logger.info("making tree")
         if os.path.exists(libpath.ctreefile(self.root)):
             logger.info("using custom")
-            x = {}
-            with open(libpath.ctreefile(self.root)) as f:
-                exec(compile(f, libpath.ctreefile(self.root), 'exec'), x)
-            return x['tree']
+            name = 'custom'
+            path = libpath.ctreefile(self.root)
+            custom = importlib.SourceFileLoader(name, path).load_module(name)
+            return custom.maketree(self.root)
         else:
             logger.info("using auto")
             return _maketree(self, libpath.treefile(self.root))
@@ -461,8 +454,42 @@ class FUSELibrary(Library):
         return
 
     def convert(self, dir, alt=None):
-        logger.warn("can't convert in fuse library")
-        return
+        logger.debug('convert(%r, %r)', dir, alt)
+        assert isinstance(dir, str)
+        assert alt is None or isinstance(alt, str)
+        dir = os.path.abspath(dir)
+
+        logger.info("Checking %r is a dir", dir)
+        if not os.path.isdir(dir):
+            raise NotADirectoryError("{} is not a directory".format(dir))
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not a symlink", dir)
+        if os.path.islink(dir):
+            logger.info("%r is symlink; skipping", dir)
+            return
+        logger.info("Check okay")
+
+        logger.info("Checking %r is not in dirs", dir)
+        dirname, basename = os.path.split(os.path.abspath(dir))
+        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
+            raise LibraryError("{} is in special directory".format(dirname))
+        logger.info("Check okay")
+
+        if alt is not None:
+            assert isinstance(alt, str)
+            basename = alt
+        new = os.path.join(libpath.dirsdir(self.root), basename)
+        realnew = os.path.join(libpath.dirsdir(self._realroot), basename)
+        logger.info("Checking name conflict")
+        if os.path.exists(new):
+            raise FileExistsError('{} exists'.format(new))
+        logger.info("Check okay")
+
+        logger.debug("moving %r to %r", dir, new)
+        os.rename(dir, new)
+        logger.debug("linking %r to %r", dir, realnew)
+        os.symlink(realnew, dir)
 
 
 class LibraryError(Exception):

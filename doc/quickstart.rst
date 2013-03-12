@@ -3,7 +3,10 @@ Quickstart Guide
 
 dantalian is a tag-based "soft filesystem".  It provides a wrapper interface to
 the underlying filesystem.  It requires hard links and expects to be on one
-device/partition (can't hard link across devices or partitions).
+device/partition (can't hard link across devices or partitions).  This is just
+a quick guide to get you started using dantalian.  You should read the rest of
+the guide to better understand how dantalian works, what you can do with it,
+and how you can make use of it.
 
 Installing is as easy as::
 

@@ -1,0 +1,163 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; dantalian 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.3 documentation" href="index.html" />
+    <link rel="next" title="Quickstart Guide" href="quickstart.html" />
+    <link rel="prev" title="Welcome to dantalian’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to dantalian’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>dantalian is a tag-based file organization system.  It uses hard links, by
+creating hard links in subdirectories (&#8220;tags&#8221;).  This provides a very flexible
+and transparent system.  It provides a number of distinct advantages over
+common database/metadata-based tagging system implementations.</p>
+<ol class="arabic simple">
+<li>Tag data is &#8220;stored&#8221; in the directory structure.  dantalian need not be
+installed to interact with it; dantalian merely provides a number of useful
+commands and scripts for interacting with it.  dantalian libraries can be
+freely copied to other systems.</li>
+<li>Data does not need to be recalculated.  Everything follows tagged files
+dynamically, even if (a hard link of) the file is moved elsewhere on the
+file system.</li>
+<li>Files do not need to have unique names.  (How well dantalian behaves with
+names is well-defined, but tricky.  Refer to <a class="reference internal" href="guide/library.html#name-conflicts"><em>Name conflicts</em></a> for
+details.)</li>
+<li>Tagging is file-type oblivious.  Even directories can be tagged, using
+symlinks.</li>
+<li>Tags can be read on the file system level, so finding files in other
+applications, e.g. uploading a file in a web browser, opening a file in its
+respective editor, is trivial.</li>
+<li>Certain tag operations are <em>extremely</em> cheap, namely tagging, untagging, and
+retrieving all files with a given tag.</li>
+<li>Database-based tagging systems have a few ugly realities that they are
+forced to deal with.  First, unless it implements an entirely new file
+system altogether, it&#8217;ll need to rely on having the file in a traditional
+hierarchical directory file system.  So, you&#8217;ll still need to find a way to
+organize your files irrespective of tagging, whether that be throwing
+everything in one folder or somehow coming up with another organization
+scheme.  Often, this means that moving the files or renaming them ruins the
+tagging.  The other choice would be for the system to keep files organized
+internally, in which case the system often requires <em>every single file</em> have
+a unique filename (which, if I remember correctly, is what Tagsistant does,
+and one of the reasons I decided to create dantalian).</li>
+</ol>
+<p>Unfortunately, there are also a few disadvantages.</p>
+<ol class="arabic simple">
+<li>Certain tag operations are relatively expensive, depending on library size.</li>
+<li>Tagging doesn&#8217;t follow the file, only the library.</li>
+</ol>
+<p>I will be looking into adding some form of caching, as will as scripts to flush
+metadata to files, to dantalian to minimize its disadvantages, thus keeping the
+best of both worlds of data/metadata-based tagging and hard-link-based tagging.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">dantalian uses hard links heavily.  Make sure you are familiar with how hard
+links work.  They are very powerful, but can be messy and/or dangerous if
+you are not familiar with them.  Especially take care not to accidently
+break hard links, e.g. by copying and removing files.  dantalian
+leverages the advantages hard links provide, but won&#8217;t protect you from
+yourself!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to dantalian&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="next chapter">Quickstart Guide</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart Guide"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to dantalian’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

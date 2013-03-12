@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart Guide &mdash; hitagiFS 0.2 documentation</title>
+    <title>Quickstart Guide &mdash; dantalian 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,9 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="hitagiFS 0.2 documentation" href="index.html" />
-    <link rel="next" title="Design" href="specs.html" />
-    <link rel="prev" title="Welcome to hitagiFS’s documentation!" href="index.html" /> 
+    <link rel="top" title="dantalian 0.3 documentation" href="index.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,15 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="specs.html" title="Design"
+          <a href="install.html" title="Installation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to hitagiFS’s documentation!"
+          <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,29 +53,27 @@
             
   <div class="section" id="quickstart-guide">
 <h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline">¶</a></h1>
-<p>hitagiFS is a tag-based &#8220;soft filesystem&#8221;.  It provides a wrapper interface to
+<p>dantalian is a tag-based &#8220;soft filesystem&#8221;.  It provides a wrapper interface to
 the underlying filesystem.  It requires hard links and expects to be on one
-device/partition (can&#8217;t hard link across devices or partitions).</p>
+device/partition (can&#8217;t hard link across devices or partitions).  This is just
+a quick guide to get you started using dantalian.  You should read the rest of
+the guide to better understand how dantalian works, what you can do with it,
+and how you can make use of it.</p>
 <p>Installing is as easy as:</p>
 <div class="highlight-python"><pre>python setup.py install</pre>
 </div>
-<p>No dependencies! Except the following:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">find</span></tt> utility should be installed (I can&#8217;t imagine why not, but...)</li>
-<li>You need Sphinx to build the documentation (It&#8217;s already built, though)</li>
-</ul>
-<p>Create a new directory to hold your hitagifs:</p>
+<p>Create a new directory to hold your library:</p>
 <div class="highlight-python"><pre>$ mkdir test
-$ hfs init test</pre>
+$ dantalian init test</pre>
 </div>
 <p>or:</p>
 <div class="highlight-python"><pre>$ mkdir test
 $ cd test
-$ hfs init</pre>
+$ dantalian init</pre>
 </div>
-<p>Navigate into the directory.  hitagiFS will look through parent directories to
-find a hitagifs to work with, but you can also specify a specific directory:</p>
-<div class="highlight-python"><pre>$ hfs --root=/path/to/root &lt;command&gt;</pre>
+<p>Navigate into the directory.  dantalian will look through parent directories to
+find a library to work with, but you can also specify a specific directory:</p>
+<div class="highlight-python"><pre>$ dantalian --root=/path/to/root &lt;command&gt;</pre>
 </div>
 <p>Make a few tags (tags are directories!):</p>
 <div class="highlight-python"><pre>$ mkdir -p pics/kitty
@@ -93,7 +88,7 @@ $ tree .
 └── 1.jpg</pre>
 </div>
 <p>Tag a few photos:</p>
-<div class="highlight-python"><pre>$ hfs tag pics/kitty 1.jpg
+<div class="highlight-python"><pre>$ dantalian tag pics/kitty 1.jpg
 $ tree .
 .
 ├── pics
@@ -102,7 +97,7 @@ $ tree .
 │   └── fruit
 ├── food
 └── 1.jpg
-$ hfs tag food 1.jpg
+$ dantalian tag food 1.jpg
 $ tree .
 .
 ├── pics
@@ -114,7 +109,7 @@ $ tree .
 └── 1.jpg</pre>
 </div>
 <p>Untag:</p>
-<div class="highlight-python"><pre>$ hfs untag food 1.jpg
+<div class="highlight-python"><pre>$ dantalian untag food 1.jpg
 $ tree .
 .
 ├── pics
@@ -125,7 +120,7 @@ $ tree .
 └── 1.jpg</pre>
 </div>
 <p>Rename:</p>
-<div class="highlight-python"><pre>$ hfs rename 1.jpg 2.jpg
+<div class="highlight-python"><pre>$ dantalian rename 1.jpg 2.jpg
 $ tree .
 .
 ├── pics
@@ -136,8 +131,8 @@ $ tree .
 └── 2.jpg</pre>
 </div>
 <p>Convert a directory so you can tag it:</p>
-<div class="highlight-python"><pre>$ hfs convert pics/fruit
-$ hfs tag food pics/fruit
+<div class="highlight-python"><pre>$ dantalian convert pics/fruit
+$ dantalian tag food pics/fruit
 $ tree .
 .
 ├── pics
@@ -147,7 +142,7 @@ $ tree .
 ├── food
 │   └── fruit
 └── 2.jpg
-$ hfs tag pics/fruit 2.jpg
+$ dantalian tag pics/fruit 2.jpg
 $ tree .
 .
 ├── pics
@@ -161,7 +156,7 @@ $ tree .
 └── 2.jpg</pre>
 </div>
 <p>Delete a file:</p>
-<div class="highlight-python"><pre>$ hfs rm 2.jpg
+<div class="highlight-python"><pre>$ dantalian rm 2.jpg
 $ tree .
 .
 ├── pics
@@ -180,10 +175,10 @@ $ tree .
 │   └── fruit
 └── food
     └── 2.jpg
-$ hfs find pics/kitty
+$ dantalian find pics/kitty
 1.jpg
 2.jpg
-$ hfs find pics/kitty food
+$ dantalian find pics/kitty food
 2.jpg</pre>
 </div>
 <p>Make sure to check the rest of the documentation for specifics.</p>
@@ -196,11 +191,11 @@ $ hfs find pics/kitty food
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to hitagiFS&#8217;s documentation!</a></p>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="specs.html"
-                        title="next chapter">Design</a></p>
+  <p class="topless"><a href="install.html"
+                        title="next chapter">Installation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/quickstart.txt"
@@ -230,15 +225,12 @@ $ hfs find pics/kitty food
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="specs.html" title="Design"
+          <a href="install.html" title="Installation"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to hitagiFS’s documentation!"
+          <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li><a href="index.html">hitagiFS 0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">dantalian 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

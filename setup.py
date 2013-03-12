@@ -9,6 +9,6 @@ setup(
     author_email='darkfeline@abagofapples.com',
     url='http://abagofapples.com/',
     package_dir={'': 'src'},
-    packages=['dantalian', 'dantalian.library'],
+    packages=['dantalian'],
     scripts=['src/bin/dantalian'],
 )

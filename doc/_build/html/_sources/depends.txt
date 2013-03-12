@@ -13,3 +13,4 @@ Dependencies
   release, and it can be found online, so this is usually unnecessary, but if
   you want to build it yourself, or you're using the latest development
   version, you'll need Sphinx to build the docs.
+- fuse, if you want to use FUSE mount features.

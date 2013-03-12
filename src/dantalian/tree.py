@@ -21,7 +21,7 @@ import stat
 import abc
 from time import time
 
-from dantalian.library import path as libpath
+from dantalian import path as libpath
 
 __all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag']
 logger = logging.getLogger(__name__)
@@ -159,7 +159,7 @@ def _uniqmap(files):
     Given a list of files, map unique basename strings to each file and return
     a dictionary."""
     logger.debug("_uniqmap(%r)", files)
-    files = list(files)
+    files = sorted(files)
     map = {}
     uniqmap = {}
     while len(files) > 0:
