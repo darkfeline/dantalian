@@ -1,11 +1,11 @@
 *.sw[op]
 __pycache__/
 *.py[co]
-
 /build/
 /dist/
 
 /virt-env/
 /bugs.otl
+.ropeproject/
 
 /test/
