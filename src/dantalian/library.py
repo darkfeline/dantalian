@@ -3,6 +3,7 @@ import subprocess
 import logging
 import json
 import importlib
+import functools
 
 from dantalian import mount
 from dantalian import tree
@@ -234,24 +235,14 @@ class Library:
         :rtype: :class:`list`
 
         """
-        tags = list(tags)
-        tag = tags.pop(0)
-        logger.debug('filter tag %r', tag)
-        path = self.tagpath(tag)
-        files = list(libpath.listdir(path))
-        logger.debug('found set %r', files)
-        for tag in tags:
-            logger.debug('filter tag %r', tag)
-            path = self.tagpath(tag)
-            good = []
-            for file in files:
-                for f in libpath.listdir(path):
-                    if libpath.samefile(file, f):
-                        good.append(file)
-                        break
-            files = good
-            logger.debug('found set %r', files)
-        return files
+        assert len(tags) > 0
+        logger.debug("find(%r)", tags)
+        map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
+        logger.debug("using map %r", map)
+        inodes = functools.reduce(set.intersection, [
+            set(os.lstat(x) for x in libpath.listdir(y)) for y in tags])
+        logger.debug("found unique inodes %r", inodes)
+        return [map[x] for x in inodes]
 
     def rm(self, file):
         """Removes all tags from `file`.
