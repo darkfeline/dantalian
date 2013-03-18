@@ -14,3 +14,4 @@ Contents:
    quickstart
    install
    guide
+   changes
