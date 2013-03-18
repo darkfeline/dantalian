@@ -95,3 +95,14 @@ use case and know what you are doing.  ``dantalian`` works with a single
 library for its operations.  Usually, it will search up through the directories
 and use the first library it finds, so take care of where you run it.  You can
 also specify a specific library by using the ``--root`` option.
+
+Scalability
+-----------
+
+dantalian's scalability ultimately depends on the host file system, but is
+generally pretty lenient.  On ext4, for example, the main limiting factor is
+number of files per directory, i.e., the number of files that have a given tag.
+dantalian remains usable no matter the number, but if you have, say more than
+10,000 files with a given tag, ``ls`` (specifically ``readdir()`` on the
+kernel level) may begin to see performance issues.  However, file access is
+unaffected.
