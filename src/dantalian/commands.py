@@ -29,12 +29,16 @@ def tag(lib, *args):
     """
     logger.debug('tag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian tag", add_help=False)
+    parser.add_argument('-s')
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
     for file in args.file:
         try:
-            lib.tag(file, args.tag)
+            if not args.s:
+                lib.tag(file, args.tag)
+            else:
+                lib.tag(args.tag, file)
         except IsADirectoryError:
             logger.warn('skipped %r; convert it first', file)
 
@@ -47,11 +51,15 @@ def untag(lib, *args):
     """
     logger.debug('untag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian utag", add_help=False)
+    parser.add_argument('-s')
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
     for file in args.file:
-        lib.untag(file, args.tag)
+        if not args.s:
+            lib.untag(file, args.tag)
+        else:
+            lib.untag(args.tag, file)
 
 
 @public

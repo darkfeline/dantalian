@@ -44,12 +44,14 @@ tag
    Usage: **dantalian tag** *TAG* *FILE*...
 
    Tags FILE with TAG.  If FILE is already tagged, does nothing.  If FILE is a
-   directory, you'll need to convert it first.
+   directory, you'll need to convert it first.  The option ``-s`` reverses
+   *TAG* and *FILE*, for tagging a single file with multiple tags.
 
 untag
    Usage: **dantalian untag** *TAG* *FILE*...
 
-   Removes TAG from FILE.  If FILE isn't tagged, does nothing.
+   Removes TAG from FILE.  If FILE isn't tagged, does nothing.  Has the same
+   ``-s`` options as **tag**
 
 tags
    Usage: **dantalian tags** *FILE*
