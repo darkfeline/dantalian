@@ -78,7 +78,7 @@ before directories can be tagged.  Converting a directory moves it to a special
 location under ``.dantalian`` and replaces it with an absolute symbolic link to
 its new location.  Because converted directories are all kept in one location,
 no two converted directories may have the same name.  However, the name of the
-directory hitagiFS keeps track of and the name of the symbolic link that users
+directory dantalian keeps track of and the name of the symbolic link that users
 will be interacting with are separate.  Thus, if there's a naming conflict, the
 actual directory can be renamed, and the symbolic links follow the naming rules
 as above.  This feature imposes an extra requirement on the library root
