@@ -176,7 +176,6 @@ class Library:
                 files]
 
     def convert(self, dir, alt=None):
-
         """Convert a directory to a symlink.
 
         If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert`
@@ -188,42 +187,8 @@ class Library:
         ``.dantalian/dirs``.
 
         """
-
         logger.debug('convert(%r, %r)', dir, alt)
-        assert isinstance(dir, str)
-        assert alt is None or isinstance(alt, str)
-        dir = os.path.abspath(dir)
-
-        logger.info("Checking %r is a dir", dir)
-        if not os.path.isdir(dir):
-            raise NotADirectoryError("{} is not a directory".format(dir))
-        logger.info("Check okay")
-
-        logger.info("Checking %r is not a symlink", dir)
-        if os.path.islink(dir):
-            logger.info("%r is symlink; skipping", dir)
-            return
-        logger.info("Check okay")
-
-        logger.info("Checking %r is not in dirs", dir)
-        dirname, basename = os.path.split(os.path.abspath(dir))
-        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
-            raise LibraryError("{} is in special directory".format(dirname))
-        logger.info("Check okay")
-
-        if alt is not None:
-            assert isinstance(alt, str)
-            basename = alt
-        new = os.path.join(libpath.dirsdir(self.root), basename)
-        logger.info("Checking name conflict")
-        if os.path.exists(new):
-            raise FileExistsError('{} exists'.format(new))
-        logger.info("Check okay")
-
-        logger.debug("moving %r to %r", dir, new)
-        os.rename(dir, new)
-        logger.debug("linking %r to %r", dir, new)
-        os.symlink(new, dir)
+        _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
 
     def find(self, tags):
         """Return a list of files with all of the given tags.
@@ -413,6 +378,58 @@ def _maketree(root, config):
     return r
 
 
+def _convertcheck(dir, to, alt):
+    """
+    Parameters:
+
+    dir: directory to convert
+    to: dantalian library dirsdir
+    alt: alternate name (str or None)
+
+    Returns tuple of arguments to _convertto
+    """
+    logger.debug('_convertcheck(%r, %r, %r)', dir, to, alt)
+    assert isinstance(dir, str)
+    assert isinstance(to, str)
+    dir = os.path.abspath(dir)
+
+    logger.info("Checking %r is a dir", dir)
+    if not os.path.isdir(dir):
+        raise NotADirectoryError("{} is not a directory".format(dir))
+    logger.info("Check okay")
+
+    logger.info("Checking %r is not a symlink", dir)
+    if os.path.islink(dir):
+        logger.info("%r is symlink; skipping", dir)
+        return
+    logger.info("Check okay")
+
+    logger.info("Checking %r is not in dirs", dir)
+    dirname, basename = os.path.split(os.path.abspath(dir))
+    if libpath.samefile(dirname, to):
+        raise LibraryError("{} is in special directory".format(dirname))
+    logger.info("Check okay")
+
+    if alt is not None:
+        assert isinstance(alt, str)
+        basename = alt
+    new = os.path.join(to, basename)
+    logger.info("Checking name conflict")
+    if os.path.exists(new):
+        raise FileExistsError('{} exists'.format(new))
+    logger.info("Check okay")
+    return (dir, new)
+
+
+def _convertto(dir, target):
+    logger.debug('_convertto(%r, %r, %r)', dir, linktarget, movetarget)
+
+    logger.debug("moving %r to %r", dir, target)
+    os.rename(dir, target)
+    logger.debug("linking %r to %r", dir, target)
+    os.symlink(target, dir)
+
+
 def _find_root(dir):
     """Find the first library above `dir`.
 
@@ -455,41 +472,7 @@ class FUSELibrary(Library):
 
     def convert(self, dir, alt=None):
         logger.debug('convert(%r, %r)', dir, alt)
-        assert isinstance(dir, str)
-        assert alt is None or isinstance(alt, str)
-        dir = os.path.abspath(dir)
-
-        logger.info("Checking %r is a dir", dir)
-        if not os.path.isdir(dir):
-            raise NotADirectoryError("{} is not a directory".format(dir))
-        logger.info("Check okay")
-
-        logger.info("Checking %r is not a symlink", dir)
-        if os.path.islink(dir):
-            logger.info("%r is symlink; skipping", dir)
-            return
-        logger.info("Check okay")
-
-        logger.info("Checking %r is not in dirs", dir)
-        dirname, basename = os.path.split(os.path.abspath(dir))
-        if libpath.samefile(dirname, libpath.dirsdir(self.root)):
-            raise LibraryError("{} is in special directory".format(dirname))
-        logger.info("Check okay")
-
-        if alt is not None:
-            assert isinstance(alt, str)
-            basename = alt
-        new = os.path.join(libpath.dirsdir(self.root), basename)
-        realnew = os.path.join(libpath.dirsdir(self._realroot), basename)
-        logger.info("Checking name conflict")
-        if os.path.exists(new):
-            raise FileExistsError('{} exists'.format(new))
-        logger.info("Check okay")
-
-        logger.debug("moving %r to %r", dir, new)
-        os.rename(dir, new)
-        logger.debug("linking %r to %r", dir, realnew)
-        os.symlink(realnew, dir)
+        _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
 
 
 class LibraryError(Exception):
