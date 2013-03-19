@@ -50,7 +50,7 @@ def untag(lib, *args):
     directory).  If `file` isn't tagged, does nothing.
     """
     logger.debug('untag(%r, %r)', lib, args)
-    parser = argparse.ArgumentParser(prog="dantalian utag", add_help=False)
+    parser = argparse.ArgumentParser(prog="dantalian untag", add_help=False)
     parser.add_argument('-s')
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
