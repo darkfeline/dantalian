@@ -88,6 +88,12 @@ fix
    Fixes symlinks after the library has been moved.  If it hasn't been moved,
    does nothing.
 
+clean
+   Usage: **dantalian clean**
+
+   Clean converted directories.  Delete any converted directories which no
+   longer have any symlinks in the library reference it.
+
 init
    Usage: **dantalian init** [*DIR*]
 

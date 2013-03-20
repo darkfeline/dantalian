@@ -4,6 +4,8 @@ import logging
 import json
 import importlib
 import functools
+import re
+import shutil
 
 from dantalian import mount
 from dantalian import tree
@@ -189,6 +191,29 @@ class Library:
         """
         logger.debug('convert(%r, %r)', dir, alt)
         _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
+
+    def cleandirs(self):
+        """Clean converted directories
+
+        Remove directories in the library's converted directories directory
+        which do not have a symlink in the library that references them.  Nuke
+        them with shutil.rmtree
+        """
+        dirsdir = libpath.dirsdir(self.root)
+        prefix = re.compile(re.escape(dirsdir))
+        symlinks = libpath.findsymlinks(self.root)
+        symlinks = filter(prefix.match, symlinks)
+        linkedto = [os.readlink(x[0]) for x in symlinks]
+        dirs = libpath.listdir(dirsdir)
+        for x in linkedto:
+            try:
+                dirs.remove(x)
+            except ValueError:
+                logger.warn("Broken link %r", x)
+        logger.debug("Found unreferenced dirs %r", dirs)
+        for x in dirs:
+            logger.debug("Nuking %r", x)
+            shutil.rmtree(x)
 
     def find(self, tags):
         """Return a list of files with all of the given tags.

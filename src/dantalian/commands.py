@@ -152,6 +152,17 @@ def fix(lib, *args):
 
 
 @public
+def clean(lib, *args):
+    """
+    Clean converted directories.
+    """
+    logger.debug('clean(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian clean", add_help=False)
+    args = parser.parse_args(args)
+    lib.cleandirs()
+
+
+@public
 def init(*args):
     """
     Creates a library in `dir`.  If `dir` is omitted, creates a library in
