@@ -6,21 +6,15 @@ line.  See the manpage for usage.
 import argparse
 import logging
 import os
-import sys
 
 from dantalian import library
 
+__all__ = [
+    'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
+    'init', 'mount']
 logger = logging.getLogger(__name__)
 
 
-def public(f):
-    all = sys.modules[f.__module__].__dict__.setdefault('__all__', [])
-    if f.__name__ not in all:
-        all.append(f.__name__)
-    return f
-
-
-@public
 def tag(lib, *args):
     """
     Tags `file` with `tag` (Hard links `file` under `tag` directory with the
@@ -43,7 +37,6 @@ def tag(lib, *args):
             logger.warn('skipped %r; convert it first', file)
 
 
-@public
 def untag(lib, *args):
     """
     Removes tag `tag` from `file` (Removes the hard link to `file` under `tag`
@@ -62,7 +55,6 @@ def untag(lib, *args):
             lib.untag(args.tag, file)
 
 
-@public
 def tags(lib, *args):
     """
     Lists all the tags of `file` (Lists the directories that have hard links to
@@ -77,7 +69,6 @@ def tags(lib, *args):
         print(tag)
 
 
-@public
 def find(lib, *args):
     """
     Intersect tag search.  Lists all files that have all of the given tags.
@@ -92,7 +83,6 @@ def find(lib, *args):
         print(file)
 
 
-@public
 def rm(lib, *args):
     """
     Removes the files given (Removes all hard links to the files under the root
@@ -106,7 +96,6 @@ def rm(lib, *args):
         lib.rm(file)
 
 
-@public
 def rename(lib, *args):
     """
     Renames all hard links of `file` to `new`.
@@ -119,7 +108,6 @@ def rename(lib, *args):
     lib.rename(args.source, args.dest)
 
 
-@public
 def convert(lib, *args):
     """
     Converts directories so they can be tagged.  (Moves directories to special
@@ -139,7 +127,6 @@ def convert(lib, *args):
             logger.warn('Name conflict %r; skipping', dir)
 
 
-@public
 def fix(lib, *args):
     """
     Fixes symlinks after the library has been moved.  If it hasn't been moved,
@@ -151,7 +138,6 @@ def fix(lib, *args):
     lib.fix()
 
 
-@public
 def clean(lib, *args):
     """
     Clean converted directories.
@@ -162,7 +148,6 @@ def clean(lib, *args):
     lib.cleandirs()
 
 
-@public
 def init(*args):
     """
     Creates a library in `dir`.  If `dir` is omitted, creates a library in
@@ -175,7 +160,6 @@ def init(*args):
     library.init_library(args.root)
 
 
-@public
 def mount(lib, *args):
     """
     Mount FUSE according to config files.
