@@ -74,9 +74,9 @@ class Library:
         with open(libpath.rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
-            return False
+            return None
         else:
-            return True
+            return old_root
 
     def __init__(self, root):
         """If `root` is not a library, raise LibraryError."""
