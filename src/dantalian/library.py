@@ -199,21 +199,7 @@ class Library:
         which do not have a symlink in the library that references them.  Nuke
         them with shutil.rmtree
         """
-        dirsdir = libpath.dirsdir(self.root)
-        prefix = re.compile(re.escape(dirsdir))
-        symlinks = libpath.findsymlinks(self.root)
-        symlinks = filter(prefix.match, symlinks)
-        linkedto = [os.readlink(x[0]) for x in symlinks]
-        dirs = libpath.listdir(dirsdir)
-        for x in linkedto:
-            try:
-                dirs.remove(x)
-            except ValueError:
-                logger.warn("Broken link %r", x)
-        logger.debug("Found unreferenced dirs %r", dirs)
-        for x in dirs:
-            logger.debug("Nuking %r", x)
-            shutil.rmtree(x)
+        _cleandirs(self.root)
 
     def find(self, tags):
         """Return a list of files with all of the given tags.
@@ -328,6 +314,24 @@ class Library:
 
     def mount(self, path):
         return mount.mount(path, self, self.maketree())
+
+
+def _cleandirs(root):
+    dirsdir = libpath.dirsdir(root)
+    prefix = re.compile(re.escape(dirsdir))
+    symlinks = libpath.findsymlinks(root)
+    symlinks = filter(prefix.match, symlinks)
+    linkedto = [os.readlink(x[0]) for x in symlinks]
+    dirs = libpath.listdir(dirsdir)
+    for x in linkedto:
+        try:
+            dirs.remove(x)
+        except ValueError:
+            logger.warn("Broken link %r", x)
+    logger.debug("Found unreferenced dirs %r", dirs)
+    for x in dirs:
+        logger.debug("Nuking %r", x)
+        shutil.rmtree(x)
 
 
 def _maketree(root, config):
