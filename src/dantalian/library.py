@@ -218,7 +218,7 @@ class Library:
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is an iterable. `tags` is left unchanged.  Returns a list.  File
+        `tags` is a list. `tags` is left unchanged.  Returns a list.  File
         paths are absolute and are paths to the hard link under the first tag
         given.
 
