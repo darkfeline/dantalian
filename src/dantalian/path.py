@@ -1,7 +1,10 @@
 import os
 import logging
 import sys
+import subprocess
 from functools import lru_cache
+
+from dantalian.errors import DependencyError
 
 logger = logging.getLogger(__name__)
 
@@ -67,3 +70,32 @@ def listdir(path):
 
     """
     return iter(os.path.join(path, f) for f in os.listdir(path))
+
+
+@public
+def findsymlinks(dir):
+    """Find symlinks
+
+    Returns a list of lists.  Symlinks that are the same inode are grouped
+    together.  Relies on 'find' utility, for sheer simplicity and speed.
+    If it cannot be found, :exc:`DependencyError` is raised.  Output paths
+    are absolute.
+    """
+    try:
+        output = subprocess.check_output(
+            ['find', dir, '-type', 'l'])
+    except FileNotFoundError:
+        raise DependencyError("find could not be found; \
+            probably findutils is not installed")
+    output = output.decode().rstrip().split('\n')
+    result = []
+    for file in output:
+        found = 0
+        for set in result:
+            if samefile(set[0], file):
+                set.append(file)
+                found = 1
+                break
+        if not found:
+            result.append([file])
+    return result

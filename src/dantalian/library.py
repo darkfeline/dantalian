@@ -260,34 +260,6 @@ class Library:
             logger.debug('renaming %r %r', file, new)
             os.rename(file, new)
 
-    def _get_symlinks(self):
-        """Get all tracked symlinks.
-
-        Returns a list of lists.  Symlinks that are the same inode are grouped
-        together.  Relies on 'find' utility, for sheer simplicity and speed.
-        If it cannot be found, :exc:`DependencyError` is raised.  Output paths
-        are absolute.
-
-        """
-        try:
-            output = subprocess.check_output(
-                ['find', self.root, '-type', 'l'])
-        except FileNotFoundError:
-            raise DependencyError("find could not be found; \
-                probably findutils is not installed")
-        output = output.decode().rstrip().split('\n')
-        result = []
-        for file in output:
-            found = 0
-            for set in result:
-                if libpath.samefile(set[0], file):
-                    set.append(file)
-                    found = 1
-                    break
-            if not found:
-                result.append([file])
-        return result
-
     def tagpath(self, tag):
         """Get absolute path of `tag`.
 
@@ -308,7 +280,7 @@ class Library:
             return
         logger.info('Move detected; fixing')
         newdir = libpath.dirsdir(self.root)
-        files = self._get_symlinks()
+        files = libpath.findsymlinks(self.root)
         logger.debug('found symlinks %r', files)
         for set in files:
             f = set.pop(0)
