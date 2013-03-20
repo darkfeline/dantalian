@@ -73,18 +73,36 @@ perfectly.
 Tagging Directories
 -------------------
 
-Because directories cannot be hard linked, dantalian must first convert them
-before directories can be tagged.  Converting a directory moves it to a special
-location under ``.dantalian`` and replaces it with an absolute symbolic link to
-its new location.  Because converted directories are all kept in one location,
-no two converted directories may have the same name.  However, the name of the
-directory dantalian keeps track of and the name of the symbolic link that users
-will be interacting with are separate.  Thus, if there's a naming conflict, the
-actual directory can be renamed, and the symbolic links follow the naming rules
-as above.  This feature imposes an extra requirement on the library root
-directory.  Namely, when the root directory path is changed, the symbolic links
-of all converted directories must be fixed.  dantalian provides this
-functionality, but ``dantalian fix`` must be called each time.
+Directories generally are not allowed to be hard linked in most file systems,
+for various reasons.  However, symbolic links are regular files and thus can be
+hard linked, even if they point to a directory.  dantalian leverages this, but
+care should be taken.
+
+dantalian can convert directories.  Converting a directory moves it to a
+special location under ``.dantalian`` and replaces it with an absolute symbolic
+link to its new location.  This allows directories to be tagged just like other
+files.
+
+This feature imposes an extra requirement on the library root directory.
+Namely, when the root directory path is changed, the symbolic links of all
+converted directories must be fixed by running ``dantalian fix``.  Also, unlike
+regular files, which can be freely hard linked to directories outside of the
+library (and tagged in other libraries), if you hard link the symbolic link of
+a dantalian-converted directory outside of it, move the library, and run
+``dantalian fix``, it will break the external hard links.  If this is one of
+your use cases, place the directories in a fixed location outside of the
+library, create a symlink, and then tag it with dantalian instead of using
+``dantalian convert``.  ``dantalian convert`` is best used for tagging tags;
+you *can* use it for tagging directories (e.g., scanned books, entire albums as
+a single unit), but if you forsee moving the library and hard linking the
+symlinks elsewhere, use the method mentioned above.
+
+Because converted directories are all kept in one location, no two converted
+directories may have the same name.  However, the name of the directory
+dantalian keeps track of and the name of the symbolic link that users will be
+interacting with are separate.  Thus, if there's a naming conflict, the actual
+directory can be renamed, and the symbolic links follow the naming rules as
+above.
 
 Nested Libraries
 ----------------
