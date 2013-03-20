@@ -413,8 +413,6 @@ def _convertcheck(dir, to, alt):
 
 
 def _convertto(dir, target):
-    logger.debug('_convertto(%r, %r, %r)', dir, linktarget, movetarget)
-
     logger.debug("moving %r to %r", dir, target)
     os.rename(dir, target)
     logger.debug("linking %r to %r", dir, target)
