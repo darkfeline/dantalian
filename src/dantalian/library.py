@@ -229,8 +229,8 @@ class Library:
         logger.debug("find(%r)", tags)
         map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
         logger.debug("using map %r", map)
-        inodes = functools.reduce(set.intersection, [
-            set(os.lstat(x) for x in libpath.listdir(y)) for y in tags])
+        inodes = functools.reduce(set.intersection, (
+            set(os.lstat(x) for x in libpath.listdir(y)) for y in tags))
         logger.debug("found unique inodes %r", inodes)
         return [map[x] for x in inodes]
 
