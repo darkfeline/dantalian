@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import sys
 
 from dantalian import commands
 from dantalian import library
@@ -29,8 +30,11 @@ logger.setLevel(args.loglevel.upper())
 if args.logfilter:
     handler.addFilter(logging.Filter(args.logfilter))
 
-if args.command in ('init'):
+if args.command in commands.t_global:
     getattr(commands, args.command)(*args.args)
-else:
+elif args.command in commands.t_library:
     lib = library.open_library(getattr(args, 'root', None))
     getattr(commands, args.command)(lib, *args.args)
+else:
+    print('Command not found')
+    sys.exit(1)

@@ -10,8 +10,16 @@ import os
 from dantalian import library
 
 __all__ = [
+    't_global', 't_library',
+
     'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
-    'init', 'mount']
+    'init', 'mount'
+]
+t_global = ['init']
+t_library = [
+    'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
+    'mount'
+]
 logger = logging.getLogger(__name__)
 
 
