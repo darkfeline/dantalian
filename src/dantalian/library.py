@@ -459,7 +459,7 @@ class FUSELibrary(Library):
 
     def convert(self, dir, alt=None):
         logger.debug('convert(%r, %r)', dir, alt)
-        _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
+        _convertto(*_convertcheck(dir, libpath.dirsdir(self._realroot), alt))
 
 
 class LibraryError(Exception):
