@@ -8,10 +8,10 @@ import functools
 from dantalian import mount
 from dantalian import tree
 from dantalian import path as libpath
+from dantalian.errors import DependencyError
 
 __all__ = [
-    'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError',
-    'DependencyError']
+    'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError']
 logger = logging.getLogger(__name__)
 
 
@@ -477,7 +477,3 @@ class FUSELibrary(Library):
 
 class LibraryError(Exception):
     """Library error"""
-
-
-class DependencyError(Exception):
-    """Dependency error"""
