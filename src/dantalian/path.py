@@ -80,7 +80,7 @@ def fixsymlinks(links, oldprefix, newprefix):
     Recursively replace symlinks `links` that match `oldprefix` with
     `newprefix`.  `links` is as returned from findsymlinks().
     """
-    oldprefix = re.compile(r"^" + oldprefix)
+    oldprefix = re.compile(r"^" + re.escape(oldprefix))
     for set in links:
         try:
             f = set.pop(0)
