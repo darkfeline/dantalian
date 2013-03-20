@@ -453,6 +453,9 @@ class FUSELibrary(Library):
             self._realroot = f.read()
         logger.debug("real library is %r", self._realroot)
 
+    def cleandirs(self):
+        _cleandirs(self._realroot)
+
     def fix(self):
         logger.warn("can't fix fuse library")
         return
