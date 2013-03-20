@@ -279,21 +279,11 @@ class Library:
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        newdir = libpath.dirsdir(self.root)
         files = libpath.findsymlinks(self.root)
         logger.debug('found symlinks %r', files)
-        for set in files:
-            f = set.pop(0)
-            new = os.path.join(newdir, os.path.basename(os.readlink(f)))
-            logger.debug("unlinking %r", f)
-            os.unlink(f)
-            logger.debug("symlinking %r to %r", f, new)
-            os.symlink(new, f)
-            for file in set:
-                logger.debug("unlinking %r", file)
-                os.unlink(file)
-                logger.debug("linking %r to %r", file, f)
-                os.link(f, file)
+        olddir = libpath.dirsdir(self._moved)
+        newdir = libpath.dirsdir(self.root)
+        libpath.fixsymlinks(files, olddir, newdir)
         logger.debug('writing %r', libpath.rootfile(self.root))
         with open(libpath.rootfile(self.root), 'w') as f:
             f.write(self.root)

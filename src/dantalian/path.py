@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+import re
 import subprocess
 from functools import lru_cache
 
@@ -70,6 +71,32 @@ def listdir(path):
 
     """
     return iter(os.path.join(path, f) for f in os.listdir(path))
+
+
+@public
+def fixsymlinks(links, oldprefix, newprefix):
+    """Fix symlinks
+
+    Recursively replace symlinks `links` that match `oldprefix` with
+    `newprefix`.  `links` is as returned from findsymlinks().
+    """
+    oldprefix = re.compile(r"^" + oldprefix)
+    for set in links:
+        try:
+            f = set.pop(0)
+        except IndexError:
+            logger.warn("Empty set")
+            continue
+        newtarget = oldprefix.sub(newprefix, os.readlink(f), count=1)
+        logger.debug("unlinking %r", f)
+        os.unlink(f)
+        logger.debug("symlinking %r to %r", f, newtarget)
+        os.symlink(newtarget, f)
+        for file in set:
+            logger.debug("unlinking %r", file)
+            os.unlink(file)
+            logger.debug("linking %r to %r", file, f)
+            os.link(f, file)
 
 
 @public
