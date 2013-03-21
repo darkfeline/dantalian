@@ -146,7 +146,7 @@ class Library:
                 logger.debug('unlinking %r', f)
                 os.unlink(f)
 
-    def listpaths(self, file):
+    def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
@@ -176,7 +176,7 @@ class Library:
 
         """
         assert isinstance(file, str)
-        files = self.listpaths(file)
+        files = self._listpaths(file)
         return [os.path.dirname(file).replace(self.root + '/', '') for file in
                 files]
 
@@ -240,7 +240,7 @@ class Library:
         """
         assert isinstance(file, str)
         error = 0
-        for file in self.listpaths(file):
+        for file in self._listpaths(file):
             logger.debug('unlinking %r', file)
             try:
                 os.unlink(file)
@@ -260,7 +260,7 @@ class Library:
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
-        files = self.listpaths(file)
+        files = self._listpaths(file)
         logger.debug('found to rename %r', files)
         for file in files:
             head = os.path.dirname(file)
