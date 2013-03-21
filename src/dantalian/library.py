@@ -349,8 +349,7 @@ class Library:
                 y[x] = tree.fs2tag(y[x])
         return r
 
-    def mount(self, path):
-        tree = self.maketree()
+    def mount(self, path, tree):
         addr = libpath.fusesock(self.root)
         try:
             os.unlink(addr)
