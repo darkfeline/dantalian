@@ -318,7 +318,7 @@ class Library:
     def _maketree(self, config):
         """Make a FSNode tree
 
-        self is an instance of Library.  config is file path.
+        config is file path.
         """
         logger.debug("_maketree(%r, %r)", self, config)
         with open(config) as f:
