@@ -92,7 +92,10 @@ class Library:
         logger.info('Library initialized')
         logger.debug('root is %r', self.root)
 
-    def tag(self, file, tag, alt=None):
+    def tag(self, file, tag):
+        self._tag(file, tag)
+
+    def _tag(self, file, tag, alt=None):
         """Tag `file` with `tag`.
 
         `file` is relative to current dir. `tag` is relative to library root.
