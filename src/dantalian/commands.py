@@ -10,16 +10,17 @@ import os
 from dantalian import library
 
 __all__ = [
-    't_global', 't_library',
+    't_global', 't_library', 't_sock',
 
     'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
-    'init', 'mount'
+    'init', 'mount', 'mknode'
 ]
 t_global = ['init']
 t_library = [
     'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
     'mount'
 ]
+t_sock = ['mknode']
 logger = logging.getLogger(__name__)
 
 
@@ -178,3 +179,15 @@ def mount(lib, *args):
     args = parser.parse_args(args)
     lib.mount(args.path)
     logger.debug('exit')
+
+
+def mknode(sock, *args):
+    """
+    Make a node in FUSE
+    """
+    logger.debug('mknode(%r, %r)', sock, args)
+    parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
+    parser.add_argument('path')
+    parser.add_argument('tags', nargs="+")
+    args = parser.parse_args(args)
+    sock.send(" ".join(['mknode'] + ['/' + args.path] + args.tags).encode())

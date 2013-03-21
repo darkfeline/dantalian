@@ -6,6 +6,9 @@ import importlib
 import functools
 import re
 import shutil
+import shlex
+import threading
+import socket
 
 from dantalian import mount
 from dantalian import tree
@@ -347,7 +350,23 @@ class Library:
         return r
 
     def mount(self, path):
-        return mount.mount(path, self, self.maketree())
+        tree = self.maketree()
+        addr = libpath.fusesock(self.root)
+        try:
+            os.unlink(addr)
+            logger.debug("Removed old socket")
+        except OSError:
+            if os.path.exists(addr):
+                raise
+        sock = socket.socket(socket.AF_UNIX)
+        sock.bind(addr)
+        sock.listen(1)
+        logger.debug("Socket bound and listening to %r", addr)
+        thread = SocketOperations(sock, self, tree)
+        thread.start()
+        logger.debug("Started socket listening thread")
+        logger.debug("Mounting fuse at %r with %r", path, tree)
+        return mount.mount(path, self, tree)
 
 
 def _cleandirs(root):
@@ -464,6 +483,56 @@ class FUSELibrary(Library):
     def convert(self, dir, alt=None):
         logger.debug('convert(%r, %r)', dir, alt)
         _convertto(*_convertcheck(dir, libpath.dirsdir(self._realroot), alt))
+
+
+class SocketOperations(threading.Thread):
+
+    def __init__(self, sock, root, tree):
+        """
+        `sock` is server socket. `root` is library. `tree` is root node.
+        """
+        super().__init__()
+        self.sock = sock
+        self.root = root
+        self.tree = tree
+
+    def run(self):
+        while True:
+            sock, addr = self.sock.accept()
+            msg = ""
+            while True:
+                m = sock.recv(1024)
+                if not m:
+                    break
+                msg += m.decode()
+            logger.debug('recieved from socket %r', msg)
+            msg = shlex.split(msg)
+            cmd = msg.pop(0)
+            try:
+                x = getattr(self, 'do_' + cmd)
+            except AttributeError:
+                logger.warn('received unknown command %r', cmd)
+            x(*msg)
+
+    def do_mknode(self, path, *tags):
+        name = []
+        while True:
+            path, x = os.path.split(path)
+            name.append(x)
+            try:
+                node, path = tree.split(self.tree, path)
+            except TypeError:
+                continue
+            else:
+                if path:  # tried to make node outside vfs
+                    return
+                name = list(reversed(name))
+                for next in name[:-1]:
+                    node[name] = tree.FSNode()
+                    node = node[name]
+                x = tree.TagNode(self.root, tags)
+                node[name[-1]] = x
+                break
 
 
 class LibraryError(Exception):

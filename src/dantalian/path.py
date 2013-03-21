@@ -8,6 +8,7 @@ from dantalian.errors import DependencyError
 
 __all__ = [
     'rootdir', 'fuserootdir', 'rootfile', 'dirsdir', 'treefile', 'ctreefile',
+    'fusesock',
 
     'samefile', 'listdir', 'fixsymlinks', 'findsymlinks'
 ]
@@ -42,6 +43,11 @@ def treefile(root):
 @lru_cache()
 def ctreefile(root):
     return os.path.join(rootdir(root), 'mount_custom')
+
+
+@lru_cache()
+def fusesock(root):
+    return os.path.join(rootdir(root), 'fuse.sock')
 
 
 def samefile(f1, f2):

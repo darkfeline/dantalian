@@ -3,9 +3,12 @@
 import argparse
 import logging
 import sys
+import os
+import socket
 
 from dantalian import commands
 from dantalian import library
+from dantalian import path as libpath
 
 parser = argparse.ArgumentParser(
     prog="hfs", add_help=False,
@@ -35,6 +38,15 @@ if args.command in commands.t_global:
 elif args.command in commands.t_library:
     lib = library.open_library(getattr(args, 'root', None))
     getattr(commands, args.command)(lib, *args.args)
+elif args.command in commands.t_sock:
+    lib = library.open_library(getattr(args, 'root', None))
+    if not isinstance(lib, library.FUSELibrary):
+        print('Socket command can only be used with fuse')
+        sys.exit(1)
+    addr = libpath.fusesock(lib._realroot)
+    sock = socket.socket(socket.AF_UNIX)
+    sock.connect(addr)
+    getattr(commands, args.command)(sock, *args.args)
 else:
     print('Command not found')
     sys.exit(1)
