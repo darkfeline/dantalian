@@ -309,7 +309,7 @@ class Library:
             custom = importlib.SourceFileLoader(name, path).load_module(name)
             return custom.maketree(self.root)
         else:
-            logger.info("using auto")
+            logger.info("using config")
             return self._maketree(libpath.treefile(self.root))
 
     def _maketree(self, config):
