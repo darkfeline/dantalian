@@ -389,8 +389,8 @@ class TagOperations(LoggingMixIn, Operations):
 def _getpath(node, path):
     """Get real path
 
-    Calculate and return the real path given TagNode `node` and list of strings
-    `path`.  If `node` is not a BorderNode or `path` is empty, raise
+    Calculate and return the real path given BorderNode `node` and list of
+    strings `path`.  If `node` is not a BorderNode or `path` is empty, raise
     FuseOSError(EINVAL).  This is used internally when trying to resolve real,
     non-virtual, outside paths.
     """
