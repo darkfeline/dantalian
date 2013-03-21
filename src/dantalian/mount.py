@@ -358,28 +358,11 @@ class TagOperations(LoggingMixIn, Operations):
         path.  path is a list of strings indicating the path from the given
         node.  If node is the last file in the path, path is None.
         """
-        assert len(path) > 0
-        assert path[0] == "/"
-        logger.debug("resolving path %r", path)
-        path = [x for x in path.lstrip('/').split('/') if x != ""]
-        logger.debug("path list %r", path)
-        cur = self.tree
-        while path:
-            logger.debug("resolving %r", path[0])
-            try:
-                a = cur[path[0]]
-            except KeyError:
-                logger.warn("path broken")
-                raise FuseOSError(ENOENT)
-            if isinstance(a, str):
-                logger.debug("BorderNode found, %r, %r", cur, path)
-                return (cur, path)
-            else:
-                logger.debug("next node")
-                cur = a
-                del path[0]
-        logger.debug("found node %r", cur)
-        return (cur, [])
+        x = tree.split(self.tree, path)
+        if not x:
+            raise FuseOSError(ENOENT)
+        else:
+            return x
 
     def _tmplink(self, target):
         """Create a temporary hardlink to `target` and return the path to it.
