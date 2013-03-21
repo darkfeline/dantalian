@@ -1,3 +1,4 @@
+import abc
 import os
 import subprocess
 import logging
@@ -72,7 +73,31 @@ def open_library(root=None):
         return Library(root)
 
 
-class Library:
+class BaseLibrary(metaclass=abc.ABCMeta):
+    """Abstract library class"""
+
+    @abc.abstractmethod
+    def tag(self, file, tag):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def untag(self, file, tag):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def listtags(self, file):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def find(self, tags):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def mount(self, path, tree):
+        raise NotImplementedError
+
+
+class Library(BaseLibrary):
 
     @property
     def _moved(self):
