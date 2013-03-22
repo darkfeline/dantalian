@@ -11,7 +11,6 @@ Contents:
    :maxdepth: 2
 
    intro
-   quickstart
-   install
-   guide
+   user
+   dev
    changes
