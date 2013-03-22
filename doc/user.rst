@@ -6,6 +6,8 @@ explain how to use it, this guide is split into the relevant sections listed
 below.
 
 .. toctree::
+   :maxdepth: 2
+
    user/install
    user/quickstart
    user/library

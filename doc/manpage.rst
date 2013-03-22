@@ -40,6 +40,23 @@ log with the bug report.
 COMMANDS
 --------
 
+There are three types of commands: universal, library, and fuse.  Universal
+commands are used without a reference to a library.  Library commands must be
+used with a library (either detected automatically or specified with
+``--root``.  Fuse commands must be used with a fuse-mounted library.
+
+UNIVERSAL
+^^^^^^^^^
+
+init
+   Usage: **dantalian init** [*DIR*]
+
+   Creates a library in DIR.  If DIR is omitted, creates a library in the
+   current directory.
+
+LIBRARY
+^^^^^^^
+
 tag
    Usage: **dantalian tag** *TAG* *FILE*...
 
@@ -94,16 +111,18 @@ clean
    Clean converted directories.  Delete any converted directories which no
    longer have any symlinks in the library reference it.
 
-init
-   Usage: **dantalian init** [*DIR*]
-
-   Creates a library in DIR.  If DIR is omitted, creates a library in the
-   current directory.
-
 mount
    Usage: **dantalian mount** *DIR*
 
    Mounts the FUSE file system at DIR according to the configuration files
+
+FUSE
+^^^^
+
+mknode
+   Usage: **dantalian mknode** *PATH* *TAGS*...
+
+   Make a TagNode
 
 CONFIGURATION FILES
 -------------------

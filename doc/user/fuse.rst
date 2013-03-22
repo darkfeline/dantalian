@@ -33,7 +33,8 @@ from the JSON for an example.
 Nodes and virtual space
 -----------------------
 
-dantalian manages the virtual space using a node tree.
+dantalian manages the virtual space using a node tree.  Inheritance tree of
+nodes:
 
 | FSNode
 |   BorderNode
