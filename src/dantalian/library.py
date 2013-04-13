@@ -17,7 +17,7 @@ from dantalian import path as libpath
 from dantalian.errors import DependencyError
 
 __all__ = [
-    'init_library', 'open_library', 'Library', 'FUSELibrary', 'LibraryError']
+    'init_library', 'open_library', 'Library', 'ProxyLibrary', 'LibraryError']
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +68,7 @@ def open_library(root=None):
         root = _find_root(os.getcwd())
         logger.debug("Found %r", root)
     if os.path.isdir(libpath.fuserootdir(root)):
-        return FUSELibrary(root)
+        return ProxyLibrary(root)
     else:
         return Library(root)
 
@@ -492,7 +492,7 @@ def _find_root(dir):
     raise LibraryError('No root found')
 
 
-class FUSELibrary(Library):
+class ProxyLibrary(Library):
 
     def __init__(self, root):
         logger.debug("open fuse library %r", root)
