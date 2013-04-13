@@ -1,6 +1,6 @@
 """
-mount.py
-========
+operations.py
+=============
 
 This module defines the FUSE operations dantalian uses.  Thus, how FUSE behaves
 is defined here.

@@ -11,7 +11,7 @@ import shlex
 import threading
 import socket
 
-from dantalian import mount
+from dantalian import operations as ops
 from dantalian import tree
 from dantalian import path as libpath
 from dantalian.errors import DependencyError
@@ -398,7 +398,7 @@ class Library(BaseLibrary):
         thread.start()
         logger.debug("Started socket listening thread")
         logger.debug("Mounting fuse at %r with %r", path, tree)
-        return mount.mount(path, self, tree)
+        return ops.mount(path, self, tree)
 
 
 def _cleandirs(root):
