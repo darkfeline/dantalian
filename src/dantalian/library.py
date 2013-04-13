@@ -99,6 +99,11 @@ class BaseLibrary(metaclass=abc.ABCMeta):
 
 class Library(BaseLibrary):
 
+    """
+    Implementation of methods that work directly with library on the file
+    system.
+    """
+
     @property
     def _moved(self):
         with open(libpath.rootfile(self.root)) as f:
