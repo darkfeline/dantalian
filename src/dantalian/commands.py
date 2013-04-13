@@ -5,6 +5,7 @@ line.  See the manpage for usage.
 
 import argparse
 import logging
+import shlex
 import os
 
 from dantalian import library
@@ -190,4 +191,7 @@ def mknode(sock, *args):
     parser.add_argument('path')
     parser.add_argument('tags', nargs="+")
     args = parser.parse_args(args)
-    sock.send(" ".join(['mknode'] + ['/' + args.path] + args.tags).encode())
+    sock.send(" ".join(
+        ['mknode'] + [shlex.quote('/' + args.path)] +
+        [shlex.quote(x) for x in args.tags]
+    ).encode())
