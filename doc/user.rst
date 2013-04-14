@@ -10,5 +10,6 @@ below.
 
    user/install
    user/quickstart
+   user/links
    user/library
    user/fuse

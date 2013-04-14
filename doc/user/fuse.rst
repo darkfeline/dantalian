@@ -75,4 +75,5 @@ limited.  Calls to outsidespace will be passed on to the OS/underlying file
 system.  Calls to tagspace will manipulate the tags on the files according to
 the library paradigm.
 
-.. autoclass:: dantalian.mount.TagOperations
+.. autoclass:: dantalian.operations.TagOperations
+   :members:
