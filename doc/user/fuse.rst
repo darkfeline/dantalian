@@ -30,6 +30,18 @@ set up a node tree and return it, and dantalian will handle the rest.  See
 :meth:`dantalian.library._maketree` to see how dantalian creates a node tree
 from the JSON for an example.
 
+Usage
+-----
+
+For the most part, FUSE-mounted libraries behave exactly like regular
+libraries, so you can use the regular dantalian commands as well as regular
+file system operations to interact with it.  However, certain dantalian
+commands behave differently or are restricted for sanity's sake (for example,
+you cannot ``mount`` a FUSE-mounted library).  dantalian distinguished between
+a mounted library and a regular library by a virtual directory
+``.dantalian-fuse``, which simply points to ``.dantalian``.
+
+
 Nodes and virtual space
 -----------------------
 
@@ -63,6 +75,13 @@ inode number (which is guaranteed to be unique) at the end of the file name,
 but before the extension.  E.g., if two files are both named ``file.mp3``, the
 latter will appear as ``file.12345.mp3``, assuming its inode number is
 ``12345``.
+
+Socket Operations
+-----------------
+
+You can also interact directly with a FUSE-mounted library using socket
+operations.  Currently, the only socket command is ``mknode``, which
+dynamically add a TagNode.
 
 FUSE Operations
 ---------------
