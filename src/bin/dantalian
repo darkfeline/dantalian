@@ -40,7 +40,7 @@ elif args.command in commands.t_library:
     getattr(commands, args.command)(lib, *args.args)
 elif args.command in commands.t_sock:
     lib = library.open_library(getattr(args, 'root', None))
-    if not isinstance(lib, library.FUSELibrary):
+    if not isinstance(lib, library.ProxyLibrary):
         print('Socket command can only be used with fuse')
         sys.exit(1)
     addr = libpath.fusesock(lib._realroot)
