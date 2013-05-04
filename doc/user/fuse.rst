@@ -37,9 +37,11 @@ For the most part, FUSE-mounted libraries behave exactly like regular
 libraries, so you can use the regular dantalian commands as well as regular
 file system operations to interact with it.  However, certain dantalian
 commands behave differently or are restricted for sanity's sake (for example,
-you cannot ``mount`` a FUSE-mounted library).  dantalian distinguished between
+you cannot ``mount`` a FUSE-mounted library).  dantalian distinguishes between
 a mounted library and a regular library by a virtual directory
 ``.dantalian-fuse``, which simply points to ``.dantalian``.
+
+To unmount, use ``fusermount -u path/to/mount``.
 
 
 Nodes and virtual space
