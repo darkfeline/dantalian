@@ -104,6 +104,16 @@ interacting with are separate.  Thus, if there's a naming conflict, the actual
 directory can be renamed, and the symbolic links follow the naming rules as
 above.
 
+Moving Libraries
+----------------
+
+Since libraries are simply directories, moving and/or backing up libraries is
+very simple.  There are two thing to keep in mind:  use ``rsync -H`` to
+preserve hard links, and don't forget to run ``dantalian fix`` to fix absolute
+symbolic links for converted directories.  The latter is extremely important as
+dantalian currently will *not* check if it needs fixing, so you may potentially
+break your library.
+
 Nested Libraries
 ----------------
 

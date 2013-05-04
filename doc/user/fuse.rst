@@ -82,8 +82,23 @@ Socket Operations
 -----------------
 
 You can also interact directly with a FUSE-mounted library using socket
-operations.  Currently, the only socket command is ``mknode``, which
-dynamically add a TagNode.
+operations.  FUSE-mounted libraries open a socket at ``.dantalian/fuse.sock``.
+dantalian provides scripts that allow you to interact dynamically with a
+mounted library, but they simply echo standard commands to the socket, which
+can be done by hand (like all other dantalian operations) from, e.g. a remote
+client that doesn't have dantalin installed.  For example, the socket command::
+
+   $ dantalian mknode path/to/node tag1 tag2
+
+can be done by::
+
+   $ echo mknode path/to/node tag1 tag2 > library/.dantalian/fuse.sock
+
+The socket processes commands much like a shell, so make sure to quote anything
+that contains spaces.
+
+Currently, the only socket command is ``mknode``, which dynamically adds a
+TagNode.
 
 FUSE Operations
 ---------------
