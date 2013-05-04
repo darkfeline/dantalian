@@ -417,7 +417,8 @@ class Library(BaseFSLibrary):
         thread.start()
         logger.debug("Started socket listening thread")
         logger.debug("Mounting fuse at %r with %r", path, tree)
-        return ops.mount(path, self, tree)
+        ops.mount(path, self, tree)
+        thread.stop()
 
 
 def _cleandirs(root):
@@ -546,10 +547,20 @@ class SocketOperations(threading.Thread):
         self.sock = sock
         self.root = root
         self.tree = tree
+        self.running = True
+
+    def stop(self):
+        self.running = False
+        self.sock.shutdown(socket.SHUT_RD)
 
     def run(self):
-        while True:
-            sock, addr = self.sock.accept()
+        while self.running:
+            try:
+                sock, addr = self.sock.accept()
+            except OSError as e:
+                logger.debug(
+                    'Got exception listening for socket connection %r', e)
+                continue
             msg = ""
             while True:
                 m = sock.recv(1024)
