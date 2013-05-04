@@ -17,7 +17,8 @@ from dantalian import path as libpath
 from dantalian.errors import DependencyError
 
 __all__ = [
-    'init_library', 'open_library', 'Library', 'ProxyLibrary', 'LibraryError']
+    'init_library', 'open_library', 'BaseLibrary', 'BaseFSLibrary', 'Library',
+    'ProxyLibrary', 'SocketOperations', 'LibraryError']
 logger = logging.getLogger(__name__)
 
 
@@ -97,7 +98,22 @@ class BaseLibrary(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
 
-class Library(BaseLibrary):
+class BaseFSLibrary(metaclass=abc.ABCMeta):
+    """
+    Abstract library class, adds more abstract methods specific to a file
+    system implementation of a BaseLibrary.
+    """
+
+    @abc.abstractmethod
+    def convert(self, dir):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def cleandirs(self):
+        raise NotImplementedError
+
+
+class Library(BaseFSLibrary):
 
     """
     Implementation of methods that work directly with library on the file
@@ -213,7 +229,10 @@ class Library(BaseLibrary):
         return [os.path.dirname(file).replace(self.root + '/', '') for file in
                 files]
 
-    def convert(self, dir, alt=None):
+    def convert(self, dir):
+        self._convert(dir)
+
+    def _convert(self, dir, alt=None):
         """Convert a directory to a symlink.
 
         If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert`
