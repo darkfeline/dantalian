@@ -115,7 +115,7 @@ def rename(lib, *args):
     parser.add_argument('file')
     parser.add_argument('new')
     args = parser.parse_args(args)
-    lib.rename(args.source, args.dest)
+    lib.rename(args.file, args.new)
 
 
 def convert(lib, *args):
