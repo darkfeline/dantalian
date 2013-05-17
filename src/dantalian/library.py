@@ -13,6 +13,7 @@ import socket
 
 from dantalian import operations as ops
 from dantalian import tree
+from dantalian.setcache import SetCache
 from dantalian import path as libpath
 from dantalian.errors import DependencyError
 
@@ -214,7 +215,7 @@ class Library(BaseFSLibrary):
                 probably findutils is not installed")
         output = output.decode().rstrip().split('\n')
         for x in iter(output):
-            if '.hitagifs/dirs/' in x:
+            if libpath.dirsdir(self.root) in x:
                 output.remove(x)
         return output
 
