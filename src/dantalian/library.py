@@ -117,20 +117,21 @@ class BaseLibrary(metaclass=abc.ABCMeta):
         pass
 
 
-class BaseFSLibrary(metaclass=abc.ABCMeta):
+class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
 
     """
-    Abstract library class, adds more abstract methods specific to a file
-    system implementation of a BaseLibrary.
+    BaseFSLibrary is the abstract class for libraries implemented on a
+    file system.  It requires the following methods and invariants in
+    addition to those described in BaseLibrary:
+
+    tag(file, tag)
+        If `file` does not have a hard link under the `tag` directory,
+        make one.  `file` has at least one hard link under the `tag`
+        directory after call.
+    untag(file, tag)
+        `file` has no hard links under the `tag` directory after call,
+        regardless of whether it did before.
     """
-
-    @abc.abstractmethod
-    def convert(self, dir):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def cleandirs(self):
-        raise NotImplementedError
 
 
 class Library(BaseFSLibrary):
