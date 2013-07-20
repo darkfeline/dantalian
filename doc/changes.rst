@@ -4,7 +4,7 @@ Changelog
 version 0.4
 -----------
 
-- Add multi-tag switch to ``tag`` and ``untag`` command.
-- Add ``clean`` command
-- Add socket/fuse commands
-- Add ``mknode`` command
+- Added multi-tag switch to ``tag`` and ``untag`` command.
+- Added ``clean`` command
+- Added socket/fuse commands
+- Added ``mknode`` command

@@ -4,7 +4,7 @@ FUSE
 ====
 
 dantalian offers an optional FUSE mount feature, which allows much more
-powerful interaction with Libraries.
+powerful interaction with libraries.
 
 To use it, run ``dantalian mount /path/to/mount/location`` on the
 command line.  You will want to mount it somewhere outside of the
@@ -45,6 +45,7 @@ by a virtual directory ``.dantalian-fuse``, which simply points to
 
 To unmount, use ``fusermount -u path/to/mount``.
 
+See :ref:`names` for more information.
 
 Nodes and virtual space
 -----------------------
@@ -52,10 +53,12 @@ Nodes and virtual space
 dantalian manages the virtual space using a node tree.  Inheritance tree
 of nodes:
 
-| FSNode
-|   BorderNode
-|     TagNode
-|     RootNode
+* FSNode
+
+  * BorderNode
+
+    * TagNode
+    * RootNode
 
 FSNodes simply represent virtual directories.  BorderNode is an abstract
 subclass for nodes that lead back into real space (back to the

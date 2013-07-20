@@ -1,5 +1,5 @@
-Library
-=======
+Libraries
+=========
 
 Libraries are the fundamental level of abstraction in dantalian.  A
 library is an abstract tag-based file organization system layered
@@ -21,18 +21,19 @@ Tags are directories, and all directories are potential tags (except
 ``.dantalian``, a special directory)  Files are "tagged" by creating a
 hard link in the respective directory.  Files can have any number and
 combination of tags.  File names and tag names are restricted only by
-the underlying file system (so yes, Unicode and 50 character long names
-are all okay).  All files of all types can be tagged, including
-symlinks.  dantalian provides functionality such that even directories
-can be tagged, perfect for hardcore file organizers.
+the underlying file system (on ext4, for example, up to 255 bytes
+and all characters except ``/`` are allowed, so knock yourself out).
+All files of all types can be tagged, including symlinks.  dantalian
+provides functionality such that even directories can be tagged, perfect
+for hardcore file organizers.
 
 Usage
 -----
 
 While it is possible to manage the library abstraction solely using
-standard programs such as ``ln``, dantalian provides useful scripts for
-performing operations such as tagging, untagging, and deleting, as
-commands for the command-line script ``dantalian``.
+standard programs such as ``ln``, ``mv``, etc., dantalian provides
+useful scripts for performing operations such as tagging, untagging, and
+deleting, as commands for the command-line script ``dantalian``.
 
 See the manpage (linked here: :ref:`manpage`) for the commands for
 ``dantalian``.
@@ -71,6 +72,8 @@ Currently, dantalian is unable to tag a file if a file with the same
 name exists in that location (this feature will be implemented later).
 However, you can manually hard link the file with a different name and
 dantalian will work perfectly.
+
+See :ref:`names` for more information.
 
 Tagging Directories
 -------------------
@@ -125,8 +128,9 @@ nested.  Behavior is well-defined, but I wouldn't recommend it unless
 you have a clear use case and know what you are doing.  ``dantalian``
 works with a single library for its operations.  Usually, it will search
 up through the directories and use the first library it finds, so take
-care of where you run it.  You can also specify a specific library by
-using the ``--root`` option.
+care where you run it.  You can also specify a specific library by
+using the ``--root`` option.  In fact, if you are nesting libraries, it
+is recommended to *always* use ``--root``.
 
 Scalability
 -----------
@@ -135,6 +139,6 @@ dantalian's scalability ultimately depends on the host file system, but
 is generally pretty lenient.  On ext4, for example, the main limiting
 factor is number of files per directory, i.e., the number of files that
 have a given tag.  dantalian remains usable no matter the number, but if
-you have, say more than 10,000 files with a given tag, ``ls``
+you have, say, more than 10,000 files with a given tag, ``ls``
 (specifically ``readdir()`` on the kernel level) may begin to see
-performance issues.  However, file access is unaffected.
+performance issues.  However, file access will not be affected.

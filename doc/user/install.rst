@@ -10,6 +10,7 @@ Dependencies
 Required
 ^^^^^^^^
 
+- Python 3
 - GNU findutils.  This is something I debated over, but in order to find
   hard links, iteration is the only option.  While a database could be
   kept to keep track of hard links, changes not made through dantalian

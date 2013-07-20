@@ -9,7 +9,7 @@ you can make use of it.
 
 Installing is as easy as::
 
-   python setup.py install
+   $ python setup.py install
 
 Create a new directory to hold your library::
 
@@ -36,8 +36,8 @@ Make a few tags (tags are directories!)::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   └── fruit
+   │   ├── kitty
+   │   └── fruit
    ├── food
    └── 1.jpg
 
@@ -47,20 +47,20 @@ Tag a few photos::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 1.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   └── 1.jpg
+   │   └── fruit
    ├── food
    └── 1.jpg
    $ dantalian tag food 1.jpg
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 1.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   └── 1.jpg
+   │   └── fruit
    ├── food
-   │   └── 1.jpg
+   │   └── 1.jpg
    └── 1.jpg
 
 Untag::
@@ -69,9 +69,9 @@ Untag::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 1.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   └── 1.jpg
+   │   └── fruit
    ├── food
    └── 1.jpg
 
@@ -81,9 +81,9 @@ Rename::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 2.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   └── 2.jpg
+   │   └── fruit
    ├── food
    └── 2.jpg
 
@@ -94,23 +94,23 @@ Convert a directory so you can tag it::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 2.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   └── 2.jpg
+   │   └── fruit
    ├── food
-   │   └── fruit
+   │   └── fruit
    └── 2.jpg
    $ dantalian tag pics/fruit 2.jpg
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   └── 2.jpg
-   │   └── fruit
-   │       └── 2.jpg
+   │   ├── kitty
+   │   │   └── 2.jpg
+   │   └── fruit
+   │       └── 2.jpg
    ├── food
-   │   └── fruit
-   │       └── 2.jpg
+   │   └── fruit
+   │       └── 2.jpg
    └── 2.jpg
 
 Delete a file::
@@ -119,22 +119,22 @@ Delete a file::
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   └── fruit
+   │   ├── kitty
+   │   └── fruit
    └── food
-       └── fruit
+       └── fruit
 
 You can also look for multiple tags at once::
 
    $ tree .
    .
    ├── pics
-   │   ├── kitty
-   │   │   ├── 1.jpg
-   │   │   └── 2.jpg
-   │   └── fruit
+   │   ├── kitty
+   │   │   ├── 1.jpg
+   │   │   └── 2.jpg
+   │   └── fruit
    └── food
-       └── 2.jpg
+       └── 2.jpg
    $ dantalian find pics/kitty
    1.jpg
    2.jpg
