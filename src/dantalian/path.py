@@ -3,6 +3,7 @@ import logging
 import re
 import subprocess
 from functools import lru_cache
+from itertools import count
 
 from dantalian.errors import DependencyError
 
@@ -66,6 +67,19 @@ def listdir(path):
 
     """
     return iter(os.path.join(path, f) for f in os.listdir(path))
+
+
+def resolve_name(dir, name):
+    """Return an available filename"""
+    files = os.listdir(dir)
+    base, ext = os.path.splitext(name)
+    if name not in files:
+        return name
+    i = count(1)
+    while True:
+        x = '.'.join((base, next(i), ext))
+        if x not in files:
+            return x
 
 
 def fixsymlinks(links, oldprefix, newprefix):
