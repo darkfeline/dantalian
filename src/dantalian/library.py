@@ -615,5 +615,4 @@ class SocketOperations(threading.Thread):
                 break
 
 
-class LibraryError(Exception):
-    """Library error"""
+class LibraryError(Exception): pass
