@@ -124,7 +124,7 @@ def findsymlinks(dir):
 
     Returns a list of lists.  Symlinks that are the same inode are
     grouped together.  Relies on 'find' utility, for sheer simplicity
-    and speed.  If it cannot be found, :exc:`DependencyError` is raised.
+    and speed.  If it cannot be found, DependencyError is raised.
     Output paths are absolute.
     """
     try:
