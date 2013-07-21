@@ -328,26 +328,25 @@ class Library(BaseFSLibrary):
     def rename(self, file, new):
         """Rename tracked file.
 
-        Rename all tracked hard links of `file` to `new`.  If file is
-        not tagged, nothing happens.  If any name collisions exist,
-        nothing will be renamed and :exc:`FileExistsError` will be
-        raised.
+        Rename all hard links in the library of `file` to `new`.  If
+        `file` is not tagged, nothing happens.  If a file cannot be
+        renamed, log an error and continue.
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
-        files = self._listpaths(file)
-        logger.debug('found to rename %r', files)
+        files = self._liststrictpaths(file)
+        logger.debug('Found to rename: %r', files)
         for file in files:
-            head = os.path.dirname(file)
-            new = os.path.join(head, new)
-            if os.path.exists(new):
-                raise FileExistsError('{} exists'.format(new))
-        logger.info('rename check okay')
-        for file in files:
-            head = os.path.dirname(file)
-            new = os.path.join(head, new)
-            logger.debug('renaming %r %r', file, new)
-            os.rename(file, new)
+            dir = os.path.dirname(file)
+            while True:
+                dest = os.path.join(dir, libpath.resolve_name(dir, new))
+                logger.debug('Moving %r to %r', file, dest)
+                try:
+                    os.rename(file, dest)
+                except FileExistsError:
+                    continue
+                else:
+                    break
 
     def tagpath(self, tag):
         """Get absolute path of `tag`.
