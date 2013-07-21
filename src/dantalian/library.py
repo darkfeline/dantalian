@@ -13,7 +13,6 @@ import socket
 
 from dantalian import operations as ops
 from dantalian import tree
-from dantalian.setcache import SetCache
 from dantalian import path as libpath
 from dantalian.errors import DependencyError
 
