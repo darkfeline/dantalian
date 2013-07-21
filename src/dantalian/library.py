@@ -431,6 +431,8 @@ class Library(BaseFSLibrary):
 
 
 def _cleandirs(root):
+    if not shutil.rmtree.avoids_symlink_attacks:
+        logger.warning('Vulnerable to symlink attacks')
     dirsdir = libpath.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
     symlinks = libpath.findsymlinks(root)
