@@ -160,39 +160,33 @@ class Library(BaseFSLibrary):
         logger.debug('root is %r', self.root)
 
     def tag(self, file, tag):
-        self._tag(file, tag)
-
-    def _tag(self, file, tag, alt=None):
-        """Tag `file` with `tag`.
+        """Tag `file` with `tag`
 
         `file` is relative to current dir. `tag` is relative to library
         root.  If `file` is already tagged, nothing happens.  This
-        includes if the file is hardlinked under another name.  If
-        `file` is an unconverted directory, :exc:`IsADirectoryError`
-        will be raised.  If there's a name collision,
-        :exc:`FileExistsError` is raised.
+        includes if the file is hardlinked under another name.
         """
-        assert isinstance(file, str)
-        assert isinstance(tag, str)
+
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        dest = self.tagpath(tag)
-        if alt is not None:
-            assert isinstance(alt, str)
-            dest = os.path.join(dest, alt)
-        name = os.path.basename(file)
-        logger.info('checking if %r already tagged with %r', file, tag)
-        for f in libpath.listdir(dest):
+        destdir = self.tagpath(tag)
+        logger.info(
+            'Checking if %r is already tagged with %r', file, tag)
+        for f in libpath.listdir(destdir):
             if libpath.samefile(f, file):
                 return
-        logger.info('check okay')
-        dest = os.path.join(dest, name)
-        logger.debug('linking %r %r', file, dest)
-        try:
-            os.link(file, dest)
-        except FileExistsError as e:
-            raise e
+        logger.info('Check okay')
+        name = os.path.basename(file)
+        while True:
+            dest = os.path.join(destdir, libpath.resolve_name(destdir, name))
+            logger.debug('linking %r %r', file, dest)
+            try:
+                os.link(file, dest)
+            except FileExistsError:
+                continue
+            else:
+                break
 
     def untag(self, file, tag):
         """Remove `tag` from `file`.
