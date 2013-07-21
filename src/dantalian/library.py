@@ -235,6 +235,26 @@ class Library(BaseFSLibrary):
         output = output.decode().rstrip().split('\n')
         return output
 
+    def _liststrictpaths(self, file):
+        """Return a list of paths to all hard links to `file`
+
+        This does not descend into symbolic links.  Thus, returns all
+        unique hard links.
+
+        Relies on 'find' utility, for sheer simplicity and speed.  If it
+        cannot be found, :exc:`DependencyError` is raised.  Output paths
+        are absolute.
+        """
+        assert isinstance(file, str)
+        try:
+            output = subprocess.check_output([
+                'find', self.root, '-samefile', file])
+        except FileNotFoundError:
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
+        output = output.decode().rstrip().split('\n')
+        return output
+
     def listtags(self, file):
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
