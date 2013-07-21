@@ -347,13 +347,13 @@ class Library(BaseFSLibrary):
     def tagpath(self, tag):
         """Get absolute path of `tag`.
 
-        Raise NotADirectoryError if tag doesn't exist
+        Raise TagError if tag doesn't exist
         :rtype: :class:`str`
 
         """
         path = os.path.join(self.root, tag)
         if not os.path.isdir(path):
-            raise NotADirectoryError(
+            raise TagError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
         return os.path.abspath(path)
 
@@ -616,3 +616,4 @@ class SocketOperations(threading.Thread):
 
 
 class LibraryError(Exception): pass
+class TagError(LibraryError): pass
