@@ -244,22 +244,18 @@ class Library(BaseFSLibrary):
             files]
 
     def convert(self, dir):
-        self._convert(dir)
-
-    def _convert(self, dir, alt=None):
         """Convert a directory to a symlink.
 
         If `dir` is in ``.dantalian/dirs`` (smartassery),
-        :meth:`convert` raises :exc:`LibraryError`.  If `dir` is a
-        symlink (probably already converted), :meth:`convert` returns
-        without doing anything.  If its name conflicts,
-        :exc:`FileExistsError` will be raised.  If `dir` is not a
-        directory, :exc:`NotADirectoryError` will be raised.  If `alt`
-        is given, the alternate name will be used for the copy kept in
+        convert raises LibraryError.  If `dir` is a
+        symlink (probably already converted), convert returns
+        without doing anything.  If `dir` is not a directory,
+        NotADirectoryError will be raised.  If `alt` is given, the
+        alternate name will be used for the copy kept in
         ``.dantalian/dirs``.
         """
-        logger.debug('convert(%r, %r)', dir, alt)
-        _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
+        logger.debug('convert(%r, %r)', dir)
+        _convertto(dir, libpath.dirsdir(self.root))
 
     def cleandirs(self):
         """Clean converted directories
@@ -452,19 +448,13 @@ def _cleandirs(root):
         shutil.rmtree(x)
 
 
-def _convertcheck(dir, to, alt):
-    """
-    Parameters:
+def _convertto(dir, target):
 
+    """
     dir: directory to convert
-    to: dantalian library dirsdir
-    alt: alternate name (str or None)
-
-    Returns tuple of arguments to _convertto
+    target: dantalian dirs directory
     """
-    logger.debug('_convertcheck(%r, %r, %r)', dir, to, alt)
-    assert isinstance(dir, str)
-    assert isinstance(to, str)
+
     dir = os.path.abspath(dir)
 
     logger.info("Checking %r is a dir", dir)
@@ -480,26 +470,21 @@ def _convertcheck(dir, to, alt):
 
     logger.info("Checking %r is not in dirs", dir)
     dirname, basename = os.path.split(os.path.abspath(dir))
-    if libpath.samefile(dirname, to):
+    if libpath.samefile(dirname, target):
         raise LibraryError("{} is in special directory".format(dirname))
     logger.info("Check okay")
 
-    if alt is not None:
-        assert isinstance(alt, str)
-        basename = alt
-    new = os.path.join(to, basename)
-    logger.info("Checking name conflict")
-    if os.path.exists(new):
-        raise FileExistsError('{} exists'.format(new))
-    logger.info("Check okay")
-    return (dir, new)
-
-
-def _convertto(dir, target):
-    logger.debug("moving %r to %r", dir, target)
-    os.rename(dir, target)
-    logger.debug("linking %r to %r", dir, target)
-    os.symlink(target, dir)
+    while True:
+        target = os.path.join(target, libpath.resolve_name(basename))
+        logger.debug("moving %r to %r", dir, target)
+        try:
+            os.rename(dir, target)
+        except FileExistsError:
+            continue
+        else:
+            logger.debug("linking %r to %r", dir, target)
+            os.symlink(target, dir)
+            break
 
 
 def _find_root(dir):
