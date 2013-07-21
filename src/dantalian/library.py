@@ -207,7 +207,10 @@ class Library(BaseFSLibrary):
             logger.debug('inode is %r', st)
             if os.path.samestat(inode, st):
                 logger.debug('unlinking %r', f)
-                os.unlink(f)
+                try:
+                    os.unlink(f)
+                except OSError as e:
+                    logger.warn('Caught OSError: %s', e)
 
     def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`
