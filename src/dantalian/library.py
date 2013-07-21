@@ -59,10 +59,10 @@ def init_library(root):
 
 def open_library(root=None):
     """
-    If `root` is :data:`None`, search up the directory tree for the first
-    library (a directory that contains ``.dantalian``) we find and use that.
-    If none are found, raises :exc:`LibraryError`.  Otherwise, `root` will be
-    used.  Return a Library or subclass.
+    If `root` is :data:`None`, search up the directory tree for the
+    first library (a directory that contains ``.dantalian``) we find and
+    use that.  If none are found, raises :exc:`LibraryError`.
+    Otherwise, `root` will be used.  Return a Library or subclass.
     """
     if root is None:
         logger.debug("Finding library...")
@@ -165,12 +165,12 @@ class Library(BaseFSLibrary):
     def _tag(self, file, tag, alt=None):
         """Tag `file` with `tag`.
 
-        `file` is relative to current dir. `tag` is relative to library root.
-        If `file` is already tagged, nothing happens.  This includes if the
-        file is hardlinked under another name.  If `file` is an unconverted
-        directory, :exc:`IsADirectoryError` will be raised.  If there's a name
-        collision, :exc:`FileExistsError` is raised.
-
+        `file` is relative to current dir. `tag` is relative to library
+        root.  If `file` is already tagged, nothing happens.  This
+        includes if the file is hardlinked under another name.  If
+        `file` is an unconverted directory, :exc:`IsADirectoryError`
+        will be raised.  If there's a name collision,
+        :exc:`FileExistsError` is raised.
         """
         assert isinstance(file, str)
         assert isinstance(tag, str)
@@ -197,10 +197,9 @@ class Library(BaseFSLibrary):
     def untag(self, file, tag):
         """Remove `tag` from `file`.
 
-        `file` is relative to current dir. `tag` is relative to library root.
-        If file is not tagged, nothing happens.  Removes *all* hard links to
-        `file` with `tag`.
-
+        `file` is relative to current dir. `tag` is relative to library
+        root.  If file is not tagged, nothing happens.  Removes *all*
+        hard links to `file` with `tag`.
         """
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
@@ -219,12 +218,11 @@ class Library(BaseFSLibrary):
     def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`
 
-        Relies on 'find' utility, for sheer simplicity and speed.  If it cannot
-        be found, :exc:`DependencyError` is raised.  Output paths are absolute.
-        Trims out any '.hitagifs/dirs/' entries.
+        Relies on 'find' utility, for sheer simplicity and speed.  If it
+        cannot be found, :exc:`DependencyError` is raised.  Output paths
+        are absolute.  Trims out any '.hitagifs/dirs/' entries.
 
         :rtype: :class:`list`
-
         """
         assert isinstance(file, str)
         try:
@@ -256,14 +254,14 @@ class Library(BaseFSLibrary):
     def _convert(self, dir, alt=None):
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.dantalian/dirs`` (smartassery), :meth:`convert`
-        raises :exc:`LibraryError`.  If `dir` is a symlink (probably already
-        converted), :meth:`convert` returns without doing anything.  If its
-        name conflicts, :exc:`FileExistsError` will be raised.  If `dir` is not
-        a directory, :exc:`NotADirectoryError` will be raised.  If `alt` is
-        given, the alternate name will be used for the copy kept in
+        If `dir` is in ``.dantalian/dirs`` (smartassery),
+        :meth:`convert` raises :exc:`LibraryError`.  If `dir` is a
+        symlink (probably already converted), :meth:`convert` returns
+        without doing anything.  If its name conflicts,
+        :exc:`FileExistsError` will be raised.  If `dir` is not a
+        directory, :exc:`NotADirectoryError` will be raised.  If `alt`
+        is given, the alternate name will be used for the copy kept in
         ``.dantalian/dirs``.
-
         """
         logger.debug('convert(%r, %r)', dir, alt)
         _convertto(*_convertcheck(dir, libpath.dirsdir(self.root), alt))
@@ -271,9 +269,9 @@ class Library(BaseFSLibrary):
     def cleandirs(self):
         """Clean converted directories
 
-        Remove directories in the library's converted directories directory
-        which do not have a symlink in the library that references them.  Nuke
-        them with shutil.rmtree
+        Remove directories in the library's converted directories
+        directory which do not have a symlink in the library that
+        references them.  Nuke them with shutil.rmtree
         """
         _cleandirs(self.root)
 
@@ -299,17 +297,16 @@ class Library(BaseFSLibrary):
     def rm(self, file):
         """Removes all tags from `file`.
 
-        `file` is a path relative to the current dir.  If `file` is not tagged,
-        nothing happens.  If a file cannot be removed (for whatever reason), it
-        is skipped, a warning is logged, and :meth:`rm` returns ``1``.
-        Otherwise, returns ``0``.
+        `file` is a path relative to the current dir.  If `file` is not
+        tagged, nothing happens.  If a file cannot be removed (for
+        whatever reason), it is skipped, a warning is logged, and
+        :meth:`rm` returns ``1``.  Otherwise, returns ``0``.
 
         .. warning::
-            In essence, this removes all tracked hard links to `file`!  If no
-            other hard links exist, `file` is deleted.
+            In essence, this removes all tracked hard links to `file`!
+            If no other hard links exist, `file` is deleted.
 
         :rtype: :class:`int`
-
         """
         assert isinstance(file, str)
         error = 0
@@ -326,10 +323,10 @@ class Library(BaseFSLibrary):
     def rename(self, file, new):
         """Rename tracked file.
 
-        Rename all tracked hard links of `file` to `new`.  If file is not
-        tagged, nothing happens.  If any name collisions exist, nothing
-        will be renamed and :exc:`FileExistsError` will be raised.
-
+        Rename all tracked hard links of `file` to `new`.  If file is
+        not tagged, nothing happens.  If any name collisions exist,
+        nothing will be renamed and :exc:`FileExistsError` will be
+        raised.
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
