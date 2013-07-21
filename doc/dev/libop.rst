@@ -57,6 +57,18 @@ implements the following public methods and invariants in addition to
 those described in BaseFSLibrary (Filename/path conflicts will be
 resolved according to :ref:`rename_alg`.):
 
+.. note::
+   dantalian respects symbolic links to directories outside of the
+   library (Internal symbolic links should always be converted by
+   dantalian.  Handmade symbolic links to library-internal paths subject
+   to breakage and Armageddon.).  For simple operations, dantalian will
+   act as though these directories are a part of the library.  For
+   complex operations, these external directories will be ignored (This
+   is because dantalian is not really descending symbolic links, but
+   only acting on the directories stored internally. This simulates only
+   descending into internal symbolic links.).  The latter case will be
+   noted below if applicable.
+
 tag(file, tag)
    Tag file as in BaseFSLibrary.  Resolve name conflict if necessary.
 
@@ -84,10 +96,18 @@ rm(file)
    Remove all hard links to `file` in the library.  Any errors will be
    reported and removal will resume for remaining hard links.
 
+.. note::
+   This method does not descend into symbolic links to external
+   directories.
+
 rename(file, new)
    Rename all hard links to `file` in the library to `new`.  File name
    conflicts are resolved and reported.  Any errors
    will be reported and renaming will resume for remaining hard links.
+
+.. note::
+   This method does not descend into symbolic links to external
+   directories.
 
 fix()
    Fix the absolute paths of symbolic links in the library to internally
