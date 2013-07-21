@@ -309,23 +309,19 @@ class Library(BaseFSLibrary):
         `file` is a path relative to the current dir.  If `file` is not
         tagged, nothing happens.  If a file cannot be removed (for
         whatever reason), it is skipped, a warning is logged, and
-        :meth:`rm` returns ``1``.  Otherwise, returns ``0``.
+        rm() returns ``1``.  Otherwise, returns ``0``.
 
-        .. warning::
-            In essence, this removes all tracked hard links to `file`!
-            If no other hard links exist, `file` is deleted.
-
-        :rtype: :class:`int`
+        This removes all hard links in the library to `file`!  If no
+        other hard links exist, `file` is deleted.
         """
         assert isinstance(file, str)
         error = 0
-        for file in self._listpaths(file):
+        for file in self._liststrictpaths(file):
             logger.debug('unlinking %r', file)
             try:
                 os.unlink(file)
             except OSError as e:
-                logger.warn(e)
-                logger.warn('Could not unlink %r', file)
+                logger.warn('Encountered OSError: %s', e)
                 error = 1
         return error
 
