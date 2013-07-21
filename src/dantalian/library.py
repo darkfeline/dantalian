@@ -269,20 +269,18 @@ class Library(BaseFSLibrary):
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is a list. `tags` is left unchanged.  Returns a list.  File
-        paths are absolute and are paths to the hard link under the first tag
-        given.
-
-        :rtype: :class:`list`
-
+        `tags` is a list. `tags` is left unchanged.  Returns a list.
+        File paths are absolute and are paths to the hard link under the
+        first tag given.
         """
-        assert len(tags) > 0
         logger.debug("find(%r)", tags)
+        assert len(tags) > 0
+        inodes = functools.reduce(
+            set.intersection,
+            (set(os.lstat(x) for x in libpath.listdir(y)) for y in tags))
+        logger.debug("found unique inodes %r", inodes)
         map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
         logger.debug("using map %r", map)
-        inodes = functools.reduce(set.intersection, (
-            set(os.lstat(x) for x in libpath.listdir(y)) for y in tags))
-        logger.debug("found unique inodes %r", inodes)
         return [map[x] for x in inodes]
 
     def rm(self, file):
