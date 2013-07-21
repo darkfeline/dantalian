@@ -215,23 +215,24 @@ class Library(BaseFSLibrary):
     def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`
 
+        This descends into symbolic links and trims ``.dantalian/dirs``.
+        Specifically, returns all paths that would account for `file`'s
+        tags.
+
         Relies on 'find' utility, for sheer simplicity and speed.  If it
         cannot be found, :exc:`DependencyError` is raised.  Output paths
-        are absolute.  Trims out any '.hitagifs/dirs/' entries.
-
-        :rtype: :class:`list`
+        are absolute.
         """
         assert isinstance(file, str)
         try:
-            output = subprocess.check_output(
-                ['find', '-L', self.root, '-samefile', file])
+            output = subprocess.check_output([
+                'find', '-L', self.root, '-path',
+                libpath.rootdir(self.root), '-prune', '-o', '-samefile', file,
+                '-print'])
         except FileNotFoundError:
             raise DependencyError("find could not be found; \
                 probably findutils is not installed")
         output = output.decode().rstrip().split('\n')
-        for x in iter(output):
-            if libpath.dirsdir(self.root) in x:
-                output.remove(x)
         return output
 
     def listtags(self, file):
