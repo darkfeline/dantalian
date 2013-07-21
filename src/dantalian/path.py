@@ -7,50 +7,58 @@ from itertools import count
 
 from dantalian.errors import DependencyError
 
-__all__ = [
-    'rootdir', 'fuserootdir', 'rootfile', 'dirsdir', 'treefile', 'ctreefile',
-    'fusesock',
-
-    'samefile', 'listdir', 'fixsymlinks', 'findsymlinks'
-]
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
+def _public(x):
+    __all__.append(x.__name__)
+    return x
+
+
+@_public
 @lru_cache()
 def rootdir(root):
     return os.path.join(root, '.dantalian')
 
 
+@_public
 @lru_cache()
 def fuserootdir(root):
     return os.path.join(root, '.dantalian-fuse')
 
 
+@_public
 @lru_cache()
 def rootfile(root):
     return os.path.join(rootdir(root), 'root')
 
 
+@_public
 @lru_cache()
 def dirsdir(root):
     return os.path.join(rootdir(root), 'dirs')
 
 
+@_public
 @lru_cache()
 def treefile(root):
     return os.path.join(rootdir(root), 'mount')
 
 
+@_public
 @lru_cache()
 def ctreefile(root):
     return os.path.join(rootdir(root), 'mount_custom')
 
 
+@_public
 @lru_cache()
 def fusesock(root):
     return os.path.join(rootdir(root), 'fuse.sock')
 
 
+@_public
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 
@@ -60,6 +68,7 @@ def samefile(f1, f2):
     return os.path.samestat(os.lstat(f1), os.lstat(f2))
 
 
+@_public
 def listdir(path):
     """Return full paths of files in `path`.
 
@@ -69,6 +78,7 @@ def listdir(path):
     return iter(os.path.join(path, f) for f in os.listdir(path))
 
 
+@_public
 def resolve_name(dir, name):
     """Return an available filename"""
     files = os.listdir(dir)
@@ -82,6 +92,7 @@ def resolve_name(dir, name):
             return x
 
 
+@_public
 def fixsymlinks(links, oldprefix, newprefix):
     """Fix symlinks
 
@@ -107,6 +118,7 @@ def fixsymlinks(links, oldprefix, newprefix):
             os.link(f, file)
 
 
+@_public
 def findsymlinks(dir):
     """Find symlinks
 
