@@ -96,10 +96,10 @@ def fixsymlinks(links, oldprefix, newprefix):
 def findsymlinks(dir):
     """Find symlinks
 
-    Returns a list of lists.  Symlinks that are the same inode are grouped
-    together.  Relies on 'find' utility, for sheer simplicity and speed.
-    If it cannot be found, :exc:`DependencyError` is raised.  Output paths
-    are absolute.
+    Returns a list of lists.  Symlinks that are the same inode are
+    grouped together.  Relies on 'find' utility, for sheer simplicity
+    and speed.  If it cannot be found, :exc:`DependencyError` is raised.
+    Output paths are absolute.
     """
     try:
         output = subprocess.check_output(
