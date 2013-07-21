@@ -4,6 +4,7 @@ __pycache__/
 /build/
 /dist/
 /doc/tags
+/src/tags
 
 /virt-env/
 /bugs.otl
