@@ -236,15 +236,12 @@ class Library(BaseFSLibrary):
         return output
 
     def listtags(self, file):
-        """Return a list of all tags of `file`
-
-        :rtype: :class:`list`
-
-        """
+        """Return a list of all tags of `file`"""
         assert isinstance(file, str)
         files = self._listpaths(file)
-        return [os.path.dirname(file).replace(self.root + '/', '') for file in
-                files]
+        return [
+            os.path.dirname(f).replace(self.root + '/', '', 1) for f in
+            files]
 
     def convert(self, dir):
         self._convert(dir)
