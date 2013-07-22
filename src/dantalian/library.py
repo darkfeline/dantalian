@@ -546,9 +546,9 @@ class ProxyLibrary(Library):
         logger.warn("can't mount fuse library")
         return
 
-    def convert(self, dir, alt=None):
-        logger.debug('convert(%r, %r)', dir, alt)
-        _convertto(*_convertcheck(dir, libpath.dirsdir(self._realroot), alt))
+    def convert(self, dir):
+        logger.debug('convert(%r, %r)', dir)
+        _convertto(dir, libpath.dirsdir(self._realroot))
 
 
 class SocketOperations(threading.Thread):
