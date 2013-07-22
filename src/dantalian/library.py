@@ -356,10 +356,11 @@ class Library(BaseFSLibrary):
 
         """
         path = os.path.join(self.root, tag)
+        assert path == os.path.abspath(path)
         if not os.path.isdir(path):
             raise TagError(
                 "Tag {} doesn't exist (or isn't a directory)".format(tag))
-        return os.path.abspath(path)
+        return path
 
     def fix(self):
         logger.info('Checking if moved')
