@@ -588,7 +588,8 @@ class SocketOperations(threading.Thread):
                 x = getattr(self, 'do_' + cmd)
             except AttributeError:
                 logger.warn('received unknown command %r', cmd)
-            x(*msg)
+            else:
+                x(*msg)
 
     def do_mknode(self, path, *tags):
         name = []
