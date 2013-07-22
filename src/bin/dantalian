@@ -11,7 +11,7 @@ from dantalian import library
 from dantalian import path as libpath
 
 parser = argparse.ArgumentParser(
-    prog="hfs", add_help=False,
+    prog="dantalian", add_help=False,
     description="dantalian CLI tool.  Check docs for usage.")
 parser.add_argument('command', choices=commands.__all__)
 parser.add_argument('args', nargs='*')
