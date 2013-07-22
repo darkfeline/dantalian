@@ -369,14 +369,14 @@ class Library(BaseFSLibrary):
             return
         logger.info('Move detected; fixing')
         files = libpath.findsymlinks(self.root)
-        logger.debug('found symlinks %r', files)
+        logger.debug('Found symlinks %r', files)
         olddir = libpath.dirsdir(self._moved)
         newdir = libpath.dirsdir(self.root)
         libpath.fixsymlinks(files, olddir, newdir)
-        logger.debug('writing %r', libpath.rootfile(self.root))
+        logger.debug('Writing %r', libpath.rootfile(self.root))
         with open(libpath.rootfile(self.root), 'w') as f:
             f.write(self.root)
-        logger.info('finished fixing')
+        logger.info('Finished fixing')
 
     def maketree(self):
         logger.info("making tree")

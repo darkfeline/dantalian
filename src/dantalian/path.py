@@ -107,15 +107,31 @@ def fixsymlinks(links, oldprefix, newprefix):
             logger.warning("Empty set")
             continue
         newtarget = oldprefix.sub(newprefix, os.readlink(f), count=1)
-        logger.debug("unlinking %r", f)
+        logger.debug("Unlinking %r", f)
         os.unlink(f)
-        logger.debug("symlinking %r to %r", f, newtarget)
-        os.symlink(newtarget, f)
+        dir, name = os.path.dirname(f)
+        while True:
+            f = os.path.join(dir, resolve_name(dir, name))
+            logger.debug("Symlinking %r to %r", f, newtarget)
+            try:
+                os.symlink(newtarget, f)
+            except FileExistsError:
+                continue
+            else:
+                break
         for file in set:
-            logger.debug("unlinking %r", file)
+            logger.debug("Unlinking %r", file)
             os.unlink(file)
-            logger.debug("linking %r to %r", file, f)
-            os.link(f, file)
+            dir = os.path.dirname(file)
+            while True:
+                dest = os.path.join(dir, resolve_name(dir, file))
+                logger.debug('Linking %r to %r', dest, f)
+                try:
+                    os.link(f, dest)
+                except FileExistsError:
+                    continue
+                else:
+                    break
 
 
 @_public
