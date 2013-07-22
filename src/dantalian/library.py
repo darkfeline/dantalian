@@ -268,8 +268,8 @@ class Library(BaseFSLibrary):
         assert isinstance(file, str)
         files = self._listpaths(file)
         return [
-            os.path.dirname(f).replace(self.root + '/', '', 1) for f in
-            files]
+            '/' if os.path.dirname(f) == self.root else
+            os.path.dirname(f).replace(self.root, '', 1) for f in files]
 
     def convert(self, dir):
         """Convert a directory to a symlink.
