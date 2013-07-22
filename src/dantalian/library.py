@@ -499,7 +499,7 @@ def _convertto(dir, target):
     logger.info("Check okay")
 
     while True:
-        target = os.path.join(target, libpath.resolve_name(basename))
+        target = os.path.join(target, libpath.resolve_name(dir, basename))
         logger.debug("moving %r to %r", dir, target)
         try:
             os.rename(dir, target)
