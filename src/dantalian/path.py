@@ -149,6 +149,8 @@ def findsymlinks(dir):
     except FileNotFoundError:
         raise DependencyError("find could not be found; \
             probably findutils is not installed")
+    if not output:
+        return []
     output = output.decode().rstrip().split('\n')
     result = []
     for file in output:
