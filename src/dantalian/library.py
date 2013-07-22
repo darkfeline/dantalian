@@ -16,12 +16,16 @@ from dantalian import tree
 from dantalian import path as libpath
 from dantalian.errors import DependencyError
 
-__all__ = [
-    'init_library', 'open_library', 'BaseLibrary', 'BaseFSLibrary', 'Library',
-    'ProxyLibrary', 'SocketOperations', 'LibraryError']
+__all__ = []
 logger = logging.getLogger(__name__)
 
 
+def _public(f):
+    __all__.append(f.__name__)
+    return f
+
+
+@_public
 def init_library(root):
 
     """Initialize a library at `root`
@@ -57,6 +61,7 @@ def init_library(root):
     return Library(root)
 
 
+@_public
 def open_library(root=None):
     """
     If `root` is :data:`None`, search up the directory tree for the
@@ -74,6 +79,7 @@ def open_library(root=None):
         return Library(root)
 
 
+@_public
 class BaseLibrary(metaclass=abc.ABCMeta):
 
     """
@@ -117,6 +123,7 @@ class BaseLibrary(metaclass=abc.ABCMeta):
         pass
 
 
+@_public
 class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
 
     """
@@ -134,6 +141,7 @@ class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
     """
 
 
+@_public
 class Library(BaseFSLibrary):
 
     """
@@ -526,6 +534,7 @@ def _find_root(dir):
     raise LibraryError('No root found')
 
 
+@_public
 class ProxyLibrary(Library):
 
     def __init__(self, root):
@@ -551,6 +560,7 @@ class ProxyLibrary(Library):
         _convertto(dir, libpath.dirsdir(self._realroot))
 
 
+@_public
 class SocketOperations(threading.Thread):
 
     def __init__(self, sock, root, tree):
@@ -612,5 +622,11 @@ class SocketOperations(threading.Thread):
                 break
 
 
-class LibraryError(Exception): pass
-class TagError(LibraryError): pass
+@_public
+class LibraryError(Exception):
+    pass
+
+
+@_public
+class TagError(LibraryError):
+    pass
