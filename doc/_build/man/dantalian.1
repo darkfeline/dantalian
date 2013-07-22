@@ -1,4 +1,4 @@
-.TH "DANTALIAN" "1" "March 09, 2013" "0.3" "dantalian"
+.TH "DANTALIAN" "1" "July 21, 2013" "0.4" "dantalian"
 .SH NAME
 dantalian \- dantalian cli script
 .
@@ -40,8 +40,9 @@ tag\-based file organization system.
 .sp
 Comprehensive documentation can be found online at
 \fI\%https://dantalian.readthedocs.org/\fP (note which version of dantalian the
-documentation is for).  The documentation may also be distributed and installed
-locally, in which case it can probably be found in the usual location.
+documentation is for).  The documentation may also be distributed and
+installed locally, in which case it can probably be found in the usual
+location.
 .SH OPTIONS
 .INDENT 0.0
 .TP
@@ -49,8 +50,8 @@ locally, in which case it can probably be found in the usual location.
 Specify a specific library to use.
 .TP
 .B \-\-loglevel \fILEVEL\fP
-Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN, ERROR,
-or CRITICAL, case insensitive.
+Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN,
+ERROR, or CRITICAL, case insensitive.
 .TP
 .B \-\-logfile \fIFILE\fP
 Specify a file to log to instead of stderr.
@@ -59,22 +60,41 @@ Specify a file to log to instead of stderr.
 Show only messages from the given module
 .UNINDENT
 .sp
-These options are for debugging purposes.  If you run into a bug, run
-\fBdantalian\fP with \fB\-\-loglevel=DEBUG \-\-logfile=output.log\fP and include the
-log with the bug report.
+The last three options are for debugging purposes.  If you run into a
+bug, run \fBdantalian\fP with \fB\-\-loglevel=DEBUG \-\-logfile=output.log\fP
+and include the log with the bug report.
 .SH COMMANDS
+.sp
+There are three types of commands: universal, library, and fuse.
+Universal commands are used without a reference to a library.  Library
+commands must be used with a library (either detected automatically or
+specified with \fB\-\-root\fP.  Fuse commands must be used with a
+fuse\-mounted library.
+.SS UNIVERSAL
+.INDENT 0.0
+.TP
+.B init
+Usage: \fBdantalian init\fP [\fIDIR\fP]
+.sp
+Creates a library in DIR.  If DIR is omitted, creates a library in
+the current directory.
+.UNINDENT
+.SS LIBRARY
 .INDENT 0.0
 .TP
 .B tag
 Usage: \fBdantalian tag\fP \fITAG\fP \fIFILE\fP...
 .sp
-Tags FILE with TAG.  If FILE is already tagged, does nothing.  If FILE is a
-directory, you\(aqll need to convert it first.
+Tags FILE with TAG.  If FILE is already tagged, does nothing.  If
+FILE is a directory, you\(aqll need to convert it first.  The option
+\fB\-s\fP reverses \fITAG\fP and \fIFILE\fP, for tagging a single file with
+multiple tags.
 .TP
 .B untag
 Usage: \fBdantalian untag\fP \fITAG\fP \fIFILE\fP...
 .sp
-Removes TAG from FILE.  If FILE isn\(aqt tagged, does nothing.
+Removes TAG from FILE.  If FILE isn\(aqt tagged, does nothing.  Has the
+same \fB\-s\fP options as \fBtag\fP
 .TP
 .B tags
 Usage: \fBdantalian tags\fP \fIFILE\fP
@@ -84,13 +104,16 @@ Lists all the tags of FILE.
 .B find
 Usage: \fBdantalian find\fP \fITAG\fP...
 .sp
-Intersection tag search.  Lists all files that have all of the given tags.
-Lists files by the path to the hard link under the first tag given.
+Intersection tag search.  Lists all files that have all of the given
+tags.  Lists files by the path to the hard link under the first tag
+given.
 .TP
 .B rm
 Usage: \fBdantalian rm\fP \fIFILE\fP...
 .sp
-Removes the files given.
+Removes the files given.  That is, removes all hard links to the
+given files in the library.  Hard links outside of the library are
+unaffected.
 .TP
 .B rename
 Usage: \fBdantalian rename\fP \fIFILE\fP \fINEW\fP
@@ -100,26 +123,35 @@ Renames all hard links of FILE to NEW.
 .B convert
 Usage: \fBdantalian convert\fP \fIDIR\fP...
 .sp
-Converts directories so they can be tagged.  (Moves directories to special
-location \(aq.dantalian/dirs\(aq and replaces the original with a symlink pointing
-to the absolute path).
+Converts directories so they can be tagged.  (Moves directories to
+special location \(aq.dantalian/dirs\(aq and replaces the original with a
+symlink pointing to the absolute path).
 .TP
 .B fix
 Usage: \fBdantalian fix\fP
 .sp
-Fixes symlinks after the library has been moved.  If it hasn\(aqt been moved,
-does nothing.
+Fixes symlinks after the library has been moved.  If it hasn\(aqt been
+moved, does nothing.
 .TP
-.B init
-Usage: \fBdantalian init\fP [\fIDIR\fP]
+.B clean
+Usage: \fBdantalian clean\fP
 .sp
-Creates a library in DIR.  If DIR is omitted, creates a library in the
-current directory.
+Clean converted directories.  Delete any converted directories which
+no longer have any symlinks in the library reference it.
 .TP
 .B mount
 Usage: \fBdantalian mount\fP \fIDIR\fP
 .sp
-Mounts the FUSE file system at DIR according to the configuration files
+Mounts the FUSE file system at DIR according to the configuration
+files.
+.UNINDENT
+.SS FUSE
+.INDENT 0.0
+.TP
+.B mknode
+Usage: \fBdantalian mknode\fP \fIPATH\fP \fITAGS\fP...
+.sp
+Make a TagNode
 .UNINDENT
 .SH CONFIGURATION FILES
 .nf

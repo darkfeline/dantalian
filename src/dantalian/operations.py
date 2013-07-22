@@ -1,6 +1,6 @@
 """
-mount.py
-========
+operations.py
+=============
 
 This module defines the FUSE operations dantalian uses.  Thus, how FUSE behaves
 is defined here.
@@ -358,28 +358,11 @@ class TagOperations(LoggingMixIn, Operations):
         path.  path is a list of strings indicating the path from the given
         node.  If node is the last file in the path, path is None.
         """
-        assert len(path) > 0
-        assert path[0] == "/"
-        logger.debug("resolving path %r", path)
-        path = [x for x in path.lstrip('/').split('/') if x != ""]
-        logger.debug("path list %r", path)
-        cur = self.tree
-        while path:
-            logger.debug("resolving %r", path[0])
-            try:
-                a = cur[path[0]]
-            except KeyError:
-                logger.warn("path broken")
-                raise FuseOSError(ENOENT)
-            if isinstance(a, str):
-                logger.debug("BorderNode found, %r, %r", cur, path)
-                return (cur, path)
-            else:
-                logger.debug("next node")
-                cur = a
-                del path[0]
-        logger.debug("found node %r", cur)
-        return (cur, [])
+        x = tree.split(self.tree, path)
+        if not x:
+            raise FuseOSError(ENOENT)
+        else:
+            return x
 
     def _tmplink(self, target):
         """Create a temporary hardlink to `target` and return the path to it.
@@ -406,8 +389,8 @@ class TagOperations(LoggingMixIn, Operations):
 def _getpath(node, path):
     """Get real path
 
-    Calculate and return the real path given TagNode `node` and list of strings
-    `path`.  If `node` is not a BorderNode or `path` is empty, raise
+    Calculate and return the real path given BorderNode `node` and list of
+    strings `path`.  If `node` is not a BorderNode or `path` is empty, raise
     FuseOSError(EINVAL).  This is used internally when trying to resolve real,
     non-virtual, outside paths.
     """

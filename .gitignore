@@ -3,6 +3,8 @@ __pycache__/
 *.py[co]
 /build/
 /dist/
+/doc/tags
+/src/tags
 
 /virt-env/
 /bugs.otl

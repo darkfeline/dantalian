@@ -23,7 +23,7 @@ from time import time
 
 from dantalian import path as libpath
 
-__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag']
+__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag', 'split']
 logger = logging.getLogger(__name__)
 UMASK = 0o007
 
@@ -151,6 +151,40 @@ def fs2tag(node, root, tags):
     x = TagNode(root, tags)
     x.children.update(dict(node.children))
     return x
+
+
+def split(tree, path):
+    """Get node and path components
+
+    tree is root node.  path is a string pointing to a path under the vfs.
+
+    Return a tuple (cur, path).  cur is the furthest FSNode along the
+    path.  path is a list of strings indicating the path from the given
+    node.  If node is the last file in the path, path is an empty list.  If
+    path is broken, return None
+    """
+    assert len(path) > 0
+    assert path[0] == "/"
+    logger.debug("resolving path %r", path)
+    path = [x for x in path.lstrip('/').split('/') if x != ""]
+    logger.debug("path list %r", path)
+    cur = tree
+    while path:
+        logger.debug("resolving %r", path[0])
+        try:
+            a = cur[path[0]]
+        except KeyError:
+            logger.warn("path broken")
+            return None
+        if isinstance(a, str):
+            logger.debug("BorderNode found, %r, %r", cur, path)
+            return (cur, path)
+        else:
+            logger.debug("next node")
+            cur = a
+            del path[0]
+    logger.debug("found node %r", cur)
+    return (cur, [])
 
 
 def _uniqmap(files):

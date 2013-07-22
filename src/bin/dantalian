@@ -2,15 +2,18 @@
 
 import argparse
 import logging
+import sys
+import socket
 
 from dantalian import commands
 from dantalian import library
+from dantalian import path as libpath
 
 parser = argparse.ArgumentParser(
-    prog="hfs", add_help=False,
+    prog="dantalian", add_help=False,
     description="dantalian CLI tool.  Check docs for usage.")
 parser.add_argument('command', choices=commands.__all__)
-parser.add_argument('args', nargs='*')
+parser.add_argument('args', nargs=argparse.REMAINDER)
 parser.add_argument('--loglevel', action='store', default='warn')
 parser.add_argument('--logfile', action='store', default='')
 parser.add_argument('--logfilter', action='store', default='')
@@ -29,8 +32,20 @@ logger.setLevel(args.loglevel.upper())
 if args.logfilter:
     handler.addFilter(logging.Filter(args.logfilter))
 
-if args.command in ('init'):
+if args.command in commands.t_global:
     getattr(commands, args.command)(*args.args)
-else:
+elif args.command in commands.t_library:
     lib = library.open_library(getattr(args, 'root', None))
     getattr(commands, args.command)(lib, *args.args)
+elif args.command in commands.t_sock:
+    lib = library.open_library(getattr(args, 'root', None))
+    if not isinstance(lib, library.ProxyLibrary):
+        print('Socket command can only be used with fuse')
+        sys.exit(1)
+    addr = libpath.fusesock(lib._realroot)
+    sock = socket.socket(socket.AF_UNIX)
+    sock.connect(addr)
+    getattr(commands, args.command)(sock, *args.args)
+else:
+    print('Command not found')
+    sys.exit(1)
