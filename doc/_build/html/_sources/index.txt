@@ -1,16 +1,25 @@
-Welcome to dantalian's documentation!
-=====================================
+dantalian Documentation
+=======================
 
-dantalian is a transparent tag-based file organization system.
+.. epigraph::
+
+   *"I ask of thee, art thou mankind?"*
+
+   *"Nay, I am the world, the world inside the gourd."*
+
+   *— The Mystic Archives of Dantalian*
+
+This is the documentation for dantalian 0.4-dev.  dantalian is a
+transparent tag-based file organization system.
 
 dantalian is still in active development.
 
-Contents:
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   intro
-   quickstart
-   install
-   guide
+   /intro
+   /user
+   /dev
+   /changes
+
+Manpage: :ref:`manpage`

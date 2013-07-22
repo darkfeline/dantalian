@@ -1,0 +1,12 @@
+Names and Paths
+===============
+
+Files
+-----
+
+Everything is done internally via inode, so all operations take
+filenames as a way to indicate a particular file/inode, and dantalian
+works with that.  Thus, file name handling is for the most part a
+concern for the user only.
+
+
