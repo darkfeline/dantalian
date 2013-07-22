@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>FUSE &mdash; dantalian 0.4 documentation</title>
+    <title>FUSE &mdash; dantalian 0.4.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.4',
+        VERSION:     '0.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="dantalian 0.4 documentation" href="../index.html" />
+    <link rel="top" title="dantalian 0.4.1 documentation" href="../index.html" />
     <link rel="up" title="Users Guide" href="../user.html" />
     <link rel="next" title="Bugs" href="bugs.html" />
     <link rel="prev" title="Libraries" href="library.html" /> 
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="library.html" title="Libraries"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">dantalian 0.4 documentation</a> &raquo;</li>
+        <li><a href="../index.html">dantalian 0.4.1 documentation</a> &raquo;</li>
           <li><a href="../user.html" accesskey="U">Users Guide</a> &raquo;</li> 
       </ul>
     </div>  
@@ -159,38 +159,38 @@ will manipulate the tags on the files according to the library paradigm.</p>
 <dl class="class">
 <dt id="dantalian.operations.TagOperations">
 <em class="property">class </em><tt class="descclassname">dantalian.operations.</tt><tt class="descname">TagOperations</tt><big>(</big><em>root</em>, <em>tree</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><dl class="function">
 <dt id="dantalian.operations.TagOperations.chmod">
-<tt class="descname">chmod</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.chmod" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">chmod</tt><big>(</big><em>self</em>, <em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.chmod" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.chown">
-<tt class="descname">chown</tt><big>(</big><em>path</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.chown" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">chown</tt><big>(</big><em>self</em>, <em>path</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.chown" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.create">
-<tt class="descname">create</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.create" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create</tt><big>(</big><em>self</em>, <em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is tagged,
 additionally add its tags.  If <cite>path</cite> is a node, the operation is
 invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.getattr">
-<tt class="descname">getattr</tt><big>(</big><em>path</em>, <em>fh=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.getattr" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getattr</tt><big>(</big><em>self</em>, <em>path</em>, <em>fh=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.getattr" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 get attributes from node.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.link">
-<tt class="descname">link</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.link" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">link</tt><big>(</big><em>self</em>, <em>source</em>, <em>target</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Note that this is different from standard.  Usually link(a, b) creates
 a link at a to b, but this link(source, target) creates a link at
 source to target.</p>
@@ -198,9 +198,9 @@ source to target.</p>
 <cite>source</cite> is a node, raise EINVAL</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.mkdir">
-<tt class="descname">mkdir</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.mkdir" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">mkdir</tt><big>(</big><em>self</em>, <em>path</em>, <em>mode</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
 additionally convert it and add tags.  If <cite>path</cite> is a node, the
 operation is invalid and raises EINVAL.</p>
@@ -212,38 +212,38 @@ tagged with all of the tags of the furthest node.  Otherwise the
 operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.open">
-<tt class="descname">open</tt><big>(</big><em>path</em>, <em>flags</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.open" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">open</tt><big>(</big><em>self</em>, <em>path</em>, <em>flags</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.open" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.read">
-<tt class="descname">read</tt><big>(</big><em>path</em>, <em>size</em>, <em>offset</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.read" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">read</tt><big>(</big><em>self</em>, <em>path</em>, <em>size</em>, <em>offset</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.read" title="Permalink to this definition">¶</a></dt>
 <dd><p><cite>path</cite> is ignored.  Forward the request to the OS (via built-in os
 module) with the file descriptor.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.readdir">
-<tt class="descname">readdir</tt><big>(</big><em>path</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.readdir" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readdir</tt><big>(</big><em>self</em>, <em>path</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.readdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 a directory listing containing &#8216;.&#8217; and &#8216;..&#8217; is made and generated
 entries from the node&#8217;s __iter__ are added.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.readlink">
-<tt class="descname">readlink</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.readlink" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readlink</tt><big>(</big><em>self</em>, <em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.readlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.rename">
-<tt class="descname">rename</tt><big>(</big><em>old</em>, <em>new</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.rename" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rename</tt><big>(</big><em>self</em>, <em>old</em>, <em>new</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.rename" title="Permalink to this definition">¶</a></dt>
 <dd><p>This one is tricky; here&#8217;s a handy chart.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -279,23 +279,23 @@ the operation is invalid and raises EINVAL.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.rmdir">
-<tt class="descname">rmdir</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.rmdir" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rmdir</tt><big>(</big><em>self</em>, <em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.rmdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  (If it&#8217;s tagged, it&#8217;s
 not a dir, but we&#8217;ll let the OS handle that =))  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.statfs">
-<tt class="descname">statfs</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.statfs" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">statfs</tt><big>(</big><em>self</em>, <em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.statfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward the request to the OS (via built-in os module).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.symlink">
-<tt class="descname">symlink</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.symlink" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">symlink</tt><big>(</big><em>self</em>, <em>source</em>, <em>target</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.symlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Note that this is different from standard.  Usually link(a, b) creates
 a link at a to b, but this link(source, target) creates a link at
 source to target.</p>
@@ -303,31 +303,31 @@ source to target.</p>
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.truncate">
-<tt class="descname">truncate</tt><big>(</big><em>path</em>, <em>length</em>, <em>fh=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.truncate" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">truncate</tt><big>(</big><em>self</em>, <em>path</em>, <em>length</em>, <em>fh=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.truncate" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
 additionally add its tags.  If <cite>path</cite> is a node, the operation is
 invalid and raises EINVAL. <cite>fh</cite> is ignored.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.unlink">
-<tt class="descname">unlink</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.unlink" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">unlink</tt><big>(</big><em>self</em>, <em>path</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.unlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is tagged, untag.  If <cite>path</cite> is outside, forward to OS.  If
 <cite>path</cite> is a node, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.utimens">
-<tt class="descname">utimens</tt><big>(</big><em>path</em>, <em>times=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.utimens" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">utimens</tt><big>(</big><em>self</em>, <em>path</em>, <em>times=None</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.utimens" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="function">
 <dt id="dantalian.operations.TagOperations.write">
-<tt class="descname">write</tt><big>(</big><em>path</em>, <em>data</em>, <em>offset</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.write" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">write</tt><big>(</big><em>self</em>, <em>path</em>, <em>data</em>, <em>offset</em>, <em>fh</em><big>)</big><a class="headerlink" href="#dantalian.operations.TagOperations.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
 the operation is invalid and raises EINVAL.  <cite>fh</cite> is used; <cite>path</cite> is
 only used for verification.</p>
@@ -396,7 +396,7 @@ only used for verification.</p>
         <li class="right" >
           <a href="library.html" title="Libraries"
              >previous</a> |</li>
-        <li><a href="../index.html">dantalian 0.4 documentation</a> &raquo;</li>
+        <li><a href="../index.html">dantalian 0.4.1 documentation</a> &raquo;</li>
           <li><a href="../user.html" >Users Guide</a> &raquo;</li> 
       </ul>
     </div>
