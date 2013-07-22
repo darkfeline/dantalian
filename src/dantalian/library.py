@@ -218,7 +218,7 @@ class Library(BaseFSLibrary):
                 try:
                     os.unlink(f)
                 except OSError as e:
-                    logger.warn('Caught OSError: %s', e)
+                    logger.warning('Caught OSError: %s', e)
 
     def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`
@@ -329,7 +329,7 @@ class Library(BaseFSLibrary):
             try:
                 os.unlink(file)
             except OSError as e:
-                logger.warn('Encountered OSError: %s', e)
+                logger.warning('Encountered OSError: %s', e)
                 error = 1
         return error
 
@@ -465,7 +465,7 @@ def _cleandirs(root):
         try:
             dirs.remove(x)
         except ValueError:
-            logger.warn("Broken link %r", x)
+            logger.warning("Broken link %r", x)
     logger.debug("Found unreferenced dirs %r", dirs)
     for x in dirs:
         logger.debug("Nuking %r", x)
@@ -548,11 +548,11 @@ class ProxyLibrary(Library):
         _cleandirs(self._realroot)
 
     def fix(self):
-        logger.warn("can't fix fuse library")
+        logger.warning("can't fix fuse library")
         return
 
     def mount(self, root):
-        logger.warn("can't mount fuse library")
+        logger.warning("can't mount fuse library")
         return
 
     def convert(self, dir):
@@ -593,11 +593,15 @@ class SocketOperations(threading.Thread):
                 msg += m.decode()
             logger.debug('recieved from socket %r', msg)
             msg = shlex.split(msg)
-            cmd = msg.pop(0)
+            try:
+                cmd = msg.pop(0)
+            except IndexError:
+                logger.warning('Empty message received')
+                continue
             try:
                 x = getattr(self, 'do_' + cmd)
             except AttributeError:
-                logger.warn('received unknown command %r', cmd)
+                logger.warning('Received unknown command %r', cmd)
             else:
                 x(*msg)
 
