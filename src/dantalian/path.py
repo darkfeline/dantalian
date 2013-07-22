@@ -104,7 +104,7 @@ def fixsymlinks(links, oldprefix, newprefix):
         try:
             f = set.pop(0)
         except IndexError:
-            logger.warn("Empty set")
+            logger.warning("Empty set")
             continue
         newtarget = oldprefix.sub(newprefix, os.readlink(f), count=1)
         logger.debug("unlinking %r", f)
