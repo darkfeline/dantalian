@@ -602,6 +602,7 @@ class SocketOperations(threading.Thread):
                 x = getattr(self, 'do_' + cmd)
             except AttributeError:
                 logger.warning('Received unknown command %r', cmd)
+                continue
             else:
                 x(*msg)
 
