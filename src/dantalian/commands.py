@@ -33,7 +33,7 @@ def tag(lib, *args):
     """
     logger.debug('tag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian tag", add_help=False)
-    parser.add_argument('-s')
+    parser.add_argument('-s', action='store_true')
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
@@ -54,7 +54,7 @@ def untag(lib, *args):
     """
     logger.debug('untag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian untag", add_help=False)
-    parser.add_argument('-s')
+    parser.add_argument('-s', action='store_true')
     parser.add_argument('tag')
     parser.add_argument('file', nargs="+")
     args = parser.parse_args(args)
