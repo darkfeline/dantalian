@@ -3,53 +3,62 @@ import logging
 import re
 import subprocess
 from functools import lru_cache
+from itertools import count
 
 from dantalian.errors import DependencyError
 
-__all__ = [
-    'rootdir', 'fuserootdir', 'rootfile', 'dirsdir', 'treefile', 'ctreefile',
-    'fusesock',
-
-    'samefile', 'listdir', 'fixsymlinks', 'findsymlinks'
-]
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
+def _public(x):
+    __all__.append(x.__name__)
+    return x
+
+
+@_public
 @lru_cache()
 def rootdir(root):
     return os.path.join(root, '.dantalian')
 
 
+@_public
 @lru_cache()
 def fuserootdir(root):
     return os.path.join(root, '.dantalian-fuse')
 
 
+@_public
 @lru_cache()
 def rootfile(root):
     return os.path.join(rootdir(root), 'root')
 
 
+@_public
 @lru_cache()
 def dirsdir(root):
     return os.path.join(rootdir(root), 'dirs')
 
 
+@_public
 @lru_cache()
 def treefile(root):
     return os.path.join(rootdir(root), 'mount')
 
 
+@_public
 @lru_cache()
 def ctreefile(root):
     return os.path.join(rootdir(root), 'mount_custom')
 
 
+@_public
 @lru_cache()
 def fusesock(root):
     return os.path.join(rootdir(root), 'fuse.sock')
 
 
+@_public
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 
@@ -59,6 +68,7 @@ def samefile(f1, f2):
     return os.path.samestat(os.lstat(f1), os.lstat(f2))
 
 
+@_public
 def listdir(path):
     """Return full paths of files in `path`.
 
@@ -68,6 +78,21 @@ def listdir(path):
     return iter(os.path.join(path, f) for f in os.listdir(path))
 
 
+@_public
+def resolve_name(dir, name):
+    """Return an available filename"""
+    files = os.listdir(dir)
+    base, ext = os.path.splitext(name)
+    if name not in files:
+        return name
+    i = count(1)
+    while True:
+        x = '.'.join((base, next(i), ext))
+        if x not in files:
+            return x
+
+
+@_public
 def fixsymlinks(links, oldprefix, newprefix):
     """Fix symlinks
 
@@ -79,27 +104,44 @@ def fixsymlinks(links, oldprefix, newprefix):
         try:
             f = set.pop(0)
         except IndexError:
-            logger.warn("Empty set")
+            logger.warning("Empty set")
             continue
         newtarget = oldprefix.sub(newprefix, os.readlink(f), count=1)
-        logger.debug("unlinking %r", f)
+        logger.debug("Unlinking %r", f)
         os.unlink(f)
-        logger.debug("symlinking %r to %r", f, newtarget)
-        os.symlink(newtarget, f)
+        dir, name = os.path.dirname(f)
+        while True:
+            f = os.path.join(dir, resolve_name(dir, name))
+            logger.debug("Symlinking %r to %r", f, newtarget)
+            try:
+                os.symlink(newtarget, f)
+            except FileExistsError:
+                continue
+            else:
+                break
         for file in set:
-            logger.debug("unlinking %r", file)
+            logger.debug("Unlinking %r", file)
             os.unlink(file)
-            logger.debug("linking %r to %r", file, f)
-            os.link(f, file)
+            dir = os.path.dirname(file)
+            while True:
+                dest = os.path.join(dir, resolve_name(dir, file))
+                logger.debug('Linking %r to %r', dest, f)
+                try:
+                    os.link(f, dest)
+                except FileExistsError:
+                    continue
+                else:
+                    break
 
 
+@_public
 def findsymlinks(dir):
     """Find symlinks
 
-    Returns a list of lists.  Symlinks that are the same inode are grouped
-    together.  Relies on 'find' utility, for sheer simplicity and speed.
-    If it cannot be found, :exc:`DependencyError` is raised.  Output paths
-    are absolute.
+    Returns a list of lists.  Symlinks that are the same inode are
+    grouped together.  Relies on 'find' utility, for sheer simplicity
+    and speed.  If it cannot be found, DependencyError is raised.
+    Output paths are absolute.
     """
     try:
         output = subprocess.check_output(
