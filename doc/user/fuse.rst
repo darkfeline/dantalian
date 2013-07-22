@@ -93,7 +93,7 @@ operations.  FUSE-mounted libraries open a socket at
 interact dynamically with a mounted library, but they simply echo
 standard commands to the socket, which can be done by hand (like all
 other dantalian operations) from, e.g. a remote client that doesn't have
-dantalin installed.  For example, the socket command::
+dantalian installed.  For example, the socket command::
 
    $ dantalian mknode path/to/node tag1 tag2
 
