@@ -135,8 +135,8 @@ resolved according to :ref:`rename_alg`.):
    place.  They must be unlinked and remade.)  Symbolic links are
    unlinked and a new symbolic link is made then relinked.  Filename
    conflicts are resolved and reported (if a file with the same name is
-   made in between moving the directory and creating the symbolic link,
-   for example).
+   made in between deleting and creating the symbolic link, for
+   example).
 
 .. method:: maketree()
 
