@@ -458,9 +458,9 @@ def _cleandirs(root):
     dirsdir = libpath.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
     symlinks = libpath.findsymlinks(root)
-    symlinks = filter(prefix.match, symlinks)
     linkedto = [os.readlink(x[0]) for x in symlinks]
-    dirs = libpath.listdir(dirsdir)
+    linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
+    dirs = list(libpath.listdir(dirsdir))
     for x in linkedto:
         try:
             dirs.remove(x)
