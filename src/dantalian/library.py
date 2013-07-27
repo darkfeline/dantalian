@@ -382,7 +382,9 @@ class Library(BaseFSLibrary):
         for file in files:
             dir = os.path.dirname(file)
             while True:
-                dest = os.path.join(dir, libpath.resolve_name(dir, new))
+                dest = os.path.join(dir, new)
+                if os.path.exists(dest) and not libpath.samefile(file, dest):
+                    dest = os.path.join(dir, libpath.resolve_name(dir, new))
                 logger.debug('Moving %r to %r', file, dest)
                 try:
                     os.rename(file, dest)
