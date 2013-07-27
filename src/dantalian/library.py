@@ -303,9 +303,8 @@ class Library(BaseFSLibrary):
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
         files = self._listpaths(file)
-        return [
-            '/' if os.path.dirname(f) == self.root else
-            os.path.dirname(f).replace(self.root, '', 1) for f in files]
+        return ['/' + os.path.dirname(os.path.relpath(f, self.root))
+                for f in files]
 
     def convert(self, dir):
         """Convert a directory to a symlink.
