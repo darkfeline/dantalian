@@ -206,24 +206,25 @@ class Library(BaseFSLibrary):
     def tag(self, file, tag):
         """Tag `file` with `tag`
 
-        `file` is relative to current dir. `tag` is relative to library
-        root.  If `file` is already tagged, nothing happens.  This
-        includes if the file is hardlinked under another name.
+        `file` is relative to current dir. `tag` starts with '/' and is
+        relative to library root.  If `file` is already tagged, nothing
+        happens.  This includes if the file is hardlinked under another
+        name.
         """
 
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        destdir = self.tagpath(tag)
+        p_dest = libpath.pathfromtag(tag, self.root)
         logger.info(
             'Checking if %r is already tagged with %r', file, tag)
-        for f in libpath.listdir(destdir):
+        for f in libpath.listdir(p_dest):
             if libpath.samefile(f, file):
                 return
         logger.info('Check okay')
         name = os.path.basename(file)
         while True:
-            dest = os.path.join(destdir, libpath.resolve_name(destdir, name))
+            dest = os.path.join(p_dest, libpath.resolve_name(p_dest, name))
             logger.debug('linking %r %r', file, dest)
             try:
                 os.link(file, dest)
@@ -242,10 +243,10 @@ class Library(BaseFSLibrary):
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        dest = self.tagpath(tag)
+        p_dest = libpath.pathfromtag(tag, self.root)
         inode = os.lstat(file)
         logger.debug('file inode is %r', inode)
-        for f in libpath.listdir(dest):
+        for f in libpath.listdir(p_dest):
             logger.debug('checking %r', f)
             st = os.lstat(f)
             logger.debug('inode is %r', st)
@@ -392,20 +393,6 @@ class Library(BaseFSLibrary):
                     continue
                 else:
                     break
-
-    def tagpath(self, tag):
-        """Get absolute path of `tag`.
-
-        Raise TagError if tag doesn't exist
-        :rtype: :class:`str`
-
-        """
-        path = os.path.join(self.root, tag)
-        assert path == os.path.abspath(path)
-        if not os.path.isdir(path):
-            raise TagError(
-                "Tag {} doesn't exist (or isn't a directory)".format(tag))
-        return path
 
     def fix(self):
         logger.info('Checking if moved')
