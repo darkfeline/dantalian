@@ -146,8 +146,8 @@ class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
 class Library(BaseFSLibrary):
 
     """
-    Implementation of methods that work directly with library on the file
-    system.
+    Implementation of methods that work directly with library on the
+    file system.
     """
 
     @staticmethod
