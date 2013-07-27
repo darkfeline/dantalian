@@ -12,7 +12,9 @@ from dantalian.library import Library
 parser = argparse.ArgumentParser(
     prog="dantalian", add_help=False,
     description="dantalian CLI tool.  Check docs for usage.")
-parser.add_argument('command', choices=commands.__all__)
+parser.add_argument(
+    'command', choices=(
+        commands.t_global + commands.t_library + commands.t_sock))
 parser.add_argument('args', nargs=argparse.REMAINDER)
 parser.add_argument('--loglevel', action='store', default='warn')
 parser.add_argument('--logfile', action='store', default='')
