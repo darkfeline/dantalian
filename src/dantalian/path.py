@@ -112,11 +112,11 @@ def findsymlinks(dir):
     result = []
     for file in output:
         found = 0
-        for set in result:
-            if samefile(set[0], file):
+        for stat, set in result:
+            if os.path.samestat(stat, os.lstat(file)):
                 set.append(file)
                 found = 1
                 break
         if not found:
-            result.append([file])
-    return result
+            result.append((os.lstat(file), [file]))
+    return [x[1] for x in result]
