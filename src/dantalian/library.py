@@ -10,6 +10,7 @@ import shutil
 import shlex
 import threading
 import socket
+from functools import lru_cache
 
 from dantalian import operations as ops
 from dantalian import tree
@@ -38,20 +39,20 @@ def init_library(root):
     logger.debug('init(%r)', root)
     root = os.path.abspath(root)
 
-    root_dir = libpath.rootdir(root)
+    root_dir = Library.rootdir(root)
     logger.debug('mkdir %r', root_dir)
     try:
         os.mkdir(root_dir)
     except FileExistsError:
         logger.debug('skipping %r; exists', root_dir)
 
-    root_file = libpath.rootfile(root)
+    root_file = Library.rootfile(root)
     if not os.path.exists(root_file):
         logger.debug('writing %r', root_file)
         with open(root_file, 'w') as f:
             f.write(root)
 
-    dirs_dir = libpath.dirsdir(root)
+    dirs_dir = Library.dirsdir(root)
     logger.debug('mkdir %r', dirs_dir)
     try:
         os.mkdir(dirs_dir)
@@ -73,7 +74,7 @@ def open_library(root=None):
         logger.debug("Finding library...")
         root = _find_root(os.getcwd())
         logger.debug("Found %r", root)
-    if os.path.isdir(libpath.fuserootdir(root)):
+    if os.path.isdir(Library.fuserootdir(root)):
         return ProxyLibrary(root)
     else:
         return Library(root)
@@ -149,9 +150,44 @@ class Library(BaseFSLibrary):
     system.
     """
 
+    @staticmethod
+    @lru_cache()
+    def rootdir(root):
+        return os.path.join(root, '.dantalian')
+
+    @staticmethod
+    @lru_cache()
+    def fuserootdir(root):
+        return os.path.join(root, '.dantalian-fuse')
+
+    @classmethod
+    @lru_cache()
+    def rootfile(cls, root):
+        return os.path.join(cls.rootdir(root), 'root')
+
+    @classmethod
+    @lru_cache()
+    def dirsdir(cls, root):
+        return os.path.join(cls.rootdir(root), 'dirs')
+
+    @classmethod
+    @lru_cache()
+    def treefile(cls, root):
+        return os.path.join(cls.rootdir(root), 'mount')
+
+    @classmethod
+    @lru_cache()
+    def ctreefile(cls, root):
+        return os.path.join(cls.rootdir(root), 'mount_custom')
+
+    @classmethod
+    @lru_cache()
+    def fusesock(cls, root):
+        return os.path.join(cls.rootdir(root), 'fuse.sock')
+
     @property
     def _moved(self):
-        with open(libpath.rootfile(self.root)) as f:
+        with open(self.rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
             return None
@@ -161,7 +197,7 @@ class Library(BaseFSLibrary):
     def __init__(self, root):
         """If `root` is not a library, raise LibraryError."""
         logger.debug("open library root %r", root)
-        if not os.path.isdir(root) or not os.path.isdir(libpath.rootdir(root)):
+        if not os.path.isdir(root) or not os.path.isdir(self.rootdir(root)):
             raise LibraryError("{} isn't a library".format(root))
         self.root = os.path.abspath(root)
         logger.info('Library initialized')
@@ -235,7 +271,7 @@ class Library(BaseFSLibrary):
         try:
             output = subprocess.check_output([
                 'find', '-L', self.root, '-path',
-                libpath.rootdir(self.root), '-prune', '-o', '-samefile', file,
+                self.rootdir(self.root), '-prune', '-o', '-samefile', file,
                 '-print'])
         except FileNotFoundError:
             raise DependencyError("find could not be found; \
@@ -283,7 +319,7 @@ class Library(BaseFSLibrary):
         ``.dantalian/dirs``.
         """
         logger.debug('convert(%r, %r)', dir)
-        _convertto(dir, libpath.dirsdir(self.root))
+        _convertto(dir, self.dirsdir(self.root))
 
     def cleandirs(self):
         """Clean converted directories
@@ -378,25 +414,25 @@ class Library(BaseFSLibrary):
         logger.info('Move detected; fixing')
         files = libpath.findsymlinks(self.root)
         logger.debug('Found symlinks %r', files)
-        olddir = libpath.dirsdir(self._moved)
-        newdir = libpath.dirsdir(self.root)
+        olddir = self.dirsdir(self._moved)
+        newdir = self.dirsdir(self.root)
         libpath.fixsymlinks(files, olddir, newdir)
-        logger.debug('Writing %r', libpath.rootfile(self.root))
-        with open(libpath.rootfile(self.root), 'w') as f:
+        logger.debug('Writing %r', self.rootfile(self.root))
+        with open(self.rootfile(self.root), 'w') as f:
             f.write(self.root)
         logger.info('Finished fixing')
 
     def maketree(self):
         logger.info("making tree")
-        if os.path.exists(libpath.ctreefile(self.root)):
+        if os.path.exists(self.ctreefile(self.root)):
             logger.info("using custom")
             name = 'custom'
-            path = libpath.ctreefile(self.root)
+            path = self.ctreefile(self.root)
             custom = importlib.SourceFileLoader(name, path).load_module(name)
             return custom.maketree(self.root)
         else:
             logger.info("using config")
-            return self._maketree(libpath.treefile(self.root))
+            return self._maketree(self.treefile(self.root))
 
     def _maketree(self, config):
         """Make a FSNode tree
@@ -433,7 +469,7 @@ class Library(BaseFSLibrary):
         return r
 
     def mount(self, path, tree):
-        addr = libpath.fusesock(self.root)
+        addr = self.fusesock(self.root)
         try:
             os.unlink(addr)
             logger.debug("Removed old socket")
@@ -455,12 +491,12 @@ class Library(BaseFSLibrary):
 def _cleandirs(root):
     if not shutil.rmtree.avoids_symlink_attacks:
         logger.warning('Vulnerable to symlink attacks')
-    dirsdir = libpath.dirsdir(root)
+    dirsdir = self.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
     symlinks = libpath.findsymlinks(root)
     linkedto = [os.readlink(x[0]) for x in symlinks]
     linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
-    dirs = list(libpath.listdir(dirsdir))
+    dirs = list(self.listdir(dirsdir))
     for x in linkedto:
         try:
             dirs.remove(x)
@@ -521,7 +557,7 @@ def _find_root(dir):
     """
     assert os.path.isdir(dir)
     dir = os.path.abspath(dir)
-    root_dir = libpath.rootdir('')
+    root_dir = Library.rootdir('')
     logger.debug("finding root; starting with %r", dir)
     while dir:
         logger.debug("trying %r", dir)
@@ -540,7 +576,7 @@ class ProxyLibrary(Library):
     def __init__(self, root):
         logger.debug("open fuse library %r", root)
         super().__init__(root)
-        with open(libpath.rootfile(self.root)) as f:
+        with open(self.rootfile(self.root)) as f:
             self._realroot = f.read()
         logger.debug("real library is %r", self._realroot)
 
@@ -557,7 +593,7 @@ class ProxyLibrary(Library):
 
     def convert(self, dir):
         logger.debug('convert(%r, %r)', dir)
-        _convertto(dir, libpath.dirsdir(self._realroot))
+        _convertto(dir, self.dirsdir(self._realroot))
 
 
 @_public

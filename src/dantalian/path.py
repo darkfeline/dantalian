@@ -2,7 +2,6 @@ import os
 import logging
 import re
 import subprocess
-from functools import lru_cache
 from itertools import count
 
 from dantalian.errors import DependencyError
@@ -14,48 +13,6 @@ __all__ = []
 def _public(x):
     __all__.append(x.__name__)
     return x
-
-
-@_public
-@lru_cache()
-def rootdir(root):
-    return os.path.join(root, '.dantalian')
-
-
-@_public
-@lru_cache()
-def fuserootdir(root):
-    return os.path.join(root, '.dantalian-fuse')
-
-
-@_public
-@lru_cache()
-def rootfile(root):
-    return os.path.join(rootdir(root), 'root')
-
-
-@_public
-@lru_cache()
-def dirsdir(root):
-    return os.path.join(rootdir(root), 'dirs')
-
-
-@_public
-@lru_cache()
-def treefile(root):
-    return os.path.join(rootdir(root), 'mount')
-
-
-@_public
-@lru_cache()
-def ctreefile(root):
-    return os.path.join(rootdir(root), 'mount_custom')
-
-
-@_public
-@lru_cache()
-def fusesock(root):
-    return os.path.join(rootdir(root), 'fuse.sock')
 
 
 @_public
