@@ -16,6 +16,16 @@ def _public(x):
 
 
 @_public
+def pathfromtag(tag, root):
+    return os.path.join(root, tag.lstrip('/'))
+
+
+@_public
+def tagfrompath(path, root):
+    return '/' + os.path.dirname(os.path.relpath(path, root))
+
+
+@_public
 def samefile(f1, f2):
     """If `f1` and `f2` refer to same inode.
 
