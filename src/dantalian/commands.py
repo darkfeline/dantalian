@@ -11,12 +11,9 @@ import os
 from dantalian import library
 
 __all__ = ['t_global', 't_library', 't_sock']
-t_global = ['init']
-t_library = [
-    'tag', 'untag', 'tags', 'find', 'rm', 'rename', 'convert', 'fix', 'clean',
-    'mount'
-]
-t_sock = ['mknode']
+t_global = []
+t_library = []
+t_sock = []
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +22,23 @@ def _public(f):
     return f
 
 
+def _global(f):
+    t_global.append(f.__name__)
+    return f
+
+
+def _library(f):
+    t_library.append(f.__name__)
+    return f
+
+
+def _sock(f):
+    t_sock.append(f.__name__)
+    return f
+
+
 @_public
+@_library
 def tag(lib, *args):
     """
     Tags `file` with `tag` (Hard links `file` under `tag` directory with the
@@ -49,6 +62,7 @@ def tag(lib, *args):
 
 
 @_public
+@_library
 def untag(lib, *args):
     """
     Removes tag `tag` from `file` (Removes the hard link to `file` under `tag`
@@ -68,6 +82,7 @@ def untag(lib, *args):
 
 
 @_public
+@_library
 def tags(lib, *args):
     """
     Lists all the tags of `file` (Lists the directories that have hard links to
@@ -82,6 +97,8 @@ def tags(lib, *args):
         print(tag)
 
 
+@_public
+@_library
 def find(lib, *args):
     """
     Intersect tag search.  Lists all files that have all of the given tags.
@@ -97,6 +114,7 @@ def find(lib, *args):
 
 
 @_public
+@_library
 def rm(lib, *args):
     """
     Removes the files given (Removes all hard links to the files under the root
@@ -111,6 +129,7 @@ def rm(lib, *args):
 
 
 @_public
+@_library
 def rename(lib, *args):
     """
     Renames all hard links of `file` to `new`.
@@ -124,6 +143,7 @@ def rename(lib, *args):
 
 
 @_public
+@_library
 def convert(lib, *args):
     """
     Converts directories so they can be tagged.  (Moves directories to special
@@ -144,6 +164,7 @@ def convert(lib, *args):
 
 
 @_public
+@_library
 def fix(lib, *args):
     """
     Fixes symlinks after the library has been moved.  If it hasn't been moved,
@@ -156,6 +177,7 @@ def fix(lib, *args):
 
 
 @_public
+@_library
 def clean(lib, *args):
     """
     Clean converted directories.
@@ -167,6 +189,7 @@ def clean(lib, *args):
 
 
 @_public
+@_global
 def init(*args):
     """
     Creates a library in `dir`.  If `dir` is omitted, creates a library in
@@ -180,6 +203,7 @@ def init(*args):
 
 
 @_public
+@_library
 def mount(lib, *args):
     """
     Mount FUSE according to config files.
@@ -193,6 +217,7 @@ def mount(lib, *args):
 
 
 @_public
+@_sock
 def mknode(sock, *args):
     """
     Make a node in FUSE
