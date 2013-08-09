@@ -31,8 +31,8 @@ def init_library(root):
 
     """Initialize a library at `root`
 
-    Calling :meth:`init` on an existing library does no harm.  Returns an
-    instance of :class:`Library`.
+    Calling :meth:`init` on an existing library does no harm.  Returns
+    an instance of :class:`Library`.
 
     """
 
@@ -479,12 +479,12 @@ class Library(BaseFSLibrary):
 def _cleandirs(root):
     if not shutil.rmtree.avoids_symlink_attacks:
         logger.warning('Vulnerable to symlink attacks')
-    dirsdir = self.dirsdir(root)
+    dirsdir = Library.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
     symlinks = libpath.findsymlinks(root)
     linkedto = [os.readlink(x[0]) for x in symlinks]
     linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
-    dirs = list(self.listdir(dirsdir))
+    dirs = list(Library.listdir(dirsdir))
     for x in linkedto:
         try:
             dirs.remove(x)
