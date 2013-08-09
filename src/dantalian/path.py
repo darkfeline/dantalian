@@ -17,11 +17,19 @@ def _public(x):
 
 @_public
 def pathfromtag(tag, root):
+    """Get path from tag
+
+    `tag` is absolute from the library root.
+    `root` is the library root directory.
+
+    """
+    assert tag.startswith('/')
     return os.path.join(root, tag.lstrip('/'))
 
 
 @_public
 def tagfrompath(path, root):
+    """Return absolute tag from path"""
     return '/' + os.path.dirname(os.path.relpath(path, root))
 
 
