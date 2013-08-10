@@ -1,6 +1,9 @@
 Changelog
 =========
 
+version 0.5
+-----------
+
 version 0.4
 -----------
 

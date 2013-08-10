@@ -6,7 +6,7 @@ Names and Paths
 Files
 -----
 
-Everything is done internally via inode, so all operations take
+Everything is done internally via inodes, so all operations take
 filenames only as a way to indicate a particular file/inode, and
 dantalian works with that.  Thus, file naming is for the most part a
 concern for the user only.
@@ -16,10 +16,10 @@ concern for the user only.
 File Renaming Algorithm
 -----------------------
 
-When dantalian needs to interact with files, it will attempt to use the
-name of the file directly.  If it runs into a filename/path conflict, it
-will then attempt to generate a new name using the algorithm described
-below::
+When dantalian needs to add a file to a directory (e.g., when renaming
+or tagging), it will attempt to use the name of the file directly.  If
+it runs into a filename/path conflict, it will then attempt to generate
+a new name using the algorithm described below::
 
    def resolve(dir, name):
       base, extension = split_extension(name)

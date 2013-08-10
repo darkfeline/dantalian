@@ -9,17 +9,26 @@ dantalian Documentation
 
    *— The Mystic Archives of Dantalian*
 
-This is the documentation for dantalian 0.4-dev.  dantalian is a
-transparent tag-based file organization system.
+This is the documentation for dantalian, a transparent tag-based file
+organization system.
 
 dantalian is still in active development.
 
 .. toctree::
    :maxdepth: 1
 
-   /intro
-   /user
-   /dev
-   /changes
+   intro
+   user
+   dev
+   changes
 
-Manpage: :ref:`manpage`
+Status
+------
+
+- Library: stable
+- FUSE: unstable
+
+Manpage
+-------
+
+:ref:`manpage`
