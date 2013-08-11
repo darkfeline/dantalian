@@ -27,12 +27,15 @@ def _public(f):
 
 
 @_public
-def init_library(root):
+def init_library(root: 'str'):
 
-    """Initialize a library at `root`
+    """Initialize a library at `root`.
 
-    Calling :meth:`init` on an existing library does no harm.  Returns
-    an instance of :class:`Library`.
+    Args:
+        root (str): A path.
+
+    Returns:
+        A Library instance for the initialized library.
 
     """
 
@@ -63,12 +66,20 @@ def init_library(root):
 
 
 @_public
-def open_library(root=None):
-    """
-    If `root` is :data:`None`, search up the directory tree for the
+def open_library(root: 'str or None'=None):
+    """Open a library.
+
+    If `root` is :const:`None`, search up the directory tree for the
     first library (a directory that contains ``.dantalian``) we find and
     use that.  If none are found, raises :exc:`LibraryError`.
-    Otherwise, `root` will be used.  Return a Library or subclass.
+    Otherwise, `root` will be used.
+
+    Args:
+        root (str or None): A path.  Default is None.
+
+    Returns:
+        A Library instance or suitable subclass.
+
     """
     if root is None:
         logger.debug("Finding library...")
@@ -96,11 +107,13 @@ class BaseLibrary(metaclass=abc.ABCMeta):
     listtags(file)
         Return a list of all of the tags of `file`.
     find(tags)
-        Return a list of files that have all of the given tags in `tags`.
+        Return a list of files that have all of the given tags in
+        `tags`.
     mount(path, tree)
         Mount a virtual representation of the library representation
         `tree` at `path`.  This may be left unimplemented or with a
         dummy implementation.
+
     """
 
     @abc.abstractmethod
@@ -139,16 +152,12 @@ class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
     untag(file, tag)
         `file` has no hard links under the `tag` directory after call,
         regardless of whether it did before.
+
     """
 
 
 @_public
 class Library(BaseFSLibrary):
-
-    """
-    Implementation of methods that work directly with library on the
-    file system.
-    """
 
     @staticmethod
     @lru_cache()
@@ -194,8 +203,17 @@ class Library(BaseFSLibrary):
         else:
             return old_root
 
-    def __init__(self, root):
-        """If `root` is not a library, raise LibraryError."""
+    def __init__(self, root: 'str'):
+        """
+        Should not be initialized directly; use open_library instead.
+
+        Args:
+            root (str): Path to the library.
+
+        Raises:
+            LibraryError: root is not a library.
+
+        """
         logger.debug("open library root %r", root)
         if not os.path.isdir(root) or not os.path.isdir(self.rootdir(root)):
             raise LibraryError("{} isn't a library".format(root))
@@ -204,12 +222,20 @@ class Library(BaseFSLibrary):
         logger.debug('root is %r', self.root)
 
     def tag(self, file, tag):
-        """Tag `file` with `tag`
+        """Tag file with tag.
 
-        `file` is relative to current dir. `tag` starts with '/' and is
-        relative to library root.  If `file` is already tagged, nothing
-        happens.  This includes if the file is hardlinked under another
-        name.
+        If `file` is already tagged, nothing happens.  This includes if
+        the file is hardlinked under another name.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+            tag (str): Tag, relative to the library root, starting with
+                '/'.
+
+        Raises:
+            IsADirectoryError: file is an unconverted directory.
+
         """
 
         if os.path.isdir(file) and not os.path.islink(file):
@@ -234,11 +260,18 @@ class Library(BaseFSLibrary):
                 break
 
     def untag(self, file, tag):
-        """Remove `tag` from `file`.
+        """Remove tag from file.
 
-        `file` is relative to current dir. `tag` is relative to library
-        root.  If file is not tagged, nothing happens.  Removes *all*
-        hard links to `file` with `tag`.
+        If file is not tagged, nothing happens.  Remove *all* hard
+        links to the file in the directory corresponding to the given
+        tag.  Log a warning when an OSError is caught.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+            tag (str): Tag, relative to the library root, starting with
+                '/'.
+
         """
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
@@ -258,15 +291,25 @@ class Library(BaseFSLibrary):
                     logger.warning('Caught OSError: %s', e)
 
     def _listpaths(self, file):
-        """Return a list of paths to all hard links to `file`
+        """Return a list of paths to all hard links to `file`.
 
         This descends into symbolic links and trims ``.dantalian/dirs``.
         Specifically, returns all paths that would account for `file`'s
         tags.
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it
-        cannot be found, :exc:`DependencyError` is raised.  Output paths
-        are absolute.
+        cannot be found, :exc:`DependencyError` is raised.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+
+        Returns:
+            A list of absolute paths (strings).
+
+        Raises:
+            DependencyError: find could not be found.
+
         """
         assert isinstance(file, str)
         try:
@@ -281,14 +324,25 @@ class Library(BaseFSLibrary):
         return output
 
     def _liststrictpaths(self, file):
-        """Return a list of paths to all hard links to `file`
+        """Return a list of paths to all hard links to `file`.
 
-        This does not descend into symbolic links.  Thus, returns all
-        unique hard links.
+        This does not descend into symbolic links, but does descend into
+        ``.dantalian``.  Thus, returns all unique hard links.
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it
         cannot be found, :exc:`DependencyError` is raised.  Output paths
         are absolute.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+
+        Returns:
+            A list of absolute paths (strings).
+
+        Raises:
+            DependencyError: find could not be found.
+
         """
         assert isinstance(file, str)
         try:
@@ -310,23 +364,30 @@ class Library(BaseFSLibrary):
     def convert(self, dir):
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.dantalian/dirs`` (smartassery),
-        convert raises LibraryError.  If `dir` is a
-        symlink (probably already converted), convert returns
-        without doing anything.  If `dir` is not a directory,
-        NotADirectoryError will be raised.  If `alt` is given, the
-        alternate name will be used for the copy kept in
-        ``.dantalian/dirs``.
+        If `dir` is in ``.dantalian/dirs`` (smartassery), convert raises
+        LibraryError.  If `dir` is a symlink (probably already
+        converted), convert returns without doing anything.  If `dir` is
+        not a directory, NotADirectoryError will be raised.
+
+        Args:
+            dir (str): Path to directory.
+
+        Raises:
+            NotADirectoryError: dir is not a directory.
+            LibraryError: dir is in the directory for converted
+                directories.
+
         """
         logger.debug('convert(%r, %r)', dir)
         _convertto(dir, self.dirsdir(self.root))
 
     def cleandirs(self):
-        """Clean converted directories
+        """Clean converted directories.
 
         Remove directories in the library's converted directories
         directory which do not have a symlink in the library that
-        references them.  Nuke them with shutil.rmtree
+        references them.  Nuke them with shutil.rmtree.
+
         """
         _cleandirs(self.root)
 
@@ -336,6 +397,7 @@ class Library(BaseFSLibrary):
         `tags` is a list. `tags` is left unchanged.  Returns a list.
         File paths are absolute and are paths to the hard link under the
         first tag given.
+
         """
         logger.debug("find(%r)", tags)
         assert len(tags) > 0
@@ -357,6 +419,7 @@ class Library(BaseFSLibrary):
 
         This removes all hard links in the library to `file`!  If no
         other hard links exist, `file` is deleted.
+
         """
         assert isinstance(file, str)
         error = 0
@@ -375,6 +438,7 @@ class Library(BaseFSLibrary):
         Rename all hard links in the library of `file` to `new`.  If
         `file` is not tagged, nothing happens.  If a file cannot be
         renamed, log an error and continue.
+
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
@@ -423,9 +487,11 @@ class Library(BaseFSLibrary):
             return self._maketree(self.treefile(self.root))
 
     def _maketree(self, config):
-        """Make a FSNode tree
+        """Make a FSNode tree.
 
-        config is file path.
+        Args:
+            config (str): Config file path.
+
         """
         logger.debug("_maketree(%r, %r)", self, config)
         with open(config) as f:
@@ -499,8 +565,14 @@ def _cleandirs(root):
 def _convertto(dir, target):
 
     """
-    dir: directory to convert
-    target: dantalian dirs directory
+    Args:
+        dir (str): directory to convert
+        target (str): dantalian dirs directory
+
+    Raises:
+        NotADirectoryError: dir is not a directory.
+        LibraryError: dir is in the directory for converted directories.
+
     """
 
     dir = os.path.abspath(dir)
@@ -538,9 +610,11 @@ def _convertto(dir, target):
 def _find_root(dir):
     """Find the first library above `dir`.
 
-    If none are found, raises :exc:`LibraryError`.
+    Returns:
+        A string of the absolute path to the library.
 
-    :rtype: :class:`str
+    Raises:
+        LibraryError: No libraries were found.
 
     """
     assert os.path.isdir(dir)
@@ -589,7 +663,11 @@ class SocketOperations(threading.Thread):
 
     def __init__(self, sock, root, tree):
         """
-        `sock` is server socket. `root` is library. `tree` is root node.
+        Args:
+            sock (socket): Server socket.
+            root (BaseLibrary): Library instance.
+            tree (RootNode): RootNode instance.
+
         """
         super().__init__()
         self.sock = sock
