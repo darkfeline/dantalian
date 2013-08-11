@@ -1,6 +1,12 @@
 """
-All the functions in this module are scripts to be called from the command
-line.  See the manpage for usage.
+All the functions in this module are scripts to be called from the
+command line.  See the manpage for usage.
+
+Commands should be decorated appropriately.  All of them should have
+@_public.  @_global is for global commands, which take no additional
+parameters.  @_library commands get a Library instance.  @_sock commands
+get a socket object.
+
 """
 
 import argparse
@@ -39,11 +45,17 @@ def _sock(f):
 
 @_public
 @_library
-def tag(lib, *args):
-    """
-    Tags `file` with `tag` (Hard links `file` under `tag` directory with the
-    same name).  If `file` is already tagged, does nothing.  If `file` is a
-    directory, you'll need to convert it first.
+def tag(lib: 'BaseLibrary', *args):
+    """Tag file.
+
+    Tag `file` with `tag` (Hard links `file` under `tag` directory with
+    the same name).  If `file` is already tagged, does nothing.  If
+    `file` is a directory, you'll need to convert it first.
+
+    Args:
+        lib (BaseLibrary): Library instance.
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('tag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian tag", add_help=False)
@@ -63,10 +75,16 @@ def tag(lib, *args):
 
 @_public
 @_library
-def untag(lib, *args):
-    """
-    Removes tag `tag` from `file` (Removes the hard link to `file` under `tag`
-    directory).  If `file` isn't tagged, does nothing.
+def untag(lib: 'BaseLibrary', *args):
+    """Untag file.
+
+    Remove tag `tag` from `file` (Removes the hard link to `file` under
+    `tag` directory).  If `file` isn't tagged, does nothing.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('untag(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian untag", add_help=False)
@@ -83,10 +101,16 @@ def untag(lib, *args):
 
 @_public
 @_library
-def tags(lib, *args):
-    """
-    Lists all the tags of `file` (Lists the directories that have hard links to
-    `file`).
+def tags(lib: 'BaseLibrary', *args):
+    """List tags.
+
+    List all the tags of `file` (Lists the directories that have hard
+    links to `file`).
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('tags(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian tags", add_help=False)
@@ -99,10 +123,17 @@ def tags(lib, *args):
 
 @_public
 @_library
-def find(lib, *args):
-    """
-    Intersect tag search.  Lists all files that have all of the given tags.
-    Lists files by the path to the hard link under the first tag given.
+def find(lib: 'BaseLibrary', *args):
+    """Find files with tags.
+
+    Intersect tag search.  Lists all files that have all of the given
+    tags.  Lists files by the path to the hard link under the first tag
+    given.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('find(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian find", add_help=False)
@@ -115,10 +146,16 @@ def find(lib, *args):
 
 @_public
 @_library
-def rm(lib, *args):
-    """
-    Removes the files given (Removes all hard links to the files under the root
-    directory).
+def rm(lib: 'BaseLibrary', *args):
+    """Remove file.
+
+    Remove the files given (Removes all hard links to the files under
+    the root directory).
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('rm(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian rm", add_help=False)
@@ -130,9 +167,16 @@ def rm(lib, *args):
 
 @_public
 @_library
-def rename(lib, *args):
-    """
-    Renames all hard links of `file` to `new`.
+def rename(lib: 'BaseLibrary', *args):
+    """Rename file.
+
+    Rename all hard links of `file` to `new`.  New names are subject to
+    name collision resolution.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('rename(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian rename", add_help=False)
@@ -144,11 +188,17 @@ def rename(lib, *args):
 
 @_public
 @_library
-def convert(lib, *args):
-    """
-    Converts directories so they can be tagged.  (Moves directories to special
-    location '.dantalian/dirs' and replaces the original with a symlink
-    pointing to the absolute path)
+def convert(lib: 'BaseLibrary', *args):
+    """Convert directory.
+
+    Convert directories so they can be tagged.  (Move directories to
+    special location '.dantalian/dirs' and replace the original with a
+    symlink pointing to the absolute path.)
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('convert(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian convert", add_help=False)
@@ -165,10 +215,16 @@ def convert(lib, *args):
 
 @_public
 @_library
-def fix(lib, *args):
-    """
-    Fixes symlinks after the library has been moved.  If it hasn't been moved,
-    does nothing.
+def fix(lib: 'BaseLibrary', *args):
+    """Fix symlinks.
+
+    Fix symlinks after the library has been moved.  If it hasn't been
+    moved, do nothing.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('fix(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian fix", add_help=False)
@@ -178,9 +234,16 @@ def fix(lib, *args):
 
 @_public
 @_library
-def clean(lib, *args):
-    """
-    Clean converted directories.
+def clean(lib: 'BaseLibrary', *args):
+    """Clean converted directories.
+
+    Internally tracked converted directories which no longer have
+    referent symlink under the root directory are removed.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('clean(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian clean", add_help=False)
@@ -191,9 +254,15 @@ def clean(lib, *args):
 @_public
 @_global
 def init(*args):
-    """
-    Creates a library in `dir`.  If `dir` is omitted, creates a library in
-    the current directory.
+    """Create and initialize a library.
+
+    Create a library in `dir`.  If `dir` is omitted, create a library in
+    the current directory.  If a library already exists, it is not
+    affected.
+
+    Args:
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('init(%r)', args)
     parser = argparse.ArgumentParser(prog="dantalian init", add_help=False)
@@ -204,9 +273,15 @@ def init(*args):
 
 @_public
 @_library
-def mount(lib, *args):
-    """
-    Mount FUSE according to config files.
+def mount(lib: 'BaseLibrary', *args):
+    """Mount FUSE at the given path.
+
+    The library must not be a FUSE-mounted virtual library.
+
+    Args:
+        lib (BaseLibrary): Library instance
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('mount(%r, %r)', lib, args)
     parser = argparse.ArgumentParser(prog="dantalian mount", add_help=False)
@@ -218,9 +293,13 @@ def mount(lib, *args):
 
 @_public
 @_sock
-def mknode(sock, *args):
-    """
-    Make a node in FUSE
+def mknode(sock: 'socket', *args):
+    """Make a node in FUSE.
+
+    Args:
+        sock (socket): A socket object for a library's FUSE socket.
+        args: arguments passed on to ArgumentParser (See code).
+
     """
     logger.debug('mknode(%r, %r)', sock, args)
     parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
