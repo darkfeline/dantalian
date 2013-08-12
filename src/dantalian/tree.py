@@ -173,13 +173,17 @@ def fs2tag(node, root, tags):
 def split(tree, path):
     """Get node and path components
 
-    tree is root node.  path is a string pointing to a path under the
-    vfs.
+    Args:
+        tree (RootNode): Root node.
+        path (str): Path.
 
-    Return a tuple (cur, path).  cur is the furthest FSNode along the
-    path.  path is a list of strings indicating the path from the given
-    node.  If node is the last file in the path, path is an empty list.
-    If path is broken, return None
+    Returns:
+        (cur, path), where `cur` is the furthest node along the path,
+        and `path` is a list of strings indicating the path from the
+        given node.  If node is the last file in the path, path is an
+        empty list.
+
+        If path is broken, returns None instead.
 
     """
     assert len(path) > 0
