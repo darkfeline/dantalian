@@ -117,6 +117,3 @@ implemented operations and their behavior.  As a rule of thumb,
 interaction with nodespace is extremely limited.  Calls to outsidespace
 will be passed on to the OS/underlying file system.  Calls to tagspace
 will manipulate the tags on the files according to the library paradigm.
-
-.. autoclass:: dantalian.operations.TagOperations
-   :members:

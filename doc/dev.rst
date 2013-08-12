@@ -15,3 +15,4 @@ there's a bug in the code that's not documented here, the code wins =).
    dev/depend
    dev/library
    dev/libop
+   dev/api/modules
