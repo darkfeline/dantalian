@@ -2,16 +2,17 @@
 tree.py
 =======
 
-This module contains stuff used for managing FUSE virtual space.  The protocol
-for nodes is as follows.
+This module contains stuff used for managing FUSE virtual space.  The
+protocol for nodes is as follows.
 
-Nodes map strings to items.  The key strings are file names (similar to file
-systems).
+Nodes map strings to items.  The key strings are file names (similar to
+file systems).
 
 FSNodes are purely virtual.  Their children are other nodes.
 
 BorderNodes bridge into real file system space.  They may have also have
-strings as children, which are absolute paths into real file system space.
+strings as children, which are absolute paths into real file system
+space.
 
 """
 
@@ -31,14 +32,14 @@ UMASK = 0o007
 class FSNode:
 
     """
-    Mock directory.  FSNode works like a dictionary mapping names to nodes and
-    keeps some internal file attributes.
+    Mock directory.  FSNode works like a dictionary mapping names to
+    nodes and keeps some internal file attributes.
 
     Implements:
 
-    - __iter__
-    - __getitem__
-    - __setitem__
+    * __iter__
+    * __getitem__
+    * __setitem__
 
     File Attributes:
 
@@ -47,11 +48,12 @@ class FSNode:
     uid, gid
         Defaults to process's uid, gid
     mode
-        Set directory, 0o777 minus umask
+        Set directory bit, and permission bits 0o777 minus umask
     nlinks
         Only keeps track of nodes, not TagNode directories
     size
         constant 4096
+
     """
 
     def __init__(self):
@@ -80,16 +82,19 @@ class FSNode:
 
 class BorderNode(FSNode, metaclass=abc.ABCMeta):
     """
-    BorderNode is an abstract class for subclasses of FSNode which reach outsie
-    of the virtual space"""
+    BorderNode is an abstract class for subclasses of FSNode which reach
+    outsie of the virtual space
+
+    """
 
 
 class TagNode(BorderNode):
 
     """
-    TagNode adds a method, tagged(), which returns a generated dict mapping
-    names to files that satisfy the TagNode's tags criteria, and adds these to
-    __iter__ and __getitem__
+    TagNode adds a method, tagged(), which returns a generated dict
+    mapping names to files that satisfy the TagNode's tags criteria, and
+    adds these to __iter__ and __getitem__
+
     """
 
     def __init__(self, root, tags):
@@ -118,8 +123,9 @@ class TagNode(BorderNode):
 class RootNode(BorderNode):
 
     """
-    A special TagNode that doesn't actually look for tags, merely projecting
-    the library root into virtual space
+    A special TagNode that doesn't actually look for tags, merely
+    projecting the library root into virtual space
+
     """
 
     def __init__(self, root):
@@ -156,12 +162,14 @@ def fs2tag(node, root, tags):
 def split(tree, path):
     """Get node and path components
 
-    tree is root node.  path is a string pointing to a path under the vfs.
+    tree is root node.  path is a string pointing to a path under the
+    vfs.
 
     Return a tuple (cur, path).  cur is the furthest FSNode along the
     path.  path is a list of strings indicating the path from the given
-    node.  If node is the last file in the path, path is an empty list.  If
-    path is broken, return None
+    node.  If node is the last file in the path, path is an empty list.
+    If path is broken, return None
+
     """
     assert len(path) > 0
     assert path[0] == "/"
@@ -190,8 +198,10 @@ def split(tree, path):
 def _uniqmap(files):
     """Create a unique map from an iterator of files.
 
-    Given a list of files, map unique basename strings to each file and return
-    a dictionary."""
+    Given a list of files, map unique basename strings to each file and
+    return a dictionary.
+
+    """
     logger.debug("_uniqmap(%r)", files)
     files = sorted(files)
     map = {}
