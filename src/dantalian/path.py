@@ -55,7 +55,6 @@ def listdir(path):
 
 @_public
 def resolve_name(dir, name):
-    """Return an available filename"""
     files = os.listdir(dir)
     base, ext = os.path.splitext(name)
     if name not in files:
@@ -65,6 +64,18 @@ def resolve_name(dir, name):
         x = '.'.join((base, str(next(i)), ext.lstrip('.')))
         if x not in files:
             return x
+
+
+@_public
+def fuse_resolve(name, path):
+    file, ext = os.path.splitext(name)
+    inode = os.lstat(path).st_ino
+    return '.'.join([file, inode, ext.lstrip('.')])
+
+
+@_public
+def fuse_resolve_path(path):
+    return fuse_resolve(os.path.basename(path), path)
 
 
 @_public

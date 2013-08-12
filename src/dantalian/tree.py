@@ -227,7 +227,7 @@ def _uniqmap(files):
             del files[0]
         else:
             logger.debug("collision; changing")
-            new = _makeuniq(f)
+            new = libpath.fuse_resolve(f)
             assert new not in uniqmap
             uniqmap[new] = f
             del files[0]
@@ -236,11 +236,3 @@ def _uniqmap(files):
                 files.append(map[new])
                 del map[new]
     return map
-
-
-def _makeuniq(path):
-    """Return the base file name with inode added."""
-    base = os.path.basename(path)
-    file, ext = os.path.splitext(base)
-    inode = os.lstat(path).st_ino
-    return ''.join([base, '.', inode, ext])
