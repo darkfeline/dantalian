@@ -12,6 +12,14 @@ arise.
 For the documentation:
 
 - Sphinx==1.1.3
+- sphinxcontrib-napoleon==0.2.1
+
+.. note::
+
+   At the moment, sphinxcontrib-napoleon is not Python 3 compatible, so
+   I've patched a `custom version`__.
+
+   .. __: https://github.com/darkfeline/sphinxcontrib-napoleon
 
 If you want, you can use a custom ctags extension for Sphinx:
 `ext_ctags`_
