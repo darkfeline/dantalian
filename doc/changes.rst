@@ -4,6 +4,9 @@ Changelog
 version 0.5
 -----------
 
+- Many bugfixes.
+- Major documentation improvements.
+
 version 0.4
 -----------
 
