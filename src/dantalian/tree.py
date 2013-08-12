@@ -21,6 +21,7 @@ import logging
 import stat
 import abc
 from time import time
+from itertools import chain
 
 from dantalian import path as libpath
 
@@ -140,9 +141,7 @@ class RootNode(BorderNode):
         self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
-        files = list(super().__iter__())
-        files.extend(self.files())
-        return iter(files)
+        return chain(super().__iter__(), self.files())
 
     def __getitem__(self, key):
         try:
