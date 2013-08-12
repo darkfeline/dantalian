@@ -141,7 +141,7 @@ class RootNode(BorderNode):
         self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
 
     def __iter__(self):
-        return chain(super().__iter__(), self.files())
+        return chain(super().__iter__(), self._files())
 
     def __getitem__(self, key):
         try:
@@ -152,7 +152,7 @@ class RootNode(BorderNode):
             else:
                 raise KeyError("{!r} not found".format(key))
 
-    def files(self):
+    def _files(self):
         return os.listdir(self.root.root)
 
 
