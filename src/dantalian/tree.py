@@ -121,9 +121,7 @@ class TagNode(BorderNode):
         self.tags = tags
 
     def __iter__(self):
-        files = list(super().__iter__())
-        files.extend(self._tagged().keys())
-        return iter(files)
+        return chain(super().__iter__(), self._tagged().keys())
 
     def __getitem__(self, key):
         try:
