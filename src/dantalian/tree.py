@@ -40,6 +40,7 @@ class FSNode:
     * __iter__
     * __getitem__
     * __setitem__
+    * __delitem__
 
     File Attributes:
 
@@ -78,6 +79,10 @@ class FSNode:
     def __setitem__(self, key, value):
         self.children[key] = value
         self.attr['st_nlink'] += 1
+
+    def __delitem__(self, key):
+        del self.children[key]
+        self.attr['st_nlink'] -= 1
 
 
 class BorderNode(FSNode, metaclass=abc.ABCMeta):
