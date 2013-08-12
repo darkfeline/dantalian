@@ -207,32 +207,32 @@ def split(tree, path):
 
 
 def _uniqmap(files):
-    """Create a unique map from an iterator of files.
+    """Create a mapping of unique names to paths.
 
-    Given a list of files, map unique basename strings to each file and
-    return a dictionary.
+    Args:
+        files (list): List of path strings.
+
+    Returns:
+        dict
 
     """
     logger.debug("_uniqmap(%r)", files)
-    files = sorted(files)
     map = {}
-    uniqmap = {}
-    while len(files) > 0:
-        f = files[0]
+    names_seen = []
+    while files:
+        f = files.pop(0)
         logger.debug("doing %r", f)
-        base = os.path.basename(f)
-        if base not in map and base not in uniqmap:
+        name = os.path.basename(f)
+        if name not in names_seen:
             logger.debug("no collision; adding")
-            map[base] = f
-            del files[0]
+            names_seen.append(name)
+            map[name] = f
         else:
             logger.debug("collision; changing")
             new = libpath.fuse_resolve(f)
-            assert new not in uniqmap
-            uniqmap[new] = f
-            del files[0]
             if new in map:
-                logger.debug("collision with unchanged name; redoing later")
+                logger.debug("redoing %r", map[new])
                 files.append(map[new])
-                del map[new]
+            names_seen.append(new)
+            map[new] = f
     return map
