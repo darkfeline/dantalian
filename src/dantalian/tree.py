@@ -128,8 +128,8 @@ class TagNode(BorderNode):
 class RootNode(BorderNode):
 
     """
-    A special TagNode that doesn't actually look for tags, merely
-    projecting the library root into virtual space
+    A special Node that doesn't actually look for tags, merely
+    projecting the library root into virtual space.
 
     """
 
