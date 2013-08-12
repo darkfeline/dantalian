@@ -122,16 +122,16 @@ class TagNode(BorderNode):
 
     def __iter__(self):
         files = list(super().__iter__())
-        files.extend(self.tagged().keys())
+        files.extend(self._tagged().keys())
         return iter(files)
 
     def __getitem__(self, key):
         try:
             return super().__getitem__(key)
         except KeyError:
-            return self.tagged()[key]
+            return self._tagged()[key]
 
-    def tagged(self):
+    def _tagged(self):
         return _uniqmap(self.root.find(self.tags))
 
 
