@@ -8,3 +8,4 @@ usage.
 
    reference/library
    reference/fuse
+   reference/names
