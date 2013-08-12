@@ -1,7 +1,4 @@
 """
-tree.py
-=======
-
 This module contains stuff used for managing FUSE virtual space.  The
 protocol for nodes is as follows.
 
