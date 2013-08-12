@@ -146,11 +146,11 @@ class RootNode(BorderNode):
     def __getitem__(self, key):
         try:
             return super().__getitem__(key)
-        except KeyError:
+        except KeyError as e:
             if key in self.files():
                 return os.path.join(self.root.root, key)
             else:
-                raise KeyError("{!r} not found".format(key))
+                raise KeyError("{!r} not found".format(key)) from e
 
     def _files(self):
         return os.listdir(self.root.root)
