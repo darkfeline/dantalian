@@ -24,10 +24,27 @@ a new name using the algorithm described below::
    def resolve(dir, name):
       base, extension = split_extension(name)
       for i=1; ; i++:
-         new_name = base + '.' + i + '.' + extension
+         new_name = '.'.join([base, i, extension])
          if is_okay(dir, new_name):
             return new_name
 
 If between generating the new name and using it the name becomes
 unavailable, dantalian will try to generate a name again using the
 original name.
+
+FUSE Name Collision Resolution
+------------------------------
+
+When file names are projected in a FUSE mounted library, there is a high
+chance of name collisions, in which case the virtual names of affected
+files are changed with the following algorithm::
+
+   def fuse_resolve(name, path):
+      base, extension = split_extension(name)
+      new_name = '.'.join([base, get_inode_number(path), extension])
+      return new_name
+
+In practice there will be no further name collisions, but if there are,
+then name collision resolution will be propagated outward until there
+are no name collisions.  This state is guaranteed as file systems cannot
+assign the same inode number to two different files.
