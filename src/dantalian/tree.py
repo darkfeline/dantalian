@@ -28,12 +28,90 @@ from itertools import chain
 
 from dantalian import path as libpath
 
-__all__ = ['FSNode', 'TagNode', 'BorderNode', 'RootNode', 'fs2tag', 'split']
+__all__ = []
 logger = logging.getLogger(__name__)
 UMASK = 0o007
 
 
-class FSNode:
+def _public(f):
+    __all__.append(f.__name__)
+    return f
+
+
+@_public
+class BaseNode(metaclass=abc.ABCMeta):
+
+    """
+    Base interface for all Nodes.  ``__iter__`` provides a listing of
+    the node's contents.  ``__getitem__``, ``__setitem__``, and
+    ``__delitem__`` describe a mapping data model interface.  ``dump``
+    implements dumping JSON-compatible objects.
+
+    """
+
+    @abc.abstractmethod
+    def __iter__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __getitem__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __setitem__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __delitem__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def dump(self):
+        raise NotImplementedError
+
+_load_map = {}
+
+
+def _add_map(name):
+    def adder(f):
+        _load_map[name] = f
+    return adder
+
+
+@_add_map('FSNode')
+def f(node):
+    x = FSNode()
+    map = node[1]
+    for k in map:
+        x[k] = load(map[k])
+    return x
+
+
+@_add_map('TagNode')
+def f(node):
+    x = TagNode(node[1])
+    map = node[2]
+    for k in map:
+        x[k] = load(map[k])
+    return x
+
+
+@_add_map('RootNode')
+def f(node):
+    x = RootNode(node[1])
+    map = node[2]
+    for k in map:
+        x[k] = load(map[k])
+    return x
+
+
+@_public
+def load(nodes):
+    return _load_map[nodes[0]](nodes)
+
+
+@_public
+class FSNode(BaseNode):
 
     """
     Mock directory.  FSNode works like a dictionary mapping names to
@@ -88,7 +166,19 @@ class FSNode:
         del self.children[key]
         self.attr['st_nlink'] -= 1
 
+    def dump(self):
+        """Dump object.
 
+        Dumps the node in the following format::
+
+            ['FSNode', {name: child}]
+
+        """
+        return [self.__class__.__name__, dict(
+            (x, self[x].dump()) for x in self.children)]
+
+
+@_public
 class BorderNode(FSNode, metaclass=abc.ABCMeta):
     """
     BorderNode is an abstract class for subclasses of FSNode which reach
@@ -97,6 +187,7 @@ class BorderNode(FSNode, metaclass=abc.ABCMeta):
     """
 
 
+@_public
 class TagNode(BorderNode):
 
     """
@@ -126,7 +217,19 @@ class TagNode(BorderNode):
     def _tagged(self):
         return _uniqmap(self.root.find(self.tags))
 
+    def dump(self):
+        """Dump object.
 
+        Dumps the node in the following format::
+
+            ['TagNode', [tag], {name: child}]
+
+        """
+        return [self.__class__.__name__, self.tags, dict(
+            (x, self[x].dump()) for x in self.children)]
+
+
+@_public
 class RootNode(BorderNode):
 
     """
@@ -156,7 +259,19 @@ class RootNode(BorderNode):
     def _files(self):
         return os.listdir(self.root.root)
 
+    def dump(self):
+        """Dump object.
 
+        Dumps the node in the following format::
+
+            ['RootNode', root, {name: child}]
+
+        """
+        return [self.__class__.__name__, self.root, dict(
+            (x, self[x].dump()) for x in self.children)]
+
+
+@_public
 def fs2tag(node, root, tags):
     """Convert a FSNode instance to a TagNode instance"""
     x = TagNode(root, tags)
@@ -164,6 +279,7 @@ def fs2tag(node, root, tags):
     return x
 
 
+@_public
 def split(tree, path):
     """Get node and path components
 
