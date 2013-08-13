@@ -1,11 +1,11 @@
 """
-All the functions in this module are scripts to be called from the
-command line.  See the manpage for usage.
+All the functions in this module are hooked in the dantalian script as
+commands.  See the manpage for usage.
 
 Commands should be decorated appropriately.  All of them should have
-@_public.  @_global is for global commands, which take no additional
-parameters.  @_library commands get a Library instance.  @_sock commands
-get a socket object.
+``@_public``.  ``@_global`` is for global commands, which take no
+additional parameters.  ``@_library`` commands get a Library instance.
+``@_sock`` commands get a socket object.
 
 """
 

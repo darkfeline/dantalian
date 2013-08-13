@@ -8,9 +8,6 @@ BorderNodes bridge into real file system space.  They may have also have
 strings as children, which are absolute paths into real file system
 space.
 
-Node behavior
--------------
-
 Nodes implement the methods for a mapping data model (i.e., __getitem__,
 __setitem__, __delitem__).
 
