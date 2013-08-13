@@ -635,6 +635,12 @@ def _find_root(dir):
 @_public
 class ProxyLibrary(Library):
 
+    """
+    Subclass of Library which overrides a number of methods for a
+    FUSE-mounted library.
+
+    """
+
     def __init__(self, root):
         logger.debug("open fuse library %r", root)
         super().__init__(root)
@@ -660,6 +666,21 @@ class ProxyLibrary(Library):
 
 @_public
 class SocketOperations(threading.Thread):
+
+    """
+    A Thread that manages a FUSE-mounted library and its socket, reading
+    from the socket and processing commands.
+
+    Methods that begin with ``do_`` are commands.  The following input
+    to the socket::
+
+        command arg1 arg2 arg3
+
+    will result in the method call::
+
+        do_command(arg1, arg2, arg3)
+
+    """
 
     def __init__(self, sock, root, tree):
         """
