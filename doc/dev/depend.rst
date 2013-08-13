@@ -21,6 +21,9 @@ For the documentation:
 
    .. __: https://github.com/darkfeline/sphinxcontrib-napoleon
 
+autodoc is used, so make sure you install dantalian in your working
+environment before building the documentation.
+
 If you want, you can use a custom ctags extension for Sphinx:
 `ext_ctags`_
 
