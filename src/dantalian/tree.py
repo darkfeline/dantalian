@@ -79,7 +79,7 @@ def _add_map(name):
 
 
 @_add_map('FSNode')
-def f(node):
+def f(root, node):
     x = FSNode()
     map = node[1]
     for k in map:
@@ -88,7 +88,7 @@ def f(node):
 
 
 @_add_map('TagNode')
-def f(node):
+def f(root, node):
     x = TagNode(node[1])
     map = node[2]
     for k in map:
@@ -97,8 +97,8 @@ def f(node):
 
 
 @_add_map('RootNode')
-def f(node):
-    x = RootNode(node[1])
+def f(root, node):
+    x = RootNode(root)
     map = node[2]
     for k in map:
         x[k] = load(map[k])
@@ -106,8 +106,8 @@ def f(node):
 
 
 @_public
-def load(nodes):
-    return _load_map[nodes[0]](nodes)
+def load(root, nodes):
+    return _load_map[nodes[0]](root, nodes)
 
 
 @_public
@@ -264,10 +264,10 @@ class RootNode(BorderNode):
 
         Dumps the node in the following format::
 
-            ['RootNode', root, {name: child}]
+            ['RootNode', {name: child}]
 
         """
-        return [self.__class__.__name__, self.root, dict(
+        return [self.__class__.__name__, dict(
             (x, self[x].dump()) for x in self.children)]
 
 
