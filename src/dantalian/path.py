@@ -34,16 +34,6 @@ def tagfrompath(path, root):
 
 
 @_public
-def samefile(f1, f2):
-    """If `f1` and `f2` refer to same inode.
-
-    :rtype: :class:`bool`
-
-    """
-    return os.path.samestat(os.lstat(f1), os.lstat(f2))
-
-
-@_public
 def listdir(path):
     """Return full paths of files in `path`.
 

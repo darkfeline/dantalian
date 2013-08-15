@@ -245,7 +245,7 @@ class Library(BaseFSLibrary):
         logger.info(
             'Checking if %r is already tagged with %r', file, tag)
         for f in libpath.listdir(p_dest):
-            if libpath.samefile(f, file):
+            if os.path.samefile(f, file):
                 return
         logger.info('Check okay')
         name = os.path.basename(file)
@@ -448,7 +448,7 @@ class Library(BaseFSLibrary):
             dir = os.path.dirname(file)
             while True:
                 dest = os.path.join(dir, new)
-                if os.path.exists(dest) and not libpath.samefile(file, dest):
+                if os.path.exists(dest) and not os.path.samefile(file, dest):
                     dest = os.path.join(dir, libpath.resolve_name(dir, new))
                 logger.debug('Moving %r to %r', file, dest)
                 try:
@@ -590,7 +590,7 @@ def _convertto(dir, target):
 
     logger.info("Checking %r is not in dirs", dir)
     dirname, basename = os.path.split(os.path.abspath(dir))
-    if libpath.samefile(dirname, target):
+    if os.path.samefile(dirname, target):
         raise LibraryError("{} is in special directory".format(dirname))
     logger.info("Check okay")
 
