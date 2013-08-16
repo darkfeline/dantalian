@@ -372,7 +372,7 @@ class Library(BaseFSLibrary):
                 directories.
 
         """
-        logger.debug('convert(%r, %r)', dir)
+        logger.debug('convert(%r)', dir)
         _convertto(dir, self.dirsdir(self.root))
 
     def cleandirs(self):
