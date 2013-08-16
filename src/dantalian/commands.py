@@ -52,9 +52,12 @@ def tag(lib: 'BaseLibrary', *args):
     the same name).  If `file` is already tagged, does nothing.  If
     `file` is a directory, you'll need to convert it first.
 
-    Args:
-        lib (BaseLibrary): Library instance.
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('tag(%r, %r)', lib, args)
@@ -81,9 +84,12 @@ def untag(lib: 'BaseLibrary', *args):
     Remove tag `tag` from `file` (Removes the hard link to `file` under
     `tag` directory).  If `file` isn't tagged, does nothing.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('untag(%r, %r)', lib, args)
@@ -107,9 +113,12 @@ def tags(lib: 'BaseLibrary', *args):
     List all the tags of `file` (Lists the directories that have hard
     links to `file`).
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('tags(%r, %r)', lib, args)
@@ -130,9 +139,12 @@ def find(lib: 'BaseLibrary', *args):
     tags.  Lists files by the path to the hard link under the first tag
     given.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('find(%r, %r)', lib, args)
@@ -152,9 +164,12 @@ def rm(lib: 'BaseLibrary', *args):
     Remove the files given (Removes all hard links to the files under
     the root directory).
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('rm(%r, %r)', lib, args)
@@ -173,9 +188,12 @@ def rename(lib: 'BaseLibrary', *args):
     Rename all hard links of `file` to `new`.  New names are subject to
     name collision resolution.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('rename(%r, %r)', lib, args)
@@ -195,9 +213,12 @@ def convert(lib: 'BaseLibrary', *args):
     special location '.dantalian/dirs' and replace the original with a
     symlink pointing to the absolute path.)
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('convert(%r, %r)', lib, args)
@@ -221,9 +242,12 @@ def fix(lib: 'BaseLibrary', *args):
     Fix symlinks after the library has been moved.  If it hasn't been
     moved, do nothing.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('fix(%r, %r)', lib, args)
@@ -240,9 +264,12 @@ def clean(lib: 'BaseLibrary', *args):
     Internally tracked converted directories which no longer have
     referent symlink under the root directory are removed.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('clean(%r, %r)', lib, args)
@@ -260,8 +287,10 @@ def init(*args):
     the current directory.  If a library already exists, it is not
     affected.
 
-    Args:
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('init(%r)', args)
@@ -278,9 +307,12 @@ def mount(lib: 'BaseLibrary', *args):
 
     The library must not be a FUSE-mounted virtual library.
 
-    Args:
-        lib (BaseLibrary): Library instance
-        args: arguments passed on to ArgumentParser (See code).
+    Parameters
+    ----------
+    lib : BaseLibrary
+        Library instance.
+    *args
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('mount(%r, %r)', lib, args)
@@ -296,9 +328,12 @@ def mount(lib: 'BaseLibrary', *args):
 def mknode(sock: 'socket', *args):
     """Make a node in FUSE.
 
-    Args:
+    Parameters
+    ----------
+    sock : socket
         sock (socket): A socket object for a library's FUSE socket.
-        args: arguments passed on to ArgumentParser (See code).
+    args*
+        Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('mknode(%r, %r)', sock, args)
