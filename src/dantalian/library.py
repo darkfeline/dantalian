@@ -3,7 +3,6 @@ import os
 import subprocess
 import logging
 import json
-import importlib
 import functools
 import re
 import shutil
@@ -182,12 +181,7 @@ class Library(BaseFSLibrary):
     @classmethod
     @lru_cache()
     def treefile(cls, root):
-        return os.path.join(cls.rootdir(root), 'mount')
-
-    @classmethod
-    @lru_cache()
-    def ctreefile(cls, root):
-        return os.path.join(cls.rootdir(root), 'mount_custom')
+        return os.path.join(cls.rootdir(root), 'tree')
 
     @classmethod
     @lru_cache()
@@ -476,51 +470,11 @@ class Library(BaseFSLibrary):
 
     def maketree(self):
         logger.info("making tree")
-        if os.path.exists(self.ctreefile(self.root)):
-            logger.info("using custom")
-            name = 'custom'
-            path = self.ctreefile(self.root)
-            custom = importlib.SourceFileLoader(name, path).load_module(name)
-            return custom.maketree(self.root)
+        if os.path.exists(self.treefile(self.root)):
+            with open(self.treefile(self.root)) as f:
+                return tree.load(self, json.load(f))
         else:
-            logger.info("using config")
-            return self._maketree(self.treefile(self.root))
-
-    def _maketree(self, config):
-        """Make a FSNode tree.
-
-        Args:
-            config (str): Config file path.
-
-        """
-        logger.debug("_maketree(%r, %r)", self, config)
-        with open(config) as f:
-            dat = json.load(f)
-        r = tree.RootNode(self)
-        for x in dat:
-            mount_, tags = x['mount'], x['tags']
-            logger.debug("doing %r, %r", mount_, tags)
-            mount_ = mount_.lstrip('/').split('/')
-            y = r
-            for x in mount_[:-1]:
-                logger.debug("trying %r", x)
-                try:
-                    if not isinstance(y[x], str):
-                        y = y[x]
-                    else:
-                        raise KeyError
-                except KeyError:
-                    logger.debug("making FSNode at %r[%r]", y, x)
-                    y[x] = tree.FSNode()
-                    y = y[x]
-            x = mount_[-1]
-            if x not in y:
-                logger.debug("making TagNode at %r[%r]", y, x)
-                y[x] = tree.TagNode(self, tags)
-            else:
-                logger.debug("replacing node at %r[%r]", y, x)
-                y[x] = tree.fs2tag(y[x])
-        return r
+            return tree.RootNode(self)
 
     def mount(self, path, tree):
         addr = self.fusesock(self.root)
@@ -540,6 +494,7 @@ class Library(BaseFSLibrary):
         logger.debug("Mounting fuse at %r with %r", path, tree)
         ops.mount(path, self, tree)
         thread.stop()
+        return tree
 
 
 def _cleandirs(root):
