@@ -107,6 +107,15 @@ def f(root, node):
 
 @_public
 def load(root, nodes):
+    """
+    Parameters
+    ----------
+    root : Library
+        Library instance to use for RootNode
+    nodes : list
+        JSON dump of node tree
+
+    """
     return _load_map[nodes[0]](root, nodes)
 
 
@@ -239,6 +248,13 @@ class RootNode(BorderNode):
     """
 
     def __init__(self, root):
+        """
+        Parameters
+        ----------
+        root : Library
+            Library for root
+
+        """
         super().__init__()
         assert not isinstance(root, str)
         self.root = root
