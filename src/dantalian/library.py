@@ -696,7 +696,7 @@ class SocketOperations(threading.Thread):
             else:
                 if path:  # tried to make node outside vfs
                     return
-                name = list(reversed(name))
+                name = reversed(name)
                 for next in name[:-1]:
                     node[name] = tree.FSNode()
                     node = node[name]
