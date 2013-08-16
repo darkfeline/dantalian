@@ -639,10 +639,14 @@ class SocketOperations(threading.Thread):
 
     def __init__(self, sock, root, tree):
         """
-        Args:
-            sock (socket): Server socket.
-            root (BaseLibrary): Library instance.
-            tree (RootNode): RootNode instance.
+        Parameters
+        ----------
+        sock : socket
+            Server socket.
+        root : BaseLibrary
+            Library instance.
+        tree : RootNode
+            RootNode instance.
 
         """
         super().__init__()
