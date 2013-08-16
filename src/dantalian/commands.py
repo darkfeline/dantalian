@@ -340,3 +340,25 @@ def mknode(sock: 'socket', *args):
         ['mknode'] + [shlex.quote('/' + args.path)] +
         [shlex.quote(x) for x in args.tags]
     ).encode())
+
+
+@_public
+@_sock
+def rmnode(sock: 'socket', *args):
+    """Remove a node in FUSE.
+
+    Parameters
+    ----------
+    sock : socket
+        sock (socket): A socket object for a library's FUSE socket.
+    args*
+        Arguments passed on to ArgumentParser (See code).
+
+    """
+    logger.debug('mknode(%r, %r)', sock, args)
+    parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
+    parser.add_argument('path')
+    args = parser.parse_args(args)
+    sock.send(" ".join(
+        ['rmnode'] + [shlex.quote('/' + args.path)]
+    ).encode())

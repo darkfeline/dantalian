@@ -693,20 +693,26 @@ class SocketOperations(threading.Thread):
         while True:
             path, x = os.path.split(path)
             name.append(x)
-            try:
-                node, path = tree.split(self.tree, path)
-            except TypeError:
+            node, path, ret = self.tree.getpath(path)
+            if ret == 1:
                 continue
             else:
-                if path:  # tried to make node outside vfs
-                    return
-                name = reversed(name)
-                for next in name[:-1]:
-                    node[name] = tree.FSNode()
-                    node = node[name]
-                x = tree.TagNode(self.root, tags)
-                node[name[-1]] = x
                 break
+        if path:  # tried to make node outside vfs
+            return
+        name = reversed(name)
+        for next in name[:-1]:
+            node[name] = tree.FSNode()
+            node = node[name]
+        node[name[-1]] = tree.TagNode(self.root, tags)
+
+    def do_rmnode(self, path):
+        path, name_node = os.path.split(path)
+        node, path, ret = self.tree.getpath(path)
+        if path:
+            return
+        assert ret == 0
+        del node[name_node]
 
 
 @_public
