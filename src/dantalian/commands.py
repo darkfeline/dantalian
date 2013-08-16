@@ -13,6 +13,7 @@ import argparse
 import logging
 import shlex
 import os
+import json
 
 from dantalian import library
 
@@ -319,7 +320,9 @@ def mount(lib: 'BaseLibrary', *args):
     parser = argparse.ArgumentParser(prog="dantalian mount", add_help=False)
     parser.add_argument('path')
     args = parser.parse_args(args)
-    lib.mount(args.path, lib.maketree())
+    tree = lib.mount(args.path, lib.maketree())
+    with open(lib.treefile(lib.root), 'w') as f:
+        json.dump(f, tree)
     logger.debug('exit')
 
 
