@@ -24,24 +24,16 @@ t_sock = []
 logger = logging.getLogger(__name__)
 
 
-def _public(f):
-    __all__.append(f.__name__)
+def _make_appender(obj):
+    def f(x):
+        obj.append(x.__name__)
+        return x
     return f
 
-
-def _global(f):
-    t_global.append(f.__name__)
-    return f
-
-
-def _library(f):
-    t_library.append(f.__name__)
-    return f
-
-
-def _sock(f):
-    t_sock.append(f.__name__)
-    return f
+_public = _make_appender(__all__)
+_global = _make_appender(t_global)
+_library = _make_appender(t_library)
+_sock = _make_appender(t_sock)
 
 
 @_public
