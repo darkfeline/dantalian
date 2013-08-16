@@ -23,9 +23,13 @@ class TestLibraryMethods(unittest.TestCase):
         shutil.rmtree(self.root)
         os.chdir(self._olddir)
 
+    def assertTagged(self, a, b):
+        """Assert `b` is tagged at `a`"""
+        self.assertTrue(os.path.exists(a))
+        self.assertTrue(os.path.samefile(a, b))
+
     def test_tag(self):
         l = self.library
         os.chdir('library')
         l.tag('a', '/A')
-        self.assertTrue(os.path.isfile(os.path.join('A', 'a')))
-        self.assertTrue(os.path.samefile(os.path.join('A', 'a'), 'a'))
+        self.assertTagged(os.path.join('A', 'a'), 'a')
