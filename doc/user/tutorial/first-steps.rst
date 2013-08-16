@@ -140,9 +140,15 @@ so you either need to be working in the library or indicate the library
 with an optional argument (all of the following are identical)::
 
    library $ dantalian tag /Genres/Rock ../Music/song.mp3
+   library $ cd Genres
    Genres $ dantalian tag /Genres/Rock ../../Music/song.mp3
+   Genres $ cd
    ~ $ dantalian --root library tag /Genres/Rock Music/song.mp3
+   ~ $ cd Music
    Music $ dantalian --root ~/library tag /Genres/Rock song.mp3
+
+(You can do all of the above if you want.  dantalian doesn't do anything
+if it sees that the file is already tagged.)
 
 So let's tag our song::
 
@@ -192,8 +198,11 @@ all of these tagged files are the same, so you can do
 ``Artists/Bob/song.mp3``, ``Artists/Charlie/song.mp3`` and
 ``"Albums/B&C's First Album/song.mp3"`` as well.
 
-Check :ref:`manpage` for the dantalian manpage with all of the available
-commands.  We'll be covering a few more of them below.
+Check the :doc:`manpage </manpage>` for all of the available commands.
+We'll be covering a few more of them below.
+
+Tagging directories
+^^^^^^^^^^^^^^^^^^^
 
 We untagged ``song.mp3`` because it is Charlie's song, although the
 album ``B&C's First Album`` is by both Bob and Charlie.  So, can we tag

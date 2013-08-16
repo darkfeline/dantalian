@@ -1,5 +1,3 @@
-.. _manpage:
-
 dantalian - dantalian cli script
 ================================
 

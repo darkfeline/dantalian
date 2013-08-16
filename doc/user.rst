@@ -11,6 +11,6 @@ dantalian are highly suggested to read the :ref:`tutorial`.
 
    user/install
    user/tutorial
+   user/guide
    user/reference
    user/links
-   user/bugs

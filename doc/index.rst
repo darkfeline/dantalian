@@ -10,7 +10,7 @@ dantalian Documentation
    *— The Mystic Archives of Dantalian*
 
 This is the documentation for dantalian, a transparent tag-based file
-organization system.
+organization system, version |release|, built on |today|.
 
 dantalian is still in active development.
 
@@ -21,14 +21,10 @@ dantalian is still in active development.
    user
    dev
    changes
+   bugs
 
 Status
 ------
 
 - Library: stable
 - FUSE: unstable
-
-Manpage
--------
-
-:ref:`manpage`
