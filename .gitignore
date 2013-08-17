@@ -1,10 +1,11 @@
 *.sw[op]
-__pycache__/
+__pycache__
 *.py[co]
 
-/build/
-/dist/
+/build
+/dist
 /doc/_build
 
-/virt-env/
+/virt-env
 /doc/tags
+.ropeproject
