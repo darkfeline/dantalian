@@ -35,8 +35,7 @@ standard programs such as ``ln``, ``mv``, etc., dantalian provides
 useful scripts for performing operations such as tagging, untagging, and
 deleting, as commands for the command-line script ``dantalian``.
 
-See the manpage (linked here: :ref:`manpage`) for the commands for
-``dantalian``.
+See the :doc:`manpage </manpage>` for the commands for ``dantalian``.
 
 Specific Requirements
 ---------------------
