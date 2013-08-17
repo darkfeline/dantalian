@@ -1,13 +1,10 @@
 *.sw[op]
 __pycache__/
 *.py[co]
+
 /build/
 /dist/
-/doc/tags
-/src/tags
+/doc/_build
 
 /virt-env/
-/bugs.otl
-.ropeproject/
-
-/test/
+/doc/tags
