@@ -65,3 +65,11 @@ class TestLibraryMethods(unittest.TestCase):
         self.assertSameTags(l.listtags('b'), ['/', '/C'])
         l.tag('b', '/A')
         self.assertSameTags(l.listtags('b'), ['/', '/C', '/A'])
+
+    def test_convert(self):
+        l = self.library
+        os.chdir('library')
+        l.convert('A')
+        p = os.path.join(self.root, l.dirsdir(l.root), 'A')
+        self.assertTrue(os.path.isdir(p))
+        self.assertEquals(os.readlink('A'), p)
