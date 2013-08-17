@@ -1,4 +1,0 @@
-Commands
-========
-
-See the :ref:`manpage`.
