@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; dantalian 0.5-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.5-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.5-dev documentation" href="index.html" />
+    <link rel="next" title="User Guide" href="user.html" />
+    <link rel="prev" title="dantalian Documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user.html" title="User Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="dantalian Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dantalian 0.5-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>dantalian is a multi-dimensionally hierarchical tag-based file
+organization system.  dantalian is very much for hardcore organizers
+and/or technically skilled individuals, people who want maximum
+flexibility in how they organize their own files.  dantalian emphasizes
+transparency, consistency and well-defined behavior.</p>
+<p>It uses hard links, by creating hard links in subdirectories (&#8220;tags&#8221;).
+This provides a very flexible and transparent system.</p>
+<p>If you</p>
+<ul class="simple">
+<li>like reading specifications (in a sense)</li>
+<li>wouldn&#8217;t trust a incompletely documented tool with organizing your
+files</li>
+<li>want maximum flexibility (tag hierarchy, no restrictions on tagged
+objects (<em>all</em> files <em>and</em> directories), arbitrary subsets of tags
+like unions and intersects (this tag and this tag or that tag but not
+this tag, etc.)</li>
+<li>want maximum scalability (hundreds of tags, thousands of tags,
+hundreds of thousands of tags, and as many files)</li>
+<li>want things to behave exactly with no ambiguity (everything happens
+explicitly, with no &#8220;smart&#8221; behavior, like &#8220;It looks like you want to
+do A, so I&#8217;ll do A for you without telling you.&#8221;)</li>
+</ul>
+<p>then dantalian is for you.  On the other hand, if you</p>
+<ul class="simple">
+<li>don&#8217;t like organizing your files</li>
+<li>don&#8217;t care too much if a file accidentally gets lost or untagged or
+misplaced</li>
+<li>don&#8217;t want to get to know your tools and just want it <em>to work</em> (most
+of the time)</li>
+</ul>
+<p>then unfortunately, dantalian is <em>not</em> for you.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Simple implementation</li>
+<li>All files (including symlinks to directories) can be tagged
+indiscriminately.</li>
+<li>Libraries are transparent.  You can interact with them on a basic
+level with coreutils, e.g. <tt class="docutils literal"><span class="pre">mv</span></tt>, <tt class="docutils literal"><span class="pre">ls</span></tt>, <tt class="docutils literal"><span class="pre">ln</span></tt>.</li>
+<li>Libraries are portable.  Moving is as simple as rsyncing it over and
+running <tt class="docutils literal"><span class="pre">dantalian</span> <span class="pre">fix</span></tt>.</li>
+<li>Files are tagged on an inode basis.</li>
+<li>Metadata is &#8220;stored&#8221; in the directory structure.</li>
+<li>Files can be moved and/or linked elsewhere without breaking anything.</li>
+<li>Almost no restrictions on tagged files&#8217; names.</li>
+</ul>
+<div class="section" id="fuse">
+<h3>FUSE<a class="headerlink" href="#fuse" title="Permalink to this headline">¶</a></h3>
+<p>FUSE mount allows the following features:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Allows better interaction on a file system level (trivial</dt>
+<dd><p class="first last">interoperability with other applications)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Virtual tag combination directories (currently only tag unions, e.g.</dt>
+<dd><p class="first last">AND).</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Dynamic management through socket operations.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="upcoming-features">
+<h2>Upcoming Features<a class="headerlink" href="#upcoming-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Support scripts for media metadata/tags.</li>
+<li>Merge libraries into a single larger one (possibly irreversible).</li>
+</ul>
+<div class="section" id="id1">
+<h3>FUSE<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Caching to improve performance at memory cost (optional, non-cached
+mounting will still be allowed).</li>
+<li>Unique mount (special mount where each file only appears once, for
+doing things like deleting duplicate files, iterating over files,
+etc.).</li>
+<li>Special MORE directories when there is a large number of files in a
+single directory.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python 3</li>
+<li>GNU findutils</li>
+<li>FUSE</li>
+<li>a POSIX filesystem</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">dantalian uses hard links heavily.  Make sure you are familiar with
+how hard links work.  They are very powerful, but can be messy and/or
+dangerous if you are not familiar with them.  Especially take care
+not to accidently break hard links, e.g. by copying and removing
+files.  dantalian leverages the advantages hard links provide, but
+won&#8217;t protect you from yourself!</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#features">Features</a><ul>
+<li><a class="reference internal" href="#fuse">FUSE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#upcoming-features">Upcoming Features</a><ul>
+<li><a class="reference internal" href="#id1">FUSE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">dantalian Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="user.html"
+                        title="next chapter">User Guide</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user.html" title="User Guide"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="dantalian Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">dantalian 0.5-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

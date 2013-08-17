@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FUSE &mdash; dantalian 0.5-dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.5-dev documentation" href="../../index.html" />
+    <link rel="up" title="dantalian User Reference" href="../reference.html" />
+    <link rel="next" title="Names and Paths" href="../reference/names.html" />
+    <link rel="prev" title="Libraries" href="../reference/library.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../reference/names.html" title="Names and Paths"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../reference/library.html" title="Libraries"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../../user.html" >User Guide</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">dantalian User Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="fuse">
+<span id="id1"></span><h1>FUSE<a class="headerlink" href="#fuse" title="Permalink to this headline">¶</a></h1>
+<p>dantalian offers an optional FUSE mount feature, which allows much more
+powerful interaction with libraries.</p>
+<p>To use it, run <tt class="docutils literal"><span class="pre">dantalian</span> <span class="pre">mount</span> <span class="pre">/path/to/mount/location</span></tt> on the
+command line.  You will want to mount it somewhere outside of the
+library.</p>
+<p>In addition to projecting the library into virtual FUSE space, you will
+also be able to set up virtual tag groups, which represent the
+intersection of a set of tags.  The two configuration files are
+<tt class="docutils literal"><span class="pre">.dantalian/mount</span></tt> and <tt class="docutils literal"><span class="pre">.dantalian/mount_custom</span></tt>.  If the latter
+exists, it will be used; otherwise the former is used.  The first
+configuration file is in JSON, and should look as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span><span class="s">&quot;mount&quot;</span><span class="p">:</span> <span class="s">&quot;/path/to/mount/location&quot;</span><span class="p">,</span>
+     <span class="s">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;tag1&quot;</span><span class="p">,</span> <span class="s">&quot;tag2&quot;</span><span class="p">,</span> <span class="s">&quot;tag3&quot;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s">&quot;mount&quot;</span><span class="p">:</span> <span class="s">&quot;/path/to/another/mount&quot;</span><span class="p">,</span>
+     <span class="s">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;more&quot;</span><span class="p">,</span> <span class="s">&quot;tags&quot;</span><span class="p">]}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Alternately, you may provide a custom script, <tt class="docutils literal"><span class="pre">mount_custom</span></tt>.  It
+should be a Python module that contains a function with the signature
+<tt class="docutils literal"><span class="pre">maketree(root)</span></tt>.  It will be passed the root of the library.  You may
+write your own script to set up a node tree and return it, and dantalian
+will handle the rest.  See <tt class="xref py py-meth docutils literal"><span class="pre">dantalian.library._maketree()</span></tt> to see
+how dantalian creates a node tree from the JSON for an example.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>For the most part, FUSE-mounted libraries behave exactly like regular
+libraries, so you can use the regular dantalian commands as well as
+regular file system operations to interact with it.  However, certain
+dantalian commands behave differently or are restricted for sanity&#8217;s
+sake (for example, you cannot <tt class="docutils literal"><span class="pre">mount</span></tt> a FUSE-mounted library).
+dantalian distinguishes between a mounted library and a regular library
+by a virtual directory <tt class="docutils literal"><span class="pre">.dantalian-fuse</span></tt>, which simply points to
+<tt class="docutils literal"><span class="pre">.dantalian</span></tt>.</p>
+<p>To unmount, use <tt class="docutils literal"><span class="pre">fusermount</span> <span class="pre">-u</span> <span class="pre">path/to/mount</span></tt>.</p>
+<p>See <a class="reference internal" href="../reference/names.html#names"><em>Names and Paths</em></a> for more information.</p>
+</div>
+<div class="section" id="nodes-and-virtual-space">
+<h2>Nodes and virtual space<a class="headerlink" href="#nodes-and-virtual-space" title="Permalink to this headline">¶</a></h2>
+<p>dantalian manages the virtual space using a node tree.  Inheritance tree
+of nodes:</p>
+<ul class="simple">
+<li>FSNode<ul>
+<li>BorderNode<ul>
+<li>TagNode</li>
+<li>RootNode</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>FSNodes simply represent virtual directories.  BorderNode is an abstract
+subclass for nodes that lead back into real space (back to the
+underlying file system).  There are two types: TagNodes project the
+intersection of their tags under themselves, whereas the RootNode (there
+will only be one) projects the library root under itself.</p>
+<p>Functionally, it is useful to divide the virtual space into categories.
+Paths which point to nodes will be called nodespace.  Paths which point
+to files directly under TagNodes are tagspace.  Paths which point more
+than one directory beyond TagNodes or any files under RootNodes are
+outsidespace.</p>
+</div>
+<div class="section" id="name-conflicts">
+<h2>Name conflicts<a class="headerlink" href="#name-conflicts" title="Permalink to this headline">¶</a></h2>
+<p>Specified mounts (nodes) will obscure any files or directories with the
+same name under RootNode.</p>
+<p>File name conflicts for files under TagNodes will be resolved by adding
+the inode number (which is guaranteed to be unique) at the end of the
+file name, but before the extension.  E.g., if two files are both named
+<tt class="docutils literal"><span class="pre">file.mp3</span></tt>, the latter will appear as <tt class="docutils literal"><span class="pre">file.12345.mp3</span></tt>, assuming its
+inode number is <tt class="docutils literal"><span class="pre">12345</span></tt>.</p>
+</div>
+<div class="section" id="socket-operations">
+<h2>Socket Operations<a class="headerlink" href="#socket-operations" title="Permalink to this headline">¶</a></h2>
+<p>You can also interact directly with a FUSE-mounted library using socket
+operations.  FUSE-mounted libraries open a socket at
+<tt class="docutils literal"><span class="pre">.dantalian/fuse.sock</span></tt>.  dantalian provides scripts that allow you to
+interact dynamically with a mounted library, but they simply echo
+standard commands to the socket, which can be done by hand (like all
+other dantalian operations) from, e.g. a remote client that doesn&#8217;t have
+dantalian installed.  For example, the socket command:</p>
+<div class="highlight-python"><pre>$ dantalian mknode path/to/node tag1 tag2</pre>
+</div>
+<p>can be done by:</p>
+<div class="highlight-python"><pre>$ echo mknode path/to/node tag1 tag2 &gt; library/.dantalian/fuse.sock</pre>
+</div>
+<p>The socket processes commands much like a shell, so make sure to quote
+anything that contains spaces.</p>
+<p>Currently, the only socket command is <tt class="docutils literal"><span class="pre">mknode</span></tt>, which dynamically adds
+a TagNode.</p>
+</div>
+<div class="section" id="fuse-operations">
+<h2>FUSE Operations<a class="headerlink" href="#fuse-operations" title="Permalink to this headline">¶</a></h2>
+<p>FUSE intercepts calls to the kernel to perform file system operations,
+allowing it to present a file system API in user space.  How it behaves
+depends on how these operations are implemented.  See below for the
+implemented operations and their behavior.  As a rule of thumb,
+interaction with nodespace is extremely limited.  Calls to outsidespace
+will be passed on to the OS/underlying file system.  Calls to tagspace
+will manipulate the tags on the files according to the library paradigm.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FUSE</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#nodes-and-virtual-space">Nodes and virtual space</a></li>
+<li><a class="reference internal" href="#name-conflicts">Name conflicts</a></li>
+<li><a class="reference internal" href="#socket-operations">Socket Operations</a></li>
+<li><a class="reference internal" href="#fuse-operations">FUSE Operations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../reference/library.html"
+                        title="previous chapter">Libraries</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../reference/names.html"
+                        title="next chapter">Names and Paths</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/user/reference/fuse.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../reference/names.html" title="Names and Paths"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../reference/library.html" title="Libraries"
+             >previous</a> |</li>
+        <li><a href="../../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../../user.html" >User Guide</a> &raquo;</li>
+          <li><a href="../reference.html" >dantalian User Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

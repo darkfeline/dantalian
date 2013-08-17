@@ -1,0 +1,7 @@
+Commands Reference
+==================
+
+See the manpage.
+
+.. toctree::
+   manpage

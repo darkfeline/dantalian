@@ -1,0 +1,5 @@
+Operations
+==========
+
+.. autoclass:: dantalian.mount.TagOperations
+   :members:

@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>First Steps &mdash; dantalian 0.5-dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.5-dev documentation" href="../../index.html" />
+    <link rel="up" title="dantalian Tutorial" href="../tutorial.html" />
+    <link rel="next" title="Guides" href="../guide.html" />
+    <link rel="prev" title="dantalian Tutorial" href="../tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../guide.html" title="Guides"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../tutorial.html" title="dantalian Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../../user.html" >User Guide</a> &raquo;</li>
+          <li><a href="../tutorial.html" accesskey="U">dantalian Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="first-steps">
+<h1>First Steps<a class="headerlink" href="#first-steps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-dantalian">
+<h2>What is dantalian?<a class="headerlink" href="#what-is-dantalian" title="Permalink to this headline">¶</a></h2>
+<p><strong>What is dantalian?</strong></p>
+<p>dantalian is a multi-dimensionally hierarchical tag-based file
+organization system.</p>
+<p><strong>A short description in English please.</strong></p>
+<p>Sorry, I&#8217;ll have to use a few diagrams too.  Say I love listening to
+music and I have a bunch of music on my hard drive.  A common way to
+organize music is like this:</p>
+<div class="highlight-python"><pre>Genre/
+   Artist/
+      Album/
+         song</pre>
+</div>
+<p>The problem is, I have this song that&#8217;s a single.  No problem, I can
+just do this:</p>
+<div class="highlight-python"><pre>Genre/
+   Artist/
+      single</pre>
+</div>
+<p>But what if it&#8217;s a collab between two different artists?  Or if the song
+mixes genres?  Or if I like my songs grouped by where I listen to them
+(in the car, at home, at work)?  I&#8217;m screwed, that&#8217;s what.</p>
+<p>A multi-dimensional hierarchy means that I can do this:</p>
+<div class="highlight-python"><pre>Genres/
+   Anime/
+      traumerei.mp3
+   Rock/
+      traumerei.mp3
+Artists/
+   Haruka Tomatsu/
+      traumerei.mp3
+      Gen&#x27;ei OP/
+         traumerei.mp3
+Albums/
+   Gen&#x27;ei OP/
+      traumerei.mp3
+   Anison Collection/
+      traumerei.mp3
+Anime/
+   Series/
+      Gen&#x27;ei wo Kakeru Taiyou/
+         Gen&#x27;ei OP/
+            traumerei.mp3
+Rating/
+   5/
+      traumerei.mp3
+   4/
+   3/
+   2/
+   1/</pre>
+</div>
+<p><strong>Wait, that looks like a pain to manage.  And you have like ten copies
+of one song, doesn&#8217;t that waste space?</strong></p>
+<p>Actually, thanks to the magic of hard links, there&#8217;s only one copy of
+<tt class="docutils literal"><span class="pre">traumerei.mp3</span></tt>.  It takes up the space of one copy, and if you change
+the song in any of the places it appears, all of them change.  They&#8217;re
+all the same file.</p>
+<p>Don&#8217;t worry, dantalian makes managing this easy as pie.</p>
+<p><strong>Oh okay.  Wait, doesn&#8217;t that look like metadata tags on .mp3 files?</strong></p>
+<p>That&#8217;s the tag-based part.  Normally, if you wanted to search for a song
+with a tag, you&#8217;d have to open up a music manager like amaroK or iTunes.
+With dantalian, if you want to find all songs tagged with the <tt class="docutils literal"><span class="pre">Pop</span></tt>
+genre, you just go to the folder <tt class="docutils literal"><span class="pre">Genres/Pop</span></tt> and all the files are
+there.</p>
+<p><strong>Cool.  What about multi-tag searches and such?</strong></p>
+<p>dantalian can do that do, but that&#8217;s a slightly more advanced feature
+for a little later.</p>
+<p><strong>So what can I use dantalian for?</strong></p>
+<p>Everything.  All files, and even folders as well.  You can then organize
+them however you want.  Knock yourself out.</p>
+<p><strong>Holy cow, I will, thanks.  So how do I get started?</strong></p>
+<p>Install dantalian (See <a class="reference internal" href="../install.html#install"><em>Installation</em></a>).  No further setup necessary.</p>
+</div>
+<div class="section" id="using-dantalian">
+<h2>Using dantalian<a class="headerlink" href="#using-dantalian" title="Permalink to this headline">¶</a></h2>
+<p><strong>Er, how do I use this thing?</strong></p>
+<p>Let&#8217;s run through an example.  Say you have a single song in your
+<tt class="docutils literal"><span class="pre">Music</span></tt> folder and want to organize it (hey, it&#8217;s an example).</p>
+<div class="section" id="making-a-library">
+<h3>Making a library<a class="headerlink" href="#making-a-library" title="Permalink to this headline">¶</a></h3>
+<p>We start by making a library:</p>
+<div class="highlight-python"><pre>~ $ mkdir library
+~ $ dantalian init library</pre>
+</div>
+<p>Or you can do:</p>
+<div class="highlight-python"><pre>~ $ mkdir library
+~ $ cd library
+library $ dantalian init</pre>
+</div>
+<p>Right now our directories look like this:</p>
+<div class="highlight-python"><pre>Music/
+   song.mp3
+library/</pre>
+</div>
+</div>
+<div class="section" id="making-tags-and-tagging">
+<h3>Making tags and tagging<a class="headerlink" href="#making-tags-and-tagging" title="Permalink to this headline">¶</a></h3>
+<p>Let&#8217;s make a bunch of directories for how we want to organize our song:</p>
+<div class="highlight-python"><pre>library/
+   Genres/
+      Rock/
+   Artists/
+      Bob/
+      Charlie/
+   Albums/
+      B&amp;C&#x27;s First Album/</pre>
+</div>
+<p>Next, let&#8217;s tag our song.  dantalian commands need to work on a library,
+so you either need to be working in the library or indicate the library
+with an optional argument (all of the following are identical):</p>
+<div class="highlight-python"><pre>library $ dantalian tag /Genres/Rock ../Music/song.mp3
+library $ cd Genres
+Genres $ dantalian tag /Genres/Rock ../../Music/song.mp3
+Genres $ cd
+~ $ dantalian --root library tag /Genres/Rock Music/song.mp3
+~ $ cd Music
+Music $ dantalian --root ~/library tag /Genres/Rock song.mp3</pre>
+</div>
+<p>(You can do all of the above if you want.  dantalian doesn&#8217;t do anything
+if it sees that the file is already tagged.)</p>
+<p>So let&#8217;s tag our song:</p>
+<div class="highlight-python"><pre>library $ dantalian tag /Genres/Rock ../Music/song.mp3
+library $ dantalian tag /Artists/Bob ../Music/song.mp3
+library $ dantalian tag /Artists/Charlie ../Music/song.mp3
+library $ dantalian tag /Albums/B&amp;C&#x27;s First Album ../Music/song.mp3</pre>
+</div>
+<p>Now our library looks like this:</p>
+<div class="highlight-python"><pre>library/
+   Genres/
+      Rock/
+         song.mp3
+   Artists/
+      Bob/
+         song.mp3
+      Charlie/
+         song.mp3
+   Albums/
+      B&amp;C&#x27;s First Album/
+         song.mp3</pre>
+</div>
+<p>That wasn&#8217;t hard, was it?  Let&#8217;s see what tags our song has:</p>
+<div class="highlight-python"><pre>library $ dantalian tags ../Music/song.mp3
+/Genres/Rock
+/Artists/Bob
+/Artists/Charlie
+/Albums/B&amp;C&#x27;s First Album</pre>
+</div>
+<p>Handy!</p>
+</div>
+<div class="section" id="some-other-things">
+<h3>Some other things<a class="headerlink" href="#some-other-things" title="Permalink to this headline">¶</a></h3>
+<p>If you want, you can add an alias for dantalian so you don&#8217;t have to
+type it every time:</p>
+<div class="highlight-python"><pre># for bash
+library $ alias d=dantalian
+library $ d untag /Artists/Bob Genres/Rock/song.mp3</pre>
+</div>
+<p>Here we also see the untag command in action.  Note that we used
+<tt class="docutils literal"><span class="pre">Genres/Rock/song.mp3</span></tt> instead of <tt class="docutils literal"><span class="pre">../Music/song.mp3</span></tt>.  Remember,
+all of these tagged files are the same, so you can do
+<tt class="docutils literal"><span class="pre">Artists/Bob/song.mp3</span></tt>, <tt class="docutils literal"><span class="pre">Artists/Charlie/song.mp3</span></tt> and
+<tt class="docutils literal"><span class="pre">&quot;Albums/B&amp;C's</span> <span class="pre">First</span> <span class="pre">Album/song.mp3&quot;</span></tt> as well.</p>
+<p>Check the <a class="reference internal" href="../../manpage.html"><em>manpage</em></a> for all of the available commands.
+We&#8217;ll be covering a few more of them below.</p>
+</div>
+<div class="section" id="tagging-directories">
+<h3>Tagging directories<a class="headerlink" href="#tagging-directories" title="Permalink to this headline">¶</a></h3>
+<p>We untagged <tt class="docutils literal"><span class="pre">song.mp3</span></tt> because it is Charlie&#8217;s song, although the
+album <tt class="docutils literal"><span class="pre">B&amp;C's</span> <span class="pre">First</span> <span class="pre">Album</span></tt> is by both Bob and Charlie.  So, can we tag
+the album with both artists?  (Remember I said you can do anything with
+dantalian?)</p>
+<p>First, you need to convert it because it&#8217;s a directory:</p>
+<div class="highlight-python"><pre>library $ d convert &quot;/Albums/B&amp;C&#x27;s First Album&quot;
+library $ d tag -s &quot;Albums/B&amp;C&#x27;s First Album&quot; /Artists/Bob /Artists/Charlie</pre>
+</div>
+<p>Notice we used the <tt class="docutils literal"><span class="pre">-s</span></tt> switch to flip the tag and the file for the
+<tt class="docutils literal"><span class="pre">tag</span></tt> command.  Normally, you would give it one tag and one or more
+files, but with the <tt class="docutils literal"><span class="pre">-s</span></tt> option you give it one file and one or more
+tags.  You can use either for all of your tagging needs.</p>
+</div>
+</div>
+<div class="section" id="closing">
+<h2>Closing<a class="headerlink" href="#closing" title="Permalink to this headline">¶</a></h2>
+<p><strong>Wait, that&#8217;s it?</strong></p>
+<p>Nope.  dantalian has a few more very powerful features, but what we
+covered is enough to get started and familiarize yourself with it.  But
+dantalian by itself really is quite simple; it&#8217;s more what you do with
+it.  A hammer and a saw is just a lump of metal on a stick for hitting
+things and a thin piece of metal for cutting, but you can build grand
+structures with them.  It&#8217;s the same with dantalian, so play around with
+these basic features and see how you can make use of them.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">First Steps</a><ul>
+<li><a class="reference internal" href="#what-is-dantalian">What is dantalian?</a></li>
+<li><a class="reference internal" href="#using-dantalian">Using dantalian</a><ul>
+<li><a class="reference internal" href="#making-a-library">Making a library</a></li>
+<li><a class="reference internal" href="#making-tags-and-tagging">Making tags and tagging</a></li>
+<li><a class="reference internal" href="#some-other-things">Some other things</a></li>
+<li><a class="reference internal" href="#tagging-directories">Tagging directories</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#closing">Closing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../tutorial.html"
+                        title="previous chapter">dantalian Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../guide.html"
+                        title="next chapter">Guides</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/user/tutorial/first-steps.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../guide.html" title="Guides"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../tutorial.html" title="dantalian Tutorial"
+             >previous</a> |</li>
+        <li><a href="../../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../../user.html" >User Guide</a> &raquo;</li>
+          <li><a href="../tutorial.html" >dantalian Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

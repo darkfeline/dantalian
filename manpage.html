@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dantalian - dantalian cli script &mdash; dantalian 0.5-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.5-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.5-dev documentation" href="index.html" />
+    <link rel="up" title="dantalian User Reference" href="user/reference.html" />
+    <link rel="next" title="Libraries" href="user/reference/library.html" />
+    <link rel="prev" title="dantalian User Reference" href="user/reference.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user/reference/library.html" title="Libraries"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="user/reference.html" title="dantalian User Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="user.html" >User Guide</a> &raquo;</li>
+          <li><a href="user/reference.html" accesskey="U">dantalian User Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dantalian-dantalian-cli-script">
+<h1>dantalian - dantalian cli script<a class="headerlink" href="#dantalian-dantalian-cli-script" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>dantalian</strong> [<em>OPTION</em>]... <em>COMMAND</em> [<em>ARGS</em>]...</p>
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>dantalian</strong> is the command line utility for dantalian, a transparent
+tag-based file organization system.</p>
+<p>Comprehensive documentation can be found online at
+<a class="reference external" href="https://dantalian.readthedocs.org/">https://dantalian.readthedocs.org/</a> (note which version of dantalian the
+documentation is for).  The documentation may also be distributed and
+installed locally, in which case it can probably be found in the usual
+location.</p>
+</div>
+<div class="section" id="options">
+<h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>&#8211;root <em>ROOT</em></dt>
+<dd>Specify a specific library to use.</dd>
+<dt>&#8211;loglevel <em>LEVEL</em></dt>
+<dd>Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN,
+ERROR, or CRITICAL, case insensitive.</dd>
+<dt>&#8211;logfile <em>FILE</em></dt>
+<dd>Specify a file to log to instead of stderr.</dd>
+<dt>&#8211;logfilter <em>MODULE</em></dt>
+<dd>Show only messages from the given module</dd>
+</dl>
+<p>The last three options are for debugging purposes.  If you run into a
+bug, run <strong>dantalian</strong> with <tt class="docutils literal"><span class="pre">--loglevel=DEBUG</span> <span class="pre">--logfile=output.log</span></tt>
+and include the log with the bug report.</p>
+</div>
+<div class="section" id="commands">
+<h2>COMMANDS<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<p>There are three types of commands: universal, library, and fuse.
+Universal commands are used without a reference to a library.  Library
+commands must be used with a library (either detected automatically or
+specified with <tt class="docutils literal"><span class="pre">--root</span></tt>.  Fuse commands must be used with a
+fuse-mounted library.</p>
+<div class="section" id="universal">
+<h3>UNIVERSAL<a class="headerlink" href="#universal" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>init</dt>
+<dd><p class="first">Usage: <strong>dantalian init</strong> [<em>DIR</em>]</p>
+<p class="last">Creates a library in DIR.  If DIR is omitted, creates a library in
+the current directory.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="library">
+<h3>LIBRARY<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>tag</dt>
+<dd><p class="first">Usage: <strong>dantalian tag</strong> <em>TAG</em> <em>FILE</em>...</p>
+<p class="last">Tags FILE with TAG.  If FILE is already tagged, does nothing.  If
+FILE is a directory, you&#8217;ll need to convert it first.  The option
+<tt class="docutils literal"><span class="pre">-s</span></tt> reverses <em>TAG</em> and <em>FILE</em>, for tagging a single file with
+multiple tags.</p>
+</dd>
+<dt>untag</dt>
+<dd><p class="first">Usage: <strong>dantalian untag</strong> <em>TAG</em> <em>FILE</em>...</p>
+<p class="last">Removes TAG from FILE.  If FILE isn&#8217;t tagged, does nothing.  Has the
+same <tt class="docutils literal"><span class="pre">-s</span></tt> options as <strong>tag</strong></p>
+</dd>
+<dt>tags</dt>
+<dd><p class="first">Usage: <strong>dantalian tags</strong> <em>FILE</em></p>
+<p class="last">Lists all the tags of FILE.</p>
+</dd>
+<dt>find</dt>
+<dd><p class="first">Usage: <strong>dantalian find</strong> <em>TAG</em>...</p>
+<p class="last">Intersection tag search.  Lists all files that have all of the given
+tags.  Lists files by the path to the hard link under the first tag
+given.</p>
+</dd>
+<dt>rm</dt>
+<dd><p class="first">Usage: <strong>dantalian rm</strong> <em>FILE</em>...</p>
+<p class="last">Removes the files given.  That is, removes all hard links to the
+given files in the library.  Hard links outside of the library are
+unaffected.</p>
+</dd>
+<dt>rename</dt>
+<dd><p class="first">Usage: <strong>dantalian rename</strong> <em>FILE</em> <em>NEW</em></p>
+<p class="last">Renames all hard links of FILE to NEW.</p>
+</dd>
+<dt>convert</dt>
+<dd><p class="first">Usage: <strong>dantalian convert</strong> <em>DIR</em>...</p>
+<p class="last">Converts directories so they can be tagged.  (Moves directories to
+special location &#8216;.dantalian/dirs&#8217; and replaces the original with a
+symlink pointing to the absolute path).</p>
+</dd>
+<dt>fix</dt>
+<dd><p class="first">Usage: <strong>dantalian fix</strong></p>
+<p class="last">Fixes symlinks after the library has been moved.  If it hasn&#8217;t been
+moved, does nothing.</p>
+</dd>
+<dt>clean</dt>
+<dd><p class="first">Usage: <strong>dantalian clean</strong></p>
+<p class="last">Clean converted directories.  Delete any converted directories which
+no longer have any symlinks in the library reference it.</p>
+</dd>
+<dt>mount</dt>
+<dd><p class="first">Usage: <strong>dantalian mount</strong> <em>DIR</em></p>
+<p class="last">Mounts the FUSE file system at DIR according to the configuration
+files.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="fuse">
+<h3>FUSE<a class="headerlink" href="#fuse" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>mknode</dt>
+<dd><p class="first">Usage: <strong>dantalian mknode</strong> <em>PATH</em> <em>TAGS</em>...</p>
+<p class="last">Make a TagNode</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="configuration-files">
+<h2>CONFIGURATION FILES<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><em>.dantalian/mount</em></div>
+<div class="line"><em>.dantalian/mount_custom</em></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">dantalian - dantalian cli script</a><ul>
+<li><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li><a class="reference internal" href="#options">OPTIONS</a></li>
+<li><a class="reference internal" href="#commands">COMMANDS</a><ul>
+<li><a class="reference internal" href="#universal">UNIVERSAL</a></li>
+<li><a class="reference internal" href="#library">LIBRARY</a></li>
+<li><a class="reference internal" href="#fuse">FUSE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration-files">CONFIGURATION FILES</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="user/reference.html"
+                        title="previous chapter">dantalian User Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="user/reference/library.html"
+                        title="next chapter">Libraries</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/manpage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user/reference/library.html" title="Libraries"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="user/reference.html" title="dantalian User Reference"
+             >previous</a> |</li>
+        <li><a href="index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="user.html" >User Guide</a> &raquo;</li>
+          <li><a href="user/reference.html" >dantalian User Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
