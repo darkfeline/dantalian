@@ -121,3 +121,16 @@ class TestLibraryMethods(unittest.TestCase):
         results = l.find(['/A/D', '/B'])
         self.assertEquals(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
+
+    def test_rm(self):
+        l = self.library
+        os.chdir('library')
+        n = [os.path.join(*x) for x in [
+            ['A', 'a'], ['B', 'marisa'], ['A', 'D', 'reimu']
+        ]]
+        for x in n:
+            os.link('a', x)
+        n.append('a')
+        l.rm('a')
+        for x in n:
+            self.assertFalse(os.path.exists(x))
