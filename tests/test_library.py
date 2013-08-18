@@ -101,19 +101,23 @@ class TestLibraryMethods(unittest.TestCase):
         l = self.library
         os.chdir('library')
         results = l.find(['/'])
-        self.assertEquals(set(results), set(
-            os.path.abspath(x) for x in ('a', 'b',)))
+        self.assertEquals(set(results), set(os.path.join(l.root, x) for x in (
+            '.dantalian', 'A', 'B', 'C', 'a', 'b',)))
         l.tag('a', '/A/D')
         results = l.find(['/A/D'])
         self.assertEquals(set(results), set(
-            os.path.abspath(x) for x in ('a',)))
+            os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
         results = l.find(['/A/D', '/'])
         self.assertEquals(set(results), set(
-            os.path.abspath(x) for x in ('a',)))
+            os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
+        results = l.find(['/', '/A/D', '/'])
+        self.assertEquals(set(results), set(
+            os.path.join(l.root, x) for x in ('a',)))
         l.tag('b', '/A/D')
         results = l.find(['/A/D'])
         self.assertEquals(set(results), set(
-            os.path.abspath(x) for x in ('a', 'b',)))
-        results = l.find(['/A/D', '/'])
+            os.path.join(l.root, 'A', 'D', x) for x in ('a', 'b',)))
+        l.tag('a', '/B')
+        results = l.find(['/A/D', '/B'])
         self.assertEquals(set(results), set(
-            os.path.abspath(x) for x in ('a',)))
+            os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
