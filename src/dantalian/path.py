@@ -17,14 +17,20 @@ def _public(x):
 
 @_public
 def pathfromtag(tag, root):
-    """Get path from tag
+    """Get absolute path from tag
 
-    `tag` is absolute from the library root.
-    `root` is the library root directory.
+    Parameters
+    ----------
+    tar : str
+        Tag.
+    root : str
+        Absolute path to library root directory.
 
     """
-    assert tag.startswith('/')
-    return os.path.join(root, tag.lstrip('/'))
+    if tag.startswith('/'):
+        return os.path.join(root, tag.lstrip('/'))
+    else:
+        return os.path.abspath(tag)
 
 
 @_public
