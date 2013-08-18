@@ -96,3 +96,24 @@ class TestLibraryMethods(unittest.TestCase):
         os.unlink('A/D/C')
         l.cleandirs()
         self.assertFalse(os.path.isdir(p))
+
+    def test_find(self):
+        l = self.library
+        os.chdir('library')
+        results = l.find(['/'])
+        self.assertEquals(set(results), set(
+            os.path.abspath(x) for x in ('a', 'b',)))
+        l.tag('a', '/A/D')
+        results = l.find(['/A/D'])
+        self.assertEquals(set(results), set(
+            os.path.abspath(x) for x in ('a',)))
+        results = l.find(['/A/D', '/'])
+        self.assertEquals(set(results), set(
+            os.path.abspath(x) for x in ('a',)))
+        l.tag('b', '/A/D')
+        results = l.find(['/A/D'])
+        self.assertEquals(set(results), set(
+            os.path.abspath(x) for x in ('a', 'b',)))
+        results = l.find(['/A/D', '/'])
+        self.assertEquals(set(results), set(
+            os.path.abspath(x) for x in ('a',)))
