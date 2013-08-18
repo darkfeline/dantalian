@@ -396,8 +396,10 @@ class Library(BaseFSLibrary):
         logger.debug("find(%r)", tags)
         assert len(tags) > 0
         inodes = functools.reduce(
-            set.intersection,
-            (set(os.lstat(x) for x in libpath.listdir(y)) for y in tags))
+            set.intersection, (set(
+                os.lstat(x) for x in libpath.listdir(
+                    libpath.pathfromtag(y, self.root))
+            ) for y in tags))
         logger.debug("found unique inodes %r", inodes)
         map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
         logger.debug("using map %r", map)
