@@ -505,7 +505,7 @@ def _cleandirs(root):
     symlinks = libpath.findsymlinks(root)
     linkedto = [os.readlink(x[0]) for x in symlinks]
     linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
-    dirs = list(Library.listdir(dirsdir))
+    dirs = libpath.listdir(dirsdir)
     for x in linkedto:
         try:
             dirs.remove(x)
