@@ -37,10 +37,12 @@ def tagfrompath(path, root):
 def listdir(path):
     """Return full paths of files in `path`.
 
-    :rtype: `iterator`
+    Returns
+    -------
+    list
 
     """
-    return iter(os.path.join(path, f) for f in os.listdir(path))
+    return [os.path.join(path, f) for f in os.listdir(path)]
 
 
 @_public
