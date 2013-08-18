@@ -13,6 +13,7 @@ there's a bug in the code that's not documented here, the code wins =).
    :maxdepth: 1
 
    dev/depend
+   dev/build
    dev/library
    dev/libop
    dev/api

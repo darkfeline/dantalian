@@ -1,2 +1,4 @@
 graft doc
 graft tests
+include README.rst
+global-exclude *.swp
