@@ -13,7 +13,7 @@ from functools import lru_cache
 
 from dantalian import operations as ops
 from dantalian import tree
-from dantalian import path as libpath
+from dantalian import path as dpath
 from dantalian.errors import DependencyError
 
 __all__ = []
@@ -235,16 +235,16 @@ class Library(BaseFSLibrary):
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        p_dest = libpath.pathfromtag(tag, self.root)
+        p_dest = dpath.pathfromtag(tag, self.root)
         logger.info(
             'Checking if %r is already tagged with %r', file, tag)
-        for f in libpath.listdir(p_dest):
+        for f in dpath.listdir(p_dest):
             if os.path.samefile(f, file):
                 return
         logger.info('Check okay')
         name = os.path.basename(file)
         while True:
-            dest = os.path.join(p_dest, libpath.resolve_name(p_dest, name))
+            dest = os.path.join(p_dest, dpath.resolve_name(p_dest, name))
             logger.debug('linking %r %r', file, dest)
             try:
                 os.link(file, dest)
@@ -270,10 +270,10 @@ class Library(BaseFSLibrary):
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        p_dest = libpath.pathfromtag(tag, self.root)
+        p_dest = dpath.pathfromtag(tag, self.root)
         inode = os.lstat(file)
         logger.debug('file inode is %r', inode)
-        for f in libpath.listdir(p_dest):
+        for f in dpath.listdir(p_dest):
             logger.debug('checking %r', f)
             st = os.lstat(f)
             logger.debug('inode is %r', st)
@@ -397,11 +397,11 @@ class Library(BaseFSLibrary):
         assert len(tags) > 0
         inodes = functools.reduce(
             set.intersection, (set(
-                os.lstat(x) for x in libpath.listdir(
-                    libpath.pathfromtag(y, self.root))
+                os.lstat(x) for x in dpath.listdir(
+                    dpath.pathfromtag(y, self.root))
             ) for y in tags))
         logger.debug("found unique inodes %r", inodes)
-        map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
+        map = dict((os.lstat(x), x) for x in dpath.listdir(tags[0]))
         logger.debug("using map %r", map)
         return [map[x] for x in inodes]
 
@@ -445,7 +445,7 @@ class Library(BaseFSLibrary):
             while True:
                 dest = os.path.join(dir, new)
                 if os.path.exists(dest) and not os.path.samefile(file, dest):
-                    dest = os.path.join(dir, libpath.resolve_name(dir, new))
+                    dest = os.path.join(dir, dpath.resolve_name(dir, new))
                 logger.debug('Moving %r to %r', file, dest)
                 try:
                     os.rename(file, dest)
@@ -460,11 +460,11 @@ class Library(BaseFSLibrary):
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        files = libpath.findsymlinks(self.root)
+        files = dpath.findsymlinks(self.root)
         logger.debug('Found symlinks %r', files)
         olddir = self.dirsdir(self._moved)
         newdir = self.dirsdir(self.root)
-        libpath.fixsymlinks(files, olddir, newdir)
+        dpath.fixsymlinks(files, olddir, newdir)
         logger.debug('Writing %r', self.rootfile(self.root))
         with open(self.rootfile(self.root), 'w') as f:
             f.write(self.root)
@@ -504,10 +504,10 @@ def _cleandirs(root):
         logger.warning('Vulnerable to symlink attacks')
     dirsdir = Library.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
-    symlinks = libpath.findsymlinks(root)
+    symlinks = dpath.findsymlinks(root)
     linkedto = [os.readlink(x[0]) for x in symlinks]
     linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
-    dirs = libpath.listdir(dirsdir)
+    dirs = dpath.listdir(dirsdir)
     for x in linkedto:
         try:
             dirs.remove(x)
@@ -552,7 +552,7 @@ def _convertto(dir, target):
     logger.info("Check okay")
 
     while True:
-        target = os.path.join(target, libpath.resolve_name(dir, basename))
+        target = os.path.join(target, dpath.resolve_name(dir, basename))
         logger.debug("moving %r to %r", dir, target)
         try:
             os.rename(dir, target)
