@@ -388,9 +388,16 @@ class Library(BaseFSLibrary):
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is a list. `tags` is left unchanged.  Returns a list.
-        File paths are absolute and are paths to the hard link under the
-        first tag given.
+        Parameters
+        ----------
+        tags : list
+            List of tags.  List is not changed.
+
+        Returns
+        -------
+        list
+            List of absolute paths, to the hard link under the first tag
+            given.
 
         """
         logger.debug("find(%r)", tags)
@@ -401,7 +408,8 @@ class Library(BaseFSLibrary):
                     dpath.pathfromtag(y, self.root))
             ) for y in tags))
         logger.debug("found unique inodes %r", inodes)
-        map = dict((os.lstat(x), x) for x in dpath.listdir(tags[0]))
+        map = dict((os.lstat(x), x) for x in dpath.listdir(
+            dpath.pathfromtag(tags[0], self.root)))
         logger.debug("using map %r", map)
         return [map[x] for x in inodes]
 
