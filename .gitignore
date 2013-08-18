@@ -5,6 +5,7 @@ __pycache__
 /build
 /dist
 /doc/_build
+/MANIFEST
 
 /virt-env
 /doc/tags
