@@ -94,46 +94,53 @@ def open_library(root: 'str or None'=None):
 class BaseLibrary(metaclass=abc.ABCMeta):
 
     """
-    BaseLibrary is the fundamental abstract library class.  It requires
-    the following methods and invariants:
-
-    tag(file, tag)
-        `file` should be tagged with `tag` after call, regardless of
-        whether it was before.
-    untag(file, tag)
-        `file` should not be tagged with `tag` after call, regardless of
-        whether it was before.
-    listtags(file)
-        Return a list of all of the tags of `file`.
-    find(tags)
-        Return a list of files that have all of the given tags in
-        `tags`.
-    mount(path, tree)
-        Mount a virtual representation of the library representation
-        `tree` at `path`.  This may be left unimplemented or with a
-        dummy implementation.
+    BaseLibrary is the abstract base class for library implementations.
 
     """
 
     @abc.abstractmethod
     def tag(self, file, tag):
+        """
+        `file` should be tagged with `tag` after call, regardless of
+        whether it was before.
+
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def untag(self, file, tag):
+        """
+        `file` should not be tagged with `tag` after call, regardless of
+        whether it was before.
+
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def listtags(self, file):
+        """
+        Return a list of all of the tags of `file`.
+
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def find(self, tags):
+        """
+        Return a list of files that have all of the given tags in
+        `tags`.
+
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def mount(self, path, tree):
-        pass
+        """
+        Mount a virtual representation of the library representation
+        `tree` at `path`.
+
+        """
+        raise NotImplementedError
 
 
 @_public
