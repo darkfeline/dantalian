@@ -20,6 +20,12 @@ Library Sublayer
 Libraries require a single POSIX filesystem underneath them to manage
 the files.  Libraries only manage the tag metadata.
 
+.. note::
+
+   dantalian's implementation anchors the library on a root directory
+   given by an absolute path on the file system, but the general library
+   specification has no such requirement.
+
 Library objects
 ---------------
 
@@ -47,6 +53,14 @@ new path.
    a directory ``albums`` in the root directory is synonymous with tag
    ``//albums``, and a directory ``artists`` in ``albums`` with tag
    ``//albums/artists``.
+
+   Due to dantalian's implementation, the special root tag ``//``
+   exists as an implementation detail.  The only documented appearance
+   of the root tag is when calling
+   :meth:`dantalian.library.BaseLibrary.listtag()`, which will include
+   the root tag if the file is hard linked under the library root
+   directory.  The root tag will work everywhere a tag will, but again,
+   is an implementation detail specific to dantalian's implementation.
 
 Tag Existence
 -------------
