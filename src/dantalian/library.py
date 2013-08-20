@@ -144,26 +144,7 @@ class BaseLibrary(metaclass=abc.ABCMeta):
 
 
 @_public
-class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
-
-    """
-    BaseFSLibrary is the abstract class for libraries implemented on a
-    file system.  It requires the following methods and invariants in
-    addition to those described in BaseLibrary:
-
-    tag(file, tag)
-        If `file` does not have a hard link under the `tag` directory,
-        make one.  `file` has at least one hard link under the `tag`
-        directory after call.
-    untag(file, tag)
-        `file` has no hard links under the `tag` directory after call,
-        regardless of whether it did before.
-
-    """
-
-
-@_public
-class Library(BaseFSLibrary):
+class Library(BaseLibrary):
 
     @staticmethod
     @lru_cache()

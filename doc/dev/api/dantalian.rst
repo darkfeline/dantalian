@@ -28,9 +28,6 @@ dantalian Package
 
    .. autofunction:: init_library
    .. autofunction:: open_library
-   .. autoclass:: BaseLibrary
-   .. autoclass:: BaseFSLibrary
-      :show-inheritance:
 
    .. autoclass:: Library
       :show-inheritance:
