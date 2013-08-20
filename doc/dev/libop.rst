@@ -4,27 +4,6 @@ Library Implementation
 This section documents dantalian's library implementation.  See
 :ref:`library spec` for a reference to the library specification.
 
-BaseLibrary exists to facilitate alternate implementations of dantalian
-libraries not based on file systems, e.g., a MySQL backend.
-
-BaseFSLibrary
--------------
-
-BaseFSLibrary is the abstract class for libraries implemented on a file
-system.  It requires the following methods and invariants in addition to
-those described in BaseLibrary:
-
-.. method:: tag(file, tag)
-
-   If `file` does not have a hard link under the `tag` directory, make
-   one.  `file` has at least one hard link under the `tag` directory
-   after call.
-
-.. method:: untag(file, tag)
-
-   `file` has no hard links under the `tag` directory after call,
-   regardless of whether it did before.
-
 Library
 -------
 
@@ -67,8 +46,7 @@ resolved according to :ref:`rename_alg`.):
 .. method:: mount(path, tree)
 
    Mount a virtual representation of the library representation `tree`
-   at `path`.  This may be left unimplemented or with a dummy
-   implementation.
+   at `path`.
 
 .. method:: convert(dir)
 
