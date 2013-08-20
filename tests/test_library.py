@@ -46,25 +46,25 @@ class TestLibraryMethods(unittest.TestCase):
     def test_tag(self):
         l = self.library
         os.chdir('library')
-        l.tag('a', '/A')
+        l.tag('a', '//A')
         self.assertTagged(os.path.join('A', 'a'), 'a')
-        l.tag('a', '/A/D')
+        l.tag('a', '//A/D')
         self.assertTagged(os.path.join('A', 'D', 'a'), 'a')
 
     def test_untag(self):
         l = self.library
         os.chdir('library')
         self.assertTagged(os.path.join('C', 'b'), 'b')
-        l.untag('b', '/C')
+        l.untag('b', '//C')
         self.assertNotTagged(os.path.join('C', 'b'), 'b')
 
     def test_listtags(self):
         l = self.library
         os.chdir('library')
-        self.assertSameTags(l.listtags('a'), ['/'])
-        self.assertSameTags(l.listtags('b'), ['/', '/C'])
-        l.tag('b', '/A')
-        self.assertSameTags(l.listtags('b'), ['/', '/C', '/A'])
+        self.assertSameTags(l.listtags('a'), ['//'])
+        self.assertSameTags(l.listtags('b'), ['//', '//C'])
+        l.tag('b', '//A')
+        self.assertSameTags(l.listtags('b'), ['//', '//C', '//A'])
 
     def test_convert(self):
         l = self.library
@@ -83,8 +83,8 @@ class TestLibraryMethods(unittest.TestCase):
         os.chdir('library')
         l.convert('A')
         l.convert('C')
-        l.tag('C', '/A')
-        l.tag('C', '/A/D')
+        l.tag('C', '//A')
+        l.tag('C', '//A/D')
         p = os.path.join(self.root, l.dirsdir(l.root), 'C')
         self.assertTrue(os.path.isdir(p))
         os.unlink('C')
@@ -100,25 +100,19 @@ class TestLibraryMethods(unittest.TestCase):
     def test_find(self):
         l = self.library
         os.chdir('library')
-        results = l.find(['/'])
-        self.assertEquals(set(results), set(os.path.join(l.root, x) for x in (
-            '.dantalian', 'A', 'B', 'C', 'a', 'b',)))
-        l.tag('a', '/A/D')
-        results = l.find(['/A/D'])
+        l.tag('a', '//A/D')
+        results = l.find(['//A/D'])
         self.assertEquals(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
-        results = l.find(['/A/D', '/'])
+        results = l.find(['//A/D'])
         self.assertEquals(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
-        results = l.find(['/', '/A/D', '/'])
-        self.assertEquals(set(results), set(
-            os.path.join(l.root, x) for x in ('a',)))
-        l.tag('b', '/A/D')
-        results = l.find(['/A/D'])
+        l.tag('b', '//A/D')
+        results = l.find(['//A/D'])
         self.assertEquals(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a', 'b',)))
-        l.tag('a', '/B')
-        results = l.find(['/A/D', '/B'])
+        l.tag('a', '//B')
+        results = l.find(['//A/D', '//B'])
         self.assertEquals(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
 

@@ -340,7 +340,7 @@ class Library(BaseLibrary):
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
         files = self._listpaths(file)
-        return ['/' + os.path.dirname(os.path.relpath(f, self.root))
+        return ['//' + os.path.dirname(os.path.relpath(f, self.root))
                 for f in files]
 
     def convert(self, dir):

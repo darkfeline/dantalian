@@ -48,7 +48,7 @@ def tagfrompath(path, root):
         Absolute path to library root directory.
 
     """
-    return '//' + os.path.dirname(os.path.relpath(path, root))
+    return '//' + os.path.relpath(path, root)
 
 
 @_public
