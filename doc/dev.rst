@@ -15,6 +15,5 @@ there's a bug in the code that's not documented here, the code wins =).
    dev/depend
    dev/build
    dev/library
-   dev/tag
    dev/libop
    dev/api

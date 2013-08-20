@@ -1,39 +1,8 @@
-Library Operations
-==================
+Library Implementation
+======================
 
-dantalian describes and implements various tiers of operations described
-below.  See :ref:`library_abstract` for a reference to the library
-abstraction specification.
-
-BaseLibrary
------------
-
-BaseLibrary is the fundamental abstract library class.  It requires the
-following methods and invariants:
-
-.. method:: tag(file, tag)
-
-   `file` should be tagged with `tag` after call, regardless of whether
-   it was before.
-
-.. method:: untag(file, tag)
-
-   `file` should not be tagged with `tag` after call, regardless of
-   whether it was before.
-
-.. method:: listtags(file)
-
-   Return a list of all of the tags of `file`.
-
-.. method:: find(tags)
-
-   Return a list of files that have all of the given tags in `tags`.
-
-.. method:: mount(path, tree)
-
-   Mount a virtual representation of the library representation `tree`
-   at `path`.  This may be left unimplemented or with a dummy
-   implementation.
+This section documents dantalian's library implementation.  See
+:ref:`library spec` for a reference to the library specification.
 
 BaseLibrary exists to facilitate alternate implementations of dantalian
 libraries not based on file systems, e.g., a MySQL backend.
@@ -78,15 +47,28 @@ resolved according to :ref:`rename_alg`.):
 
 .. method:: tag(file, tag)
 
-   Tag file as in BaseFSLibrary.  Resolve name conflict if necessary.
+   If `file` does not have a hard link under the `tag` directory, make
+   one.  `file` has at least one hard link under the `tag` directory
+   after call.
 
 .. method:: untag(file, tag)
 
-   Same as BaseFSLibrary
+   `file` should not be tagged with `tag` after call, regardless of
+   whether it was before.
 
 .. method:: listtags(file)
 
-   Same as BaseFSLibrary
+   Return a list of all of the tags of `file`.
+
+.. method:: find(tags)
+
+   Return a list of files that have all of the given tags in `tags`.
+
+.. method:: mount(path, tree)
+
+   Mount a virtual representation of the library representation `tree`
+   at `path`.  This may be left unimplemented or with a dummy
+   implementation.
 
 .. method:: convert(dir)
 
@@ -100,10 +82,6 @@ resolved according to :ref:`rename_alg`.):
 
    Remove all directories stored internally that no longer have any
    symbolic links referring to them in the library.
-
-.. method:: find(tags)
-
-   Same as BaseFSLibrary
 
 .. method:: rm(file)
 
