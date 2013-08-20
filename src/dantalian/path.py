@@ -71,7 +71,7 @@ def resolve_name(dir, name):
         return name
     i = count(1)
     while True:
-        x = '.'.join((base, str(next(i)), ext.lstrip('.')))
+        x = '.'.join(x for x in (base, str(next(i)), ext.lstrip('.')) if x)
         if x not in files:
             return x
 
