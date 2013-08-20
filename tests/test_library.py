@@ -119,12 +119,28 @@ class TestLibraryMethods(unittest.TestCase):
     def test_rm(self):
         l = self.library
         os.chdir('library')
-        n = [os.path.join(*x) for x in [
+        paths = [os.path.join(*x) for x in [
             ['A', 'a'], ['B', 'marisa'], ['A', 'D', 'reimu']
         ]]
-        for x in n:
+        for x in paths:
             os.link('a', x)
-        n.append('a')
+        paths.append('a')
         l.rm('a')
-        for x in n:
+        for x in paths:
             self.assertFalse(os.path.exists(x))
+
+    def test_rename(self):
+        l = self.library
+        os.chdir('library')
+        bases = [
+            ['A', 'a'], ['B', 'marisa'], ['A', 'D', 'reimu']
+        ]
+        paths = [os.path.join(*x) for x in bases]
+        for x in paths:
+            os.link('a', x)
+        l.rename('a', 'b')
+        bases = [x[:-1] + ['b'] for x in bases]
+        paths = [os.path.join(*x) for x in bases]
+        self.assertTrue(os.path.exists('b.1'))
+        for x in paths:
+            self.assertTagged('b.1', x)
