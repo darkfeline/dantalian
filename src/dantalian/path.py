@@ -16,27 +16,39 @@ def _public(x):
 
 
 @_public
+def istag(tag):
+    return tag.startswith('//')
+
+
+@_public
 def pathfromtag(tag, root):
     """Get absolute path from tag
 
     Parameters
     ----------
-    tar : str
+    tag : str
         Tag.
     root : str
         Absolute path to library root directory.
 
     """
-    if tag.startswith('/'):
-        return os.path.join(root, tag.lstrip('/'))
-    else:
-        return os.path.abspath(tag)
+    assert istag(tag)
+    return os.path.join(root, tag.lstrip('//'))
 
 
 @_public
 def tagfrompath(path, root):
-    """Return absolute tag from path"""
-    return '/' + os.path.dirname(os.path.relpath(path, root))
+    """Get tag from path
+
+    Parameters
+    ----------
+    path : str
+        Path.
+    root : str
+        Absolute path to library root directory.
+
+    """
+    return '//' + os.path.dirname(os.path.relpath(path, root))
 
 
 @_public
@@ -82,6 +94,16 @@ def fixsymlinks(links, oldprefix, newprefix):
 
     Recursively replace symlinks `links` that match `oldprefix` with
     `newprefix`.  `links` is as returned from findsymlinks().
+
+    Parameters
+    ----------
+    links : iterable
+        Symlinks to fix
+    oldprefix : str
+        Old prefix to replace
+    newprefix : str
+        New prefix to use
+
     """
     oldprefix = re.compile(r"^" + re.escape(oldprefix))
     for set in links:
@@ -122,10 +144,20 @@ def fixsymlinks(links, oldprefix, newprefix):
 def findsymlinks(dir):
     """Find symlinks
 
-    Returns a list of lists.  Symlinks that are the same inode are
-    grouped together.  Relies on 'find' utility, for sheer simplicity
-    and speed.  If it cannot be found, DependencyError is raised.
-    Output paths are absolute.
+    Relies on 'find' utility, for sheer simplicity and speed.  If it
+    cannot be found, DependencyError is raised.
+
+    Returns
+    -------
+    list
+        Returns a list of lists of absolute paths.  Symlinks that are
+        the same inode are grouped together.
+
+    Raises
+    ------
+    DependencyError
+        'find' was not found.
+
     """
     try:
         output = subprocess.check_output(
