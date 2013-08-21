@@ -284,7 +284,6 @@ class TagOperations(LoggingMixIn, Operations):
     def symlink(self, source, target):
         """symlink
 
-
         Note that this is different from standard.  Usually link(a, b)
         creates a link at a to b, but this link(source, target) creates
         a link at source to target.
