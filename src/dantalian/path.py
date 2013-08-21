@@ -115,7 +115,7 @@ def fixsymlinks(links, oldprefix, newprefix):
         newtarget = oldprefix.sub(newprefix, os.readlink(f), count=1)
         logger.debug("Unlinking %r", f)
         os.unlink(f)
-        dir, name = os.path.dirname(f)
+        dir, name = os.path.split(f)
         while True:
             f = os.path.join(dir, resolve_name(dir, name))
             logger.debug("Symlinking %r to %r", f, newtarget)
