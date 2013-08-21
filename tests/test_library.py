@@ -144,3 +144,16 @@ class TestLibraryMethods(unittest.TestCase):
         self.assertTrue(os.path.exists('b.1'))
         for x in paths:
             self.assertTagged('b.1', x)
+
+    def test_fix(self):
+        l = self.library
+        os.chdir('library')
+        l.convert('A')
+        os.chdir(self.root)
+        os.rename('library', 'archive')
+        l = library.open_library('archive')
+        os.chdir('archive')
+        l.fix()
+        p = os.path.join(self.root, l.dirsdir(l.root), 'A')
+        self.assertTrue(os.path.isdir(p))
+        self.assertEquals(os.readlink('A'), p)
