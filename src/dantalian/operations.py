@@ -375,7 +375,7 @@ class TagOperations(LoggingMixIn, Operations):
         path is a string pointing to a path under the FUSE vfs.  If path
         is broken, raise FuseOSError(ENOENT).
 
-        Returns a tuple (cur, path).  cur is the furthest FSNode along
+        Returns a tuple (cur, path).  cur is the furthest Node along
         the path.  path is a list of strings indicating the path from
         the given node.  If node is the last file in the path, path is
         None.

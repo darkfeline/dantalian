@@ -700,7 +700,7 @@ class SocketOperations(threading.Thread):
             return
         name = reversed(name)
         for next in name[:-1]:
-            node[name] = tree.FSNode()
+            node[name] = tree.Node()
             node = node[name]
         node[name[-1]] = tree.TagNode(self.root, tags)
 

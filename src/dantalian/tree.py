@@ -2,7 +2,7 @@
 This module contains stuff used for managing FUSE virtual space.  The
 protocol for nodes is as follows.
 
-FSNodes are purely virtual.  Their children are other nodes.
+Nodes are purely virtual.  Their children are other nodes.
 
 BorderNodes bridge into real file system space.  They may have also have
 strings as children, which are absolute paths into real file system
@@ -69,6 +69,11 @@ class BaseNode(metaclass=abc.ABCMeta):
     def dump(self):
         raise NotImplementedError
 
+    @staticmethod
+    @abc.abstractmethod
+    def load(root, node):
+        raise NotImplementedError
+
     def getfrompath(self, path):
         assert len(path) > 0
         assert path[0] == "/"
@@ -120,34 +125,8 @@ _load_map = {}
 def _add_map(name):
     def adder(f):
         _load_map[name] = f
+        return f
     return adder
-
-
-@_add_map('FSNode')
-def f(root, node):
-    x = FSNode()
-    map = node[1]
-    for k in map:
-        x[k] = load(map[k])
-    return x
-
-
-@_add_map('TagNode')
-def f(root, node):
-    x = TagNode(node[1])
-    map = node[2]
-    for k in map:
-        x[k] = load(map[k])
-    return x
-
-
-@_add_map('RootNode')
-def f(root, node):
-    x = RootNode(root)
-    map = node[2]
-    for k in map:
-        x[k] = load(map[k])
-    return x
 
 
 @_public
@@ -165,10 +144,10 @@ def load(root, nodes):
 
 
 @_public
-class FSNode(BaseNode):
+class Node(BaseNode):
 
     """
-    Mock directory.  FSNode works like a dictionary mapping names to
+    Mock directory.  Node works like a dictionary mapping names to
     nodes and keeps some internal file attributes.
 
     Implements:
@@ -225,17 +204,26 @@ class FSNode(BaseNode):
 
         Dumps the node in the following format::
 
-            ['FSNode', {name: child}]
+            ['Node', {name: child}]
 
         """
         return [self.__class__.__name__, dict(
             (x, self[x].dump()) for x in self.children)]
 
+    @staticmethod
+    @_add_map('Node')
+    def load(root, node):
+        x = Node()
+        map = node[1]
+        for k in map:
+            x[k] = load(root, map[k])
+        return x
+
 
 @_public
-class BorderNode(FSNode, metaclass=abc.ABCMeta):
+class BorderNode(Node, metaclass=abc.ABCMeta):
     """
-    BorderNode is an abstract class for subclasses of FSNode which reach
+    BorderNode is an abstract class for subclasses of Node which reach
     outsie of the virtual space
 
     """
@@ -281,6 +269,15 @@ class TagNode(BorderNode):
         """
         return [self.__class__.__name__, self.tags, dict(
             (x, self[x].dump()) for x in self.children)]
+
+    @staticmethod
+    @_add_map('TagNode')
+    def load(root, node):
+        x = TagNode(node[1])
+        map = node[2]
+        for k in map:
+            x[k] = load(root, map[k])
+        return x
 
 
 @_public
@@ -331,10 +328,19 @@ class RootNode(BorderNode):
         return [self.__class__.__name__, dict(
             (x, self[x].dump()) for x in self.children)]
 
+    @staticmethod
+    @_add_map('RootNode')
+    def load(root, node):
+        x = RootNode(root)
+        map = node[2]
+        for k in map:
+            x[k] = load(root, map[k])
+        return x
+
 
 @_public
 def fs2tag(node, root, tags):
-    """Convert a FSNode instance to a TagNode instance"""
+    """Convert a Node instance to a TagNode instance"""
     x = TagNode(root, tags)
     x.children.update(dict(node.children))
     return x
