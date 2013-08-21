@@ -28,6 +28,8 @@ dantalian Package
 
    .. autofunction:: init_library
    .. autofunction:: open_library
+   .. autoclass:: BaseLibrary
+      :members:
 
    .. autoclass:: Library
       :show-inheritance:

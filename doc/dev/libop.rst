@@ -25,30 +25,36 @@ resolved according to :ref:`rename_alg`.):
    noted below if applicable.
 
 .. method:: tag(file, tag)
+   :noindex:
 
    If `file` does not have a hard link under the `tag` directory, make
    one.  `file` has at least one hard link under the `tag` directory
    after call.
 
 .. method:: untag(file, tag)
+   :noindex:
 
    `file` should not be tagged with `tag` after call, regardless of
    whether it was before.
 
 .. method:: listtags(file)
+   :noindex:
 
    Return a list of all of the tags of `file`.
 
 .. method:: find(tags)
+   :noindex:
 
    Return a list of files that have all of the given tags in `tags`.
 
 .. method:: mount(path, tree)
+   :noindex:
 
    Mount a virtual representation of the library representation `tree`
    at `path`.
 
 .. method:: convert(dir)
+   :noindex:
 
    Store directory `dir` internally and replace the original with a
    symbolic link with the same name pointing to the absolute path of the
@@ -57,11 +63,13 @@ resolved according to :ref:`rename_alg`.):
    the symbolic link, for example).
 
 .. method:: cleandirs()
+   :noindex:
 
    Remove all directories stored internally that no longer have any
    symbolic links referring to them in the library.
 
 .. method:: rm(file)
+   :noindex:
 
    Remove all hard links to `file` in the library.  Any errors will be
    reported and removal will resume for remaining hard links.
@@ -72,6 +80,7 @@ resolved according to :ref:`rename_alg`.):
    directories.
 
 .. method:: rename(file, new)
+   :noindex:
 
    Rename all hard links to `file` in the library to `new`.  File name
    conflicts are resolved and reported.  Any errors
@@ -83,6 +92,7 @@ resolved according to :ref:`rename_alg`.):
    directories.
 
 .. method:: fix()
+   :noindex:
 
    Fix the absolute paths of symbolic links in the library to internally
    stored directories.  Hard link relationships of the symbolic links
@@ -105,9 +115,11 @@ ProxyLibrary is a subclass of Library for virtual FUSE mounted
 libraries.  It overrides the following methods:
 
 .. method:: fix()
+   :noindex:
 
    Log a warning and do nothing. (Action not allowed.)
 
 .. method:: mount(path, tree)
+   :noindex:
 
    Log a warning and do nothing. (Action not allowed.)

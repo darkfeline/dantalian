@@ -103,10 +103,37 @@ can be tagged with themselves.
 Library class and methods
 -------------------------
 
-.. autoclass:: dantalian.library.BaseLibrary
-   :members:
+The library interface is defined in the
+:class:`dantalian.library.BaseLibrary` class.  Library implementation
+must implement the following methods:
 
-   Library implementations must implement the following methods:
+.. method:: tag(file, tag)
+   :noindex:
+
+   `file` should be tagged with `tag` after call, regardless of whether
+   it was before.
+
+.. method:: untag(file, tag)
+   :noindex:
+
+   `file` should not be tagged with `tag` after call, regardless of
+   whether it was before.
+
+.. method:: listtags(file)
+   :noindex:
+
+   Return a list of all of the tags of `file`.
+
+.. method:: find(tags)
+   :noindex:
+
+   Return a list of files that have all of the given tags in `tags`.
+
+.. method:: mount(path, tree)
+   :noindex:
+
+   Mount a virtual representation of the library representation `tree`
+   at `path`.
 
 Implementation specifics
 ------------------------
