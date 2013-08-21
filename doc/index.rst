@@ -25,9 +25,3 @@ tutorial.
    dev
    changes
    bugs
-
-Status
-------
-
-- Library: stable
-- FUSE: unstable
