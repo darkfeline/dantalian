@@ -119,6 +119,26 @@ class BaseNode(metaclass=abc.ABCMeta):
             path.pop(0)
             return next.get(path)
 
+
+@_public
+class BorderNode(BaseNode, metaclass=abc.ABCMeta):
+    """
+    BorderNode is an abstract class for subclasses of BaseNode that
+    reach outside of the virtual space.
+
+    """
+
+
+@_public
+class BaseTagNode(BorderNode):
+    pass
+
+
+@_public
+class BaseRootNode(BorderNode):
+    pass
+
+
 _load_map = {}
 
 
@@ -207,7 +227,7 @@ class Node(BaseNode):
             ['Node', {name: child}]
 
         """
-        return [self.__class__.__name__, dict(
+        return ['Node', dict(
             (x, self[x].dump()) for x in self.children)]
 
     @staticmethod
@@ -221,16 +241,7 @@ class Node(BaseNode):
 
 
 @_public
-class BorderNode(Node, metaclass=abc.ABCMeta):
-    """
-    BorderNode is an abstract class for subclasses of Node which reach
-    outsie of the virtual space
-
-    """
-
-
-@_public
-class TagNode(BorderNode):
+class TagNode(BaseTagNode):
 
     """
     TagNode adds a method, tagged(), which returns a generated dict
@@ -267,7 +278,7 @@ class TagNode(BorderNode):
             ['TagNode', [tag], {name: child}]
 
         """
-        return [self.__class__.__name__, self.tags, dict(
+        return ['TagNode', self.tags, dict(
             (x, self[x].dump()) for x in self.children)]
 
     @staticmethod
@@ -281,7 +292,7 @@ class TagNode(BorderNode):
 
 
 @_public
-class RootNode(BorderNode):
+class RootNode(BaseRootNode):
 
     """
     A special Node that doesn't actually look for tags, merely
@@ -325,7 +336,7 @@ class RootNode(BorderNode):
             ['RootNode', {name: child}]
 
         """
-        return [self.__class__.__name__, dict(
+        return ['RootNode', dict(
             (x, self[x].dump()) for x in self.children)]
 
     @staticmethod
@@ -350,17 +361,21 @@ def fs2tag(node, root, tags):
 def split(tree, path):
     """Get node and path components
 
-    Args:
-        tree (RootNode): Root node.
-        path (str): Path.
+    Parameters
+    ----------
+    tree : RootNode
+        Root node
+    path : str
+        Path
 
-    Returns:
-        (cur, path), where `cur` is the furthest node along the path,
-        and `path` is a list of strings indicating the path from the
-        given node.  If node is the last file in the path, path is an
-        empty list.
+    Returns
+    -------
+    (cur, path) : (str, str) or None
+        `cur` is the furthest node along the path, and `path` is a list
+        of strings indicating the path from the given node.  If node is
+        the last file in the path, path is an empty list.
 
-        If path is broken, returns None instead.
+        If path is broken, return None instead.
 
     """
     assert len(path) > 0
