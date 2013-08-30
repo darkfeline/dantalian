@@ -42,35 +42,16 @@ class TagOperations(LoggingMixIn, Operations):
         self.tree = tree
 
     def chmod(self, path, mode):
-        """chmod
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("chmod(%r, %r)", mode)
         node, path = self._getnode(path)
         os.chmod(_getpath(node, path), mode)
 
     def chown(self, path, uid, gid):
-        """chown
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("chown(%r, %r, %r)", path, uid, gid)
         node, path = self._getnode(path)
         os.chown(_getpath(node, path), uid, gid)
 
     def create(self, path, mode):
-        """create
-
-        If `path` is outside or tagged, forward to OS.  If `path` is
-        tagged, additionally add its tags.  If `path` is a node, the
-        operation is invalid and raises EINVAL.
-
-        """
         logger.debug("create(%r, %r)", path, mode)
         path, file = os.path.split(path)
         node, path = self._getnode(os.path.dirname(path))
@@ -87,12 +68,6 @@ class TagOperations(LoggingMixIn, Operations):
             return fd
 
     def getattr(self, path, fh=None):
-        """getattr
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, get attributes from node.
-
-        """
         logger.debug("getattr(%r, %r)", path, fh)
         node, path = self._getnode(path)
         if path:
@@ -107,16 +82,6 @@ class TagOperations(LoggingMixIn, Operations):
     listxattr = None
 
     def link(self, source, target):
-        """link
-
-        Note that this is different from standard.  Usually link(a, b)
-        creates a link at a to b, but this link(source, target) creates
-        a link at source to target.
-
-        If `source` is tagged, tag it.  If `source` is outside, link it.
-        If `source` is a node, raise EINVAL
-
-        """
         logger.debug("link(%r, %r)", source, target)
         source, file = os.path.split(source)
         tnode, tpath = self._getnode(target)
@@ -134,21 +99,6 @@ class TagOperations(LoggingMixIn, Operations):
             os.link(target, source)
 
     def mkdir(self, path, mode):
-        """mkdir
-
-        If `path` is outside or tagged, forward to OS.  If it is tagged,
-        additionally convert it and add tags.  If `path` is a node, the
-        operation is invalid and raises EINVAL.
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        If `path` points beyond a node, forward the request to the OS
-        (via built-in os module).  Once a directory is created, it is
-        converted and tagged with all of the tags of the furthest node.
-        Otherwise the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("mkdir(%r, %r)", path, mode)
         node, path = self._getnode(path)
         if len(path) == 1 and isinstance(node, tree.TagNode):
@@ -163,35 +113,16 @@ class TagOperations(LoggingMixIn, Operations):
             fd = os.mkdir(_getpath(node, path), mode)
 
     def open(self, path, flags):
-        """open
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("open(%r, %r)", path, flags)
         node, path = self._getnode(path)
         return os.open(_getpath(node, path), flags)
 
     def read(self, path, size, offset, fh):
-        """read
-
-        `path` is ignored.  Forward the request to the OS (via built-in
-        os module) with the file descriptor.
-
-        """
         logger.debug("read(%r, %r, %r, %r)", path, size, offset, fh)
         os.lseek(fh, offset, 0)
         return os.read(fh, size)
 
     def readdir(self, path, fh):
-        """readdir
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, a directory listing containing '.' and '..' is made and
-        generated entries from the node's __iter__ are added.
-
-        """
         logger.debug("readdir(%r, %r)", path, fh)
         node, path = self._getnode(path)
         contents = ['.', '..']
@@ -203,12 +134,6 @@ class TagOperations(LoggingMixIn, Operations):
         return contents
 
     def readlink(self, path):
-        """readlink
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("readlink(%r)", path)
         node, path = self._getnode(path)
         return os.readlink(_getpath(node, path))
@@ -216,21 +141,6 @@ class TagOperations(LoggingMixIn, Operations):
     removexattr = None
 
     def rename(self, old, new):
-        """rename
-
-        This one is tricky; here's a handy chart.
-
-        +---------+---------+-------------------+-------------------+
-        | Old     | To Node | To Tagged         | To Outside        |
-        +=========+=========+===================+===================+
-        | Node    | EINVAL  | EINVAL            | EINVAL            |
-        +---------+---------+-------------------+-------------------+
-        | Tagged  | EINVAL  | untag, tag        | move, untag       |
-        +---------+---------+-------------------+-------------------+
-        | Outside | EINVAL  | tag, remove       | move              |
-        +---------+---------+-------------------+-------------------+
-
-        """
         logger.debug("rename(%r, %r)", old, new)
         onode, opath = self._getnode(old)
         nnode, npath = self._getnode(new)
@@ -256,13 +166,6 @@ class TagOperations(LoggingMixIn, Operations):
                     self.root.untag(new, tag)
 
     def rmdir(self, path):
-        """rmdir
-
-        If `path` is outside or tagged, forward to OS.  (If it's tagged,
-        it's not a dir, but we'll let the OS handle that =))  If `path`
-        is a node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("rmdir(%r)", path)
         node, path = self._getnode(path)
         os.rmdir(_getpath(node, path))
@@ -270,11 +173,6 @@ class TagOperations(LoggingMixIn, Operations):
     setxattr = None
 
     def statfs(self, path):
-        """statfs
-
-        Forward the request to the OS (via built-in os module).
-
-        """
         logger.debug("statfs(%r)", path)
         stv = os.statvfs(path)
         return dict((key, getattr(stv, key)) for key in (
@@ -282,16 +180,6 @@ class TagOperations(LoggingMixIn, Operations):
             'f_ffree', 'f_files', 'f_flag', 'f_frsize', 'f_namemax'))
 
     def symlink(self, source, target):
-        """symlink
-
-        Note that this is different from standard.  Usually link(a, b)
-        creates a link at a to b, but this link(source, target) creates
-        a link at source to target.
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("symlink(%r, %r)", source, target)
         source, file = os.path.split(source)
         node, path = self._getnode(source)
@@ -306,13 +194,6 @@ class TagOperations(LoggingMixIn, Operations):
             os.symlink(target, source)
 
     def truncate(self, path, length, fh=None):
-        """truncate
-
-        If `path` is outside or tagged, forward to OS.  If it is tagged,
-        additionally add its tags.  If `path` is a node, the operation
-        is invalid and raises EINVAL. `fh` is ignored.
-
-        """
         logger.debug("truncate(%r, %r, %r)", path, length, fh)
         node, path = self._getnode(path)
         if path:
@@ -322,13 +203,6 @@ class TagOperations(LoggingMixIn, Operations):
             raise FuseOSError(EINVAL)
 
     def unlink(self, path):
-        """unlink
-
-        If `path` is tagged, untag.  If `path` is outside, forward to
-        OS.  If `path` is a node, the operation is invalid and raises
-        EINVAL.
-
-        """
         logger.debug("unlink(%r)", path)
         node, path = self._getnode(path)
         file = _getpath(node, path)
@@ -342,24 +216,11 @@ class TagOperations(LoggingMixIn, Operations):
             os.unlink(file)
 
     def utimens(self, path, times=None):
-        """utimens
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.
-
-        """
         logger.debug("utimens(%r, %r)", path, times)
         node, path = self._getnode(path)
         os.utime(_getpath(node, path), times)
 
     def write(self, path, data, offset, fh):
-        """write
-
-        If `path` is outside or tagged, forward to OS.  If `path` is a
-        node, the operation is invalid and raises EINVAL.  `fh` is used;
-        `path` is only used for verification.
-
-        """
         logger.debug("write(%r, %r, %r, %r)", path, data, offset, fh)
         node, path = self._getnode(path)
         if path:
@@ -369,17 +230,6 @@ class TagOperations(LoggingMixIn, Operations):
             raise FuseOSError(EINVAL)
 
     def _getnode(self, path):
-        """Get node and path components
-
-        path is a string pointing to a path under the FUSE vfs.  If path
-        is broken, raise FuseOSError(ENOENT).
-
-        Returns a tuple (cur, path).  cur is the furthest Node along
-        the path.  path is a list of strings indicating the path from
-        the given node.  If node is the last file in the path, path is
-        None.
-
-        """
         x = tree.split(self.tree, path)
         if not x:
             raise FuseOSError(ENOENT)
@@ -387,19 +237,6 @@ class TagOperations(LoggingMixIn, Operations):
             return x
 
     def _tmplink(self, target):
-        """Create a temporary hard link to `target`
-
-        Useful when untagging something and needing a constant path to
-        it.  Make sure to delete it afterward.  (However, there's no
-        guarantee that if you don't, it'll be there forever.)
-
-        Args:
-            target (str): Path to file.
-
-        Returns:
-            Path to the created hard link.
-
-        """
         logger.debug("_tmplink(%r)", target)
         while True:
             fh, path = tempfile.mkstemp(dir=self.root.root)
