@@ -209,21 +209,32 @@ class Library(BaseLibrary):
         If `file` is already tagged, nothing happens.  This includes if
         the file is hardlinked under another name.
 
-        Args:
-            file (str): Path to the file, relative to the working
-                directory.
-            tag (str): Tag, relative to the library root, starting with
-                '/'.
+        Parameters
+        ----------
+        file : str
+             Path to the file, relative to the working directory.
+        tag : str
+            Tag, relative to the library root, starting with '/'.
 
-        Raises:
-            IsADirectoryError: file is an unconverted directory.
+        Raises
+        ------
+        IsADirectoryError
+            file is an unconverted directory.
+        NotADirectoryError
+            tag is not a directory/tag.
 
         """
 
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        p_dest = dpath.pathfromtag(tag, self.root)
+        if dpath.istag(tag):
+            p_dest = dpath.pathfromtag(tag, self.root)
+        else:
+            if not os.path.isdir(tag):
+                raise NotADirectoryError(
+                    '{} is not a directory/tag'.format(tag))
+            p_dest = tag
         logger.info(
             'Checking if %r is already tagged with %r', file, tag)
         for f in dpath.listdir(p_dest):
@@ -248,17 +259,29 @@ class Library(BaseLibrary):
         links to the file in the directory corresponding to the given
         tag.  Log a warning when an OSError is caught.
 
-        Args:
-            file (str): Path to the file, relative to the working
-                directory.
-            tag (str): Tag, relative to the library root, starting with
-                '/'.
+        Parameters
+        ----------
+        file : str
+             Path to the file, relative to the working directory.
+        tag : str
+            Tag, relative to the library root, starting with '/'.
+
+        Raises
+        ------
+        NotADirectoryError
+            tag is not a directory/tag.
 
         """
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        p_dest = dpath.pathfromtag(tag, self.root)
+        if dpath.istag(tag):
+            p_dest = dpath.pathfromtag(tag, self.root)
+        else:
+            if not os.path.isdir(tag):
+                raise NotADirectoryError(
+                    '{} is not a directory/tag'.format(tag))
+            p_dest = tag
         inode = os.lstat(file)
         logger.debug('file inode is %r', inode)
         for f in dpath.listdir(p_dest):
