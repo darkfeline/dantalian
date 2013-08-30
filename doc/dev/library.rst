@@ -4,7 +4,7 @@ Library Specification
 =====================
 
 dantalian is an implementation of the dantalian library system, an
-abstract system.  Much like how POSIX system calls defines an interface
+abstract system.  Much like how POSIX system calls define an interface
 providing a standard file system interface abstraction, the dantalian
 library system defines a standard interface for a multidimensionally
 hierarchical tagging system.
