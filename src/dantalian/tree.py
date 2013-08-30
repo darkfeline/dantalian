@@ -141,15 +141,15 @@ class Node(BaseNode):
     Mock directory.  Node works like a dictionary mapping names to
     nodes and keeps some internal file attributes.
 
-    Implements:
-
+    Implements
+    ----------
     * __iter__
     * __getitem__
     * __setitem__
     * __delitem__
 
-    File Attributes:
-
+    File Attributes
+    ---------------
     atime, ctime, mtime
         Defaults to current time
     uid, gid
