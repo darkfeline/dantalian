@@ -1,24 +1,3 @@
-"""
-This module contains stuff used for managing FUSE virtual space.  The
-protocol for nodes is as follows.
-
-Nodes are purely virtual.  Their children are other nodes.
-
-BorderNodes bridge into real file system space.  They may have also have
-strings as children, which are absolute paths into real file system
-space.
-
-Nodes implement the methods for a mapping data model (i.e., __getitem__,
-__setitem__, __delitem__).
-
-The keys are strings with file names (like in file systems/directory
-tables).
-
-The values are strings with the paths to files and directories on the
-actual file system, and node objects for nodes.
-
-"""
-
 import os
 import logging
 import stat
@@ -41,28 +20,20 @@ def _public(f):
 @_public
 class BaseNode(metaclass=abc.ABCMeta):
 
-    """
-    Base interface for all Nodes.  ``__iter__`` provides a listing of
-    the node's contents.  ``__getitem__``, ``__setitem__``, and
-    ``__delitem__`` describe a mapping data model interface.  ``dump``
-    implements dumping JSON-compatible objects.
-
-    """
-
     @abc.abstractmethod
     def __iter__(self):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def __getitem__(self):
+    def __getitem__(self, key):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def __setitem__(self):
+    def __setitem__(self, key, item):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def __delitem__(self):
+    def __delitem__(self, key):
         raise NotImplementedError
 
     @abc.abstractmethod
