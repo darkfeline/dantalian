@@ -95,7 +95,7 @@ class BaseNode(metaclass=abc.ABCMeta):
 class BorderNode(BaseNode, metaclass=abc.ABCMeta):
     """
     BorderNode is an abstract class for subclasses of BaseNode that
-    reach outside of the virtual space.
+    reaches outside of the virtual space.
 
     """
 
