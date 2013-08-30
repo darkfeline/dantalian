@@ -15,10 +15,6 @@ are building::
    # Use development branch?
    $ git checkout develop
 
-Install dantalian (needed for building the documentation)::
-
-   $ python setup.py install
-
 Build the documentation::
 
    $ cd doc

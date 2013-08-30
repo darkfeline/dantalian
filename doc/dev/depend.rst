@@ -15,17 +15,6 @@ Build Dependencies
 For the documentation:
 
 - Sphinx==1.1.3
-- sphinxcontrib-napoleon==0.2.1
-
-.. note::
-
-   At the moment, sphinxcontrib-napoleon is not Python 3 compatible, so
-   I've patched a `custom version`__.
-
-   .. __: https://github.com/darkfeline/sphinxcontrib-napoleon
-
-autodoc is used, so make sure you install dantalian in your working
-environment before building the documentation.
 
 If you want, you can use a custom ctags extension for Sphinx:
 `ext_ctags`_
