@@ -50,12 +50,18 @@ class TestLibraryMethods(unittest.TestCase):
         self.assertTagged(os.path.join('A', 'a'), 'a')
         l.tag('a', '//A/D')
         self.assertTagged(os.path.join('A', 'D', 'a'), 'a')
+        l.tag('a', 'B')
+        self.assertTagged(os.path.join('B', 'a'), 'a')
 
     def test_untag(self):
         l = self.library
         os.chdir('library')
         self.assertTagged(os.path.join('C', 'b'), 'b')
         l.untag('b', '//C')
+        self.assertNotTagged(os.path.join('C', 'b'), 'b')
+        l.tag('b', '//C')
+        self.assertTagged(os.path.join('C', 'b'), 'b')
+        l.untag('b', 'C')
         self.assertNotTagged(os.path.join('C', 'b'), 'b')
 
     def test_listtags(self):
