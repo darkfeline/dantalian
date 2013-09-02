@@ -1,5 +1,8 @@
 /doc
 /src
 /build
+/MANIFEST
+/tests
+/dist
 
 /virt-env
