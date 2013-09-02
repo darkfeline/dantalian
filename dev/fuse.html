@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FUSE/Mounted Library Specification &mdash; dantalian 0.5-dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="dantalian 0.5-dev documentation" href="../index.html" />
+    <link rel="up" title="Developer Guide" href="../dev.html" />
+    <link rel="next" title="Changelog" href="../changes.html" />
+    <link rel="prev" title="Library Implementation" href="libop.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../changes.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="libop.html" title="Library Implementation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../dev.html" accesskey="U">Developer Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="fuse-mounted-library-specification">
+<h1>FUSE/Mounted Library Specification<a class="headerlink" href="#fuse-mounted-library-specification" title="Permalink to this headline">¶</a></h1>
+<p>The Library API requires a <tt class="xref py py-meth docutils literal"><span class="pre">mount()</span></tt> method, which uses FUSE to
+mount a virtual file system representation of the library.</p>
+<p>The mounted library provides a standard file-system-like interface to
+libraries.  While the dantalian implementation of the library already
+provides such an interface, other implementations may not by default.
+Also, mounted libraries provide additional features even for dantalian&#8217;s
+existing file-system-like interface.</p>
+<div class="section" id="virtual-spaces">
+<h2>Virtual Spaces<a class="headerlink" href="#virtual-spaces" title="Permalink to this headline">¶</a></h2>
+<p>In describing mounted library behavior, it is useful to divide the file
+system space into three categories.</p>
+</div>
+<div class="section" id="fuse-operations">
+<h2>FUSE Operations<a class="headerlink" href="#fuse-operations" title="Permalink to this headline">¶</a></h2>
+<p>FUSE provides syscall-like operation hooks to emulate a file system.
+Their implementations for mounted libraries are found as methods in the
+<tt class="xref py py-class docutils literal"><span class="pre">dantalian.operations.TagOperations</span></tt> class.</p>
+<dl class="method">
+<dt>
+<tt class="descname">chmod</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">chown</tt><big>(</big><em>path</em>, <em>uid</em>, <em>gid</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">create</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is tagged,
+additionally add its tags.  If <cite>path</cite> is a node, the operation is
+invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">getattr</tt><big>(</big><em>path</em>, <em>fh=None</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+get attributes from node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">getxattr</tt><big>(</big><big>)</big></dt>
+<dd><p>Not implemented.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">listxattr</tt><big>(</big><big>)</big></dt>
+<dd><p>Not implemented.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">link</tt><big>(</big><em>source</em>, <em>target</em><big>)</big></dt>
+<dd><p>Note that this is different from standard.  Usually link(a, b)
+creates a link at a to b, but this link(source, target) creates a
+link at source to target.</p>
+<p>If <cite>source</cite> is tagged, tag it.  If <cite>source</cite> is outside, link it.  If
+<cite>source</cite> is a node, raise EINVAL</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">mkdir</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
+additionally convert it and add tags.  If <cite>path</cite> is a node, the
+operation is invalid and raises EINVAL.</p>
+<p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+<p>If <cite>path</cite> points beyond a node, forward the request to the OS (via
+built-in os module).  Once a directory is created, it is converted
+and tagged with all of the tags of the furthest node.  Otherwise the
+operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">open</tt><big>(</big><em>path</em>, <em>flags</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">read</tt><big>(</big><em>path</em>, <em>size</em>, <em>offset</em>, <em>fh</em><big>)</big></dt>
+<dd><p><cite>path</cite> is ignored.  Forward the request to the OS (via built-in os
+module) with the file descriptor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">readdir</tt><big>(</big><em>path</em>, <em>fh</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+a directory listing containing &#8216;.&#8217; and &#8216;..&#8217; is made and generated
+entries from the node&#8217;s __iter__ are added.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">readlink</tt><big>(</big><em>path</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">removexattr</tt><big>(</big><big>)</big></dt>
+<dd><p>Not implemented.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">rename</tt><big>(</big><em>old</em>, <em>new</em><big>)</big></dt>
+<dd><p>This one is tricky; here&#8217;s a handy chart.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="16%" />
+<col width="34%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Old</th>
+<th class="head">To Node</th>
+<th class="head">To Tagged</th>
+<th class="head">To Outside</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Node</td>
+<td>EINVAL</td>
+<td>EINVAL</td>
+<td>EINVAL</td>
+</tr>
+<tr class="row-odd"><td>Tagged</td>
+<td>EINVAL</td>
+<td>untag, tag</td>
+<td>move, untag</td>
+</tr>
+<tr class="row-even"><td>Outside</td>
+<td>EINVAL</td>
+<td>tag, remove</td>
+<td>move</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">rmdir</tt><big>(</big><em>path</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  (If it&#8217;s tagged, it&#8217;s
+not a dir, but we&#8217;ll let the OS handle that =))  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">setxattr</tt><big>(</big><big>)</big></dt>
+<dd><p>Not implemented.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">statfs</tt><big>(</big><em>path</em><big>)</big></dt>
+<dd><p>Forward the request to the OS (via built-in os module).</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">symlink</tt><big>(</big><em>source</em>, <em>target</em><big>)</big></dt>
+<dd><p>Note that this is different from standard.  Usually link(a, b)
+creates a link at a to b, but this link(source, target) creates a
+link at source to target.</p>
+<p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">truncate</tt><big>(</big><em>path</em>, <em>length</em>, <em>fh=None</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
+additionally add its tags.  If <cite>path</cite> is a node, the operation is
+invalid and raises EINVAL. <cite>fh</cite> is ignored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">unlink</tt><big>(</big><em>path</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is tagged, untag.  If <cite>path</cite> is outside, forward to OS.  If
+<cite>path</cite> is a node, the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">utimens</tt><big>(</big><em>path</em>, <em>times=None</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">write</tt><big>(</big><em>path</em>, <em>data</em>, <em>offset</em>, <em>fh</em><big>)</big></dt>
+<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
+the operation is invalid and raises EINVAL.  <cite>fh</cite> is used; <cite>path</cite> is
+only used for verification.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="nodes">
+<h2>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h2>
+<p>Nodes are used to construct and maintain the virtual library file
+system.  Internally, nodes are implemented as mapping type data objects.</p>
+<p>Currently, there are three node types and one virtual node class.</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.BaseNode</span></tt> is the fundamental node class,
+representing a virtual directory in a mounted library.  Its
+implementation is <tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.Node</span></tt>.</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.BorderNode</span></tt> is a virtual class/interface for
+nodes that pull the host file system into the virtual space (i.e.,
+tagged files)</p>
+<p>It has two subclasses, <tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.BaseRootNode</span></tt> and
+<tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.BaseTagNode</span></tt>, and their implementations
+<tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.RootNode</span></tt> and <tt class="xref py py-class docutils literal"><span class="pre">dantalian.tree.TagNode</span></tt>,
+respectively.</p>
+<p>RootNodes pull all of the tags in the library under themselves as
+virtual directories.  They will usually be the root node for the node
+trees that describe the mounted library structure, but this is not
+necessary.</p>
+<p>TagNodes pull the intersection set of files of a given set of tags under
+themselves.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FUSE/Mounted Library Specification</a><ul>
+<li><a class="reference internal" href="#virtual-spaces">Virtual Spaces</a></li>
+<li><a class="reference internal" href="#fuse-operations">FUSE Operations</a></li>
+<li><a class="reference internal" href="#nodes">Nodes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="libop.html"
+                        title="previous chapter">Library Implementation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../changes.html"
+                        title="next chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/fuse.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../changes.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="libop.html" title="Library Implementation"
+             >previous</a> |</li>
+        <li><a href="../index.html">dantalian 0.5-dev documentation</a> &raquo;</li>
+          <li><a href="../dev.html" >Developer Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, darkfeline.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

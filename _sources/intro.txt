@@ -31,6 +31,7 @@ then dantalian is for you.  On the other hand, if you
 - don't care too much if a file accidentally gets lost or untagged or
   misplaced
 - don't want to get to know your tools and just want it *to work* (most
+  of the time, as opposed to taking time to learn a tool that works all
   of the time)
 
 then unfortunately, dantalian is *not* for you.

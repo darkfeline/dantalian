@@ -48,3 +48,5 @@ In practice there will be no further name collisions, but if there are,
 then name collision resolution will be propagated outward until there
 are no name collisions.  This state is guaranteed as file systems cannot
 assign the same inode number to two different files.
+
+Node names use ``node`` instead of an inode number for resolution.
