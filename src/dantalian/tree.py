@@ -45,20 +45,13 @@ class BaseNode(metaclass=abc.ABCMeta):
     def load(root, node):
         raise NotImplementedError
 
-    def getfrompath(self, path):
-        assert len(path) > 0
-        assert path[0] == "/"
-        path = [x for x in path.lstrip('/').split('/') if x != ""]
-        return self.get(path)
-
     def get(self, path):
         """Get node and path components
 
         Parameters
         ----------
-        path : list
-            List of strings that form a path.  This list will be
-            modified, so make a copy if you need the original list.
+        path : str
+            Path.
 
         Returns
         -------
@@ -75,20 +68,26 @@ class BaseNode(metaclass=abc.ABCMeta):
 
         """
         assert len(path) > 0
-        logger.debug("path list %r", path)
+        assert path[0] == "/"
+        path = [x for x in path.lstrip('/').split('/') if x != ""]
+        return self._get(path)
+
+    def _get(self, path_list):
+        assert len(path_list) > 0
+        logger.debug("path list %r", path_list)
         try:
-            next = path[0]
+            next = path_list[0]
         except IndexError:
-            return (self, path, 0)
+            return (self, path_list, 0)
         try:
             next = self[next]
         except KeyError:
-            return (self, path, 1)
+            return (self, path_list, 1)
         if isinstance(next, str):
             return (self, next, 0)
         else:
-            path.pop(0)
-            return next.get(path)
+            path_list.pop(0)
+            return next._get(path_list)
 
 
 @_public
