@@ -14,7 +14,28 @@ Virtual Spaces
 --------------
 
 In describing mounted library behavior, it is useful to divide the file
-system space into three categories.
+system space into a number of categories.
+
+Directories corresponding to nodes are considered to be in virtual
+space.  (Nodes are virtual space.)
+
+Directories and files corresponding to real directories and files on the
+file system are considered to be in real space.
+
+There is also a subcategory for directories and files in real space:
+real space files and directories pulled in by TagNodes are additionally
+considered to be in tag space.  Note that this is not recursive.  Given
+the following::
+
+   TagNode/
+      dir1/
+         file1
+      dir2/
+      file2
+
+TagNode is in virtual space as it is a node.  Everything under it is in
+real space, but only ``dir1``, ``dir2``, and ``file2`` are in tag space.
+``file1`` is not in tag space.
 
 FUSE Operations
 ---------------
@@ -26,27 +47,27 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: chmod(path, mode)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: chown(path, uid, gid)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: create(path, mode)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is tagged,
-   additionally add its tags.  If `path` is a node, the operation is
-   invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   tag space, additionally tag it accordingly.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: getattr(path, fh=None)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   get attributes from node.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, get file attributes from the node.
 
 .. method:: getxattr()
    :noindex:
@@ -61,52 +82,52 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: link(source, target)
    :noindex:
 
-   Note that this is different from standard.  Usually link(a, b)
-   creates a link at a to b, but this link(source, target) creates a
-   link at source to target.
+   .. note::
 
-   If `source` is tagged, tag it.  If `source` is outside, link it.  If
-   `source` is a node, raise EINVAL
+      Note that this is different from standard.  Usually link(a, b)
+      creates a link at a to b, but this link(source, target) creates a
+      link at source to target.  This is a quirk in the FUSE library
+      used in dantalian.
+
+   If `source` is in real space, link it (forward request to OS).  If
+   `source` is in tag space, tag the newly created link.  If `source`
+   is in virtual space, raise EINVAL.
 
 .. method:: mkdir(path, mode)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If it is tagged,
-   additionally convert it and add tags.  If `path` is a node, the
-   operation is invalid and raises EINVAL.
-
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
-
-   If `path` points beyond a node, forward the request to the OS (via
-   built-in os module).  Once a directory is created, it is converted
-   and tagged with all of the tags of the furthest node.  Otherwise the
-   operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   tag space, additionally convert the new directory and tag it
+   accordingly.  If `path` is in virtual space, the operation is invalid
+   and raises EINVAL.
 
 .. method:: open(path, flags)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: read(path, size, offset, fh)
    :noindex:
 
-   `path` is ignored.  Forward the request to the OS (via built-in os
-   module) with the file descriptor.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
+
+   .. note:
+
+      `path` is ignored.  `fh` is used instead.
 
 .. method:: readdir(path, fh)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   a directory listing containing '.' and '..' is made and generated
-   entries from the node's __iter__ are added.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, get information from the node.
 
 .. method:: readlink(path)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: removexattr()
    :noindex:
@@ -118,22 +139,21 @@ Their implementations for mounted libraries are found as methods in the
 
    This one is tricky; here's a handy chart.
 
-   +---------+---------+-------------------+-------------------+
-   | Old     | To Node | To Tagged         | To Outside        |
-   +=========+=========+===================+===================+
-   | Node    | EINVAL  | EINVAL            | EINVAL            |
-   +---------+---------+-------------------+-------------------+
-   | Tagged  | EINVAL  | untag, tag        | move, untag       |
-   +---------+---------+-------------------+-------------------+
-   | Outside | EINVAL  | tag, remove       | move              |
-   +---------+---------+-------------------+-------------------+
+   +---------+---------+-------------+-------------+
+   | Old     | Virtual | Tag         | Real        |
+   +=========+=========+=============+=============+
+   | Virtual | EINVAL  | EINVAL      | EINVAL      |
+   +---------+---------+-------------+-------------+
+   | Tag     | EINVAL  | untag, tag  | move, untag |
+   +---------+---------+-------------+-------------+
+   | Real    | EINVAL  | tag, remove | move        |
+   +---------+---------+-------------+-------------+
 
 .. method:: rmdir(path)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  (If it's tagged, it's
-   not a dir, but we'll let the OS handle that =))  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: setxattr()
    :noindex:
@@ -148,38 +168,49 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: symlink(source, target)
    :noindex:
 
-   Note that this is different from standard.  Usually link(a, b)
-   creates a link at a to b, but this link(source, target) creates a
-   link at source to target.
+   .. note::
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+      Note that this is different from standard.  Usually symlink(a, b)
+      creates a symlink at a to b, but this symlink(source, target)
+      creates a symlink at source to target.  This is a quirk in the
+      FUSE library used in dantalian.
+
+   If `source` is in real space, link it (forward request to OS).  If
+   `source` is in tag space, tag the newly created symlink.  If `source`
+   is in virtual space, raise EINVAL.
 
 .. method:: truncate(path, length, fh=None)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If it is tagged,
-   additionally add its tags.  If `path` is a node, the operation is
-   invalid and raises EINVAL. `fh` is ignored.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
+
+   .. note:
+
+      `fh` is ignored.
 
 .. method:: unlink(path)
    :noindex:
 
-   If `path` is tagged, untag.  If `path` is outside, forward to OS.  If
-   `path` is a node, the operation is invalid and raises EINVAL.
+   If `source` is in real space, forward to OS.  If
+   `source` is in tag space, untag the file instead.  If `source`
+   is in virtual space, raise EINVAL.
 
 .. method:: utimens(path, times=None)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
 
 .. method:: write(path, data, offset, fh)
    :noindex:
 
-   If `path` is outside or tagged, forward to OS.  If `path` is a node,
-   the operation is invalid and raises EINVAL.  `fh` is used; `path` is
-   only used for verification.
+   If `path` is in real or tag space, forward to OS.  If `path` is in
+   virtual space, the operation is invalid and raises EINVAL.
+
+   .. note:
+
+        `fh` is used; `path` is only used for verification.
 
 Nodes
 -----
@@ -209,3 +240,19 @@ necessary.
 
 TagNodes pull the intersection set of files of a given set of tags under
 themselves.
+
+Node File Attributes
+--------------------
+
+Nodes implement a basic set of default file attributes.
+
+atime, ctime, mtime
+   Defaults to time of node creation
+uid, gid
+   Defaults to process's uid and gid
+mode
+   Set directory bit, and permission bits 0o777 minus umask bits.
+size
+   Constant 4096
+
+Currently these are dummy values and do not change, save for nlinks.
