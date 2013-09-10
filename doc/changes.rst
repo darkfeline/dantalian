@@ -8,6 +8,7 @@ version 0.5
   in a FUSE mounted library.  Changes are saved on unmount and loaded on
   mount.  Tree is dumped as a JSON file, so is editable by hand if
   necessary.
+- Wrote FUSE syscall specifications.
 - Added ``rmnode`` socket command.
 - Added unit tests.
 - Many bugfixes.

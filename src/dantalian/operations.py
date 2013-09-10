@@ -13,21 +13,31 @@ import logging
 from time import time
 
 from dantalian import tree
+from dantalian import path as dpath
 
-__all__ = ['TagOperations', 'mount']
+__all__ = []
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',
          'st_nlink', 'st_size', 'st_ino')
 logger = logging.getLogger(__name__)
 
 
-class TagOperations(LoggingMixIn, Operations):
+def _public(f):
+    __all__.append(f.__name__)
+    return f
+
+
+@_public
+class FUSEOperations(LoggingMixIn, Operations):
 
     def __init__(self, root, tree):
         """Initialize TagOperations instance.
 
-        Args:
-            root (BaseLibrary): Library instance.
-            tree (RootNode): RootNode of node tree.
+        Parameters
+        ----------
+        root : BaseLibrary
+            Library instance
+        tree : RootNode
+            Root node of node tree.
 
         """
         self.root = root
@@ -45,16 +55,9 @@ class TagOperations(LoggingMixIn, Operations):
 
     def create(self, path, mode):
         logger.debug("create(%r, %r)", path, mode)
-        path, file = os.path.split(path)
-        node, path = self._getnode(os.path.dirname(path))
-        path.append(file)
+        node, path = self._getnode(path)
         if len(path) == 1 and isinstance(node, tree.TagNode):
-            t = list(node.tags)
-            path = os.path.join(self.root.tagpath(t.pop(0)), file)
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
-            for tag in t:
-                self.root.tag(path, tag)
-            return fd
+            raise FuseOSError(EINVAL)
         else:
             fd = os.open(_getpath(node, path), os.O_WRONLY | os.O_CREAT, mode)
             return fd
@@ -222,11 +225,11 @@ class TagOperations(LoggingMixIn, Operations):
             raise FuseOSError(EINVAL)
 
     def _getnode(self, path):
-        x = tree.split(self.tree, path)
-        if not x:
+        node, path, ret = self.tree.get(path)
+        if ret != 0:
             raise FuseOSError(ENOENT)
         else:
-            return x
+            return node, path
 
     def _tmplink(self, target):
         logger.debug("_tmplink(%r)", target)
@@ -245,6 +248,25 @@ class TagOperations(LoggingMixIn, Operations):
                 return path
 
 
+@_public
+class TagOperations(FUSEOperations):
+
+    def create(self, path, mode):
+        logger.debug("create(%r, %r)", path, mode)
+        node, path = self._getnode(path)
+        if len(path) == 1 and isinstance(node, tree.TagNode):
+            t = list(node.tags)
+            file = path[0]
+            path = os.path.join(dpath.pathfromtag(t.pop(0), self.root), file)
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
+            for tag in t:
+                self.root.tag(path, tag)
+            return fd
+        else:
+            fd = os.open(_getpath(node, path), os.O_WRONLY | os.O_CREAT, mode)
+            return fd
+
+
 def _getpath(node, path):
     """Get real path
 
@@ -259,5 +281,6 @@ def _getpath(node, path):
     return os.path.join(node[path[0]], *path[1:])
 
 
+@_public
 def mount(path, root, tree):
     return FUSE(TagOperations(root, tree), path, foreground=True, use_ino=True)

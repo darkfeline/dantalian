@@ -59,9 +59,14 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: create(path, mode)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   tag space, additionally tag it accordingly.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in tag
+   space or virtual space, the operation is invalid and raises EINVAL.
+
+   .. note:
+
+      dantalian's library implementation allows for create() in tag
+      space.  This creates a file and hard links it in the directories
+      corresponding to the tags of the TagNode.
 
 .. method:: getattr(path, fh=None)
    :noindex:
