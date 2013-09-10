@@ -5,7 +5,7 @@ import abc
 from time import time
 from itertools import chain
 
-from dantalian import path as libpath
+from dantalian import path as dpath
 
 __all__ = []
 logger = logging.getLogger(__name__)
@@ -281,7 +281,7 @@ class RootNode(Node, BaseRootNode):
         super().__init__()
         assert not isinstance(root, str)
         self.root = root
-        self[libpath.fuserootdir('')] = libpath.rootdir(root.root)
+        self[dpath.fuserootdir('')] = dpath.rootdir(root.root)
 
     def __iter__(self):
         return chain(super().__iter__(), self._files())
@@ -395,7 +395,7 @@ def _uniqmap(files):
             map[name] = f
         else:
             logger.debug("collision; changing")
-            new = libpath.fuse_resolve(f)
+            new = dpath.fuse_resolve(f)
             if new in map:
                 logger.debug("redoing %r", map[new])
                 files.append(map[new])
