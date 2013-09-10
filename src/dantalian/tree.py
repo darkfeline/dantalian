@@ -211,7 +211,7 @@ class Node(BaseNode):
 
 
 @_public
-class TagNode(BaseTagNode):
+class TagNode(Node, BaseTagNode):
 
     """
     TagNode adds a method, tagged(), which returns a generated dict
@@ -262,7 +262,7 @@ class TagNode(BaseTagNode):
 
 
 @_public
-class RootNode(BaseRootNode):
+class RootNode(Node, BaseRootNode):
 
     """
     A special Node that doesn't actually look for tags, merely
