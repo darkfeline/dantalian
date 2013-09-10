@@ -15,7 +15,7 @@ import shlex
 import os
 import json
 
-from dantalian import library
+from dantalian.library import fs as library
 
 __all__ = ['t_global', 't_library', 't_sock']
 t_global = []

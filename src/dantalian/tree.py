@@ -262,64 +262,6 @@ class TagNode(Node, BaseTagNode):
 
 
 @_public
-class RootNode(Node, BaseRootNode):
-
-    """
-    A special Node that doesn't actually look for tags, merely
-    projecting the library root into virtual space.
-
-    """
-
-    def __init__(self, root):
-        """
-        Parameters
-        ----------
-        root : Library
-            Library for root
-
-        """
-        super().__init__()
-        assert not isinstance(root, str)
-        self.root = root
-        self[dpath.fuserootdir('')] = dpath.rootdir(root.root)
-
-    def __iter__(self):
-        return chain(super().__iter__(), self._files())
-
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except KeyError as e:
-            if key in self.files():
-                return os.path.join(self.root.root, key)
-            else:
-                raise KeyError("{!r} not found".format(key)) from e
-
-    def _files(self):
-        return os.listdir(self.root.root)
-
-    def dump(self):
-        """Dump object.
-
-        Dumps the node in the following format::
-
-            ['RootNode', {name: child}]
-
-        """
-        return ['RootNode', dict(
-            (x, self[x].dump()) for x in self.children)]
-
-    @staticmethod
-    @_add_map('RootNode')
-    def load(root, node):
-        x = RootNode(root)
-        map = node[2]
-        for k in map:
-            x[k] = load(root, map[k])
-        return x
-
-
-@_public
 def fs2tag(node, root, tags):
     """Convert a Node instance to a TagNode instance"""
     x = TagNode(root, tags)

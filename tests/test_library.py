@@ -4,7 +4,7 @@ import shutil
 import os
 import logging
 
-from dantalian import library
+from dantalian.library import fs as library
 
 logger = logging.getLogger(__name__)
 

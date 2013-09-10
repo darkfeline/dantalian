@@ -1,4 +1,3 @@
-import abc
 import os
 import subprocess
 import logging
@@ -10,11 +9,14 @@ import shlex
 import threading
 import socket
 from functools import lru_cache
+from itertools import chain
 
-from dantalian import operations as ops
+from dantalian import fuse
 from dantalian import tree
 from dantalian import path as dpath
 from dantalian.errors import DependencyError
+from dantalian.library import BaseLibrary
+from dantalian.library import LibraryError
 
 __all__ = []
 logger = logging.getLogger(__name__)
@@ -88,59 +90,6 @@ def open_library(root: 'str or None'=None):
         return ProxyLibrary(root)
     else:
         return Library(root)
-
-
-@_public
-class BaseLibrary(metaclass=abc.ABCMeta):
-
-    """
-    BaseLibrary is the abstract base class for library implementations.
-
-    """
-
-    @abc.abstractmethod
-    def tag(self, file, tag):
-        """
-        `file` should be tagged with `tag` after call, regardless of
-        whether it was before.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def untag(self, file, tag):
-        """
-        `file` should not be tagged with `tag` after call, regardless of
-        whether it was before.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def listtags(self, file):
-        """
-        Return a list of all of the tags of `file`.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def find(self, tags):
-        """
-        Return a list of files that have all of the given tags in
-        `tags`.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def mount(self, path, tree):
-        """
-        Mount a virtual representation of the library representation
-        `tree` at `path`.
-
-        """
-        raise NotImplementedError
 
 
 @_public
@@ -495,7 +444,7 @@ class Library(BaseLibrary):
             with open(self.treefile(self.root)) as f:
                 return tree.load(self, json.load(f))
         else:
-            return tree.RootNode(self)
+            return RootNode(self)
 
     def mount(self, path, tree):
         addr = self.fusesock(self.root)
@@ -513,7 +462,7 @@ class Library(BaseLibrary):
         thread.start()
         logger.debug("Started socket listening thread")
         logger.debug("Mounting fuse at %r with %r", path, tree)
-        ops.mount(path, self, tree)
+        fuse.mount(path, self, tree)
         thread.stop()
         return tree
 
@@ -737,10 +686,58 @@ class SocketOperations(threading.Thread):
 
 
 @_public
-class LibraryError(Exception):
-    pass
+class RootNode(tree.Node, tree.BaseRootNode):
 
+    """
+    A special Node that doesn't actually look for tags, merely
+    projecting the library root into virtual space.
 
-@_public
-class TagError(LibraryError):
-    pass
+    """
+
+    def __init__(self, root):
+        """
+        Parameters
+        ----------
+        root : Library
+            Library for root
+
+        """
+        super().__init__()
+        assert not isinstance(root, str)
+        self.root = root
+        self[Library.fuserootdir('')] = Library.rootdir(root.root)
+
+    def __iter__(self):
+        return chain(super().__iter__(), self._files())
+
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError as e:
+            if key in self.files():
+                return os.path.join(self.root.root, key)
+            else:
+                raise KeyError("{!r} not found".format(key)) from e
+
+    def _files(self):
+        return os.listdir(self.root.root)
+
+    def dump(self):
+        """Dump object.
+
+        Dumps the node in the following format::
+
+            ['RootNode', {name: child}]
+
+        """
+        return ['RootNode', dict(
+            (x, self[x].dump()) for x in self.children)]
+
+    @staticmethod
+    @tree._add_map('RootNode')
+    def load(root, node):
+        x = RootNode(root)
+        map = node[2]
+        for k in map:
+            x[k] = tree.load(root, map[k])
+        return x
