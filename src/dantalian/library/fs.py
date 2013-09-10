@@ -95,6 +95,14 @@ def open_library(root: 'str or None'=None):
 @_public
 class Library(BaseLibrary):
 
+    """
+    Attributes
+    ----------
+    root: str
+        Absolute path to library root.
+
+    """
+
     @staticmethod
     @lru_cache()
     def rootdir(root):
