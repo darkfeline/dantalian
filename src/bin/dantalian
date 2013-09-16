@@ -6,8 +6,7 @@ import sys
 import socket
 
 from dantalian import commands
-from dantalian import library
-from dantalian.library import Library
+from dantalian.library import fs as library
 
 parser = argparse.ArgumentParser(
     prog="dantalian", add_help=False,
@@ -44,7 +43,7 @@ elif args.command in commands.t_sock:
     if not isinstance(lib, library.ProxyLibrary):
         print('Socket command can only be used with fuse')
         sys.exit(1)
-    addr = Library.fusesock(lib._realroot)
+    addr = library.Library.fusesock(lib._realroot)
     sock = socket.socket(socket.AF_UNIX)
     sock.connect(addr)
     getattr(commands, args.command)(sock, *args.args)
