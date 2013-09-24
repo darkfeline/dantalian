@@ -261,3 +261,22 @@ size
    Constant 4096
 
 Currently these are dummy values and do not change, save for nlinks.
+
+Socket Commands
+---------------
+
+Socket commands allow interaction with the mounted FUSE process, thereby
+dynamically modifying parts of the virtual FUSE-mounted library.  Socket
+commands may be invoked by the relevant commands of the dantalian CLI
+script, or by ``echo``\ ing the commands directly into the FUSE library
+socket.  The dantalian CLI script simply writes the commands to the
+socket as well.
+
+Currently, there are the following commands:
+
+mknode path tag1 [tag2 ...]
+   Make a TagNode at the given path with the given tags.  Make
+   intermediary Nodes if needed.
+
+rmnode path
+   Remove the Node at the given path.
