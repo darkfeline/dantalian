@@ -13,7 +13,7 @@ This provides a very flexible and transparent system.
 If you
 
 - like reading specifications (in a sense)
-- wouldn't trust a incompletely documented tool with organizing your
+- wouldn't trust an incompletely documented tool with organizing your
   files
 - want maximum flexibility (tag hierarchy, no restrictions on tagged
   objects (*all* files *and* directories), arbitrary subsets of tags
@@ -56,9 +56,9 @@ FUSE
 FUSE mount allows the following features:
 
 - Allows better interaction on a file system level (trivial
-   interoperability with other applications)
+  interoperability with other applications)
 - Virtual tag combination directories (currently only tag unions, e.g.
-   AND).
+  AND).
 - Dynamic management through socket operations.
 
 Upcoming Features
