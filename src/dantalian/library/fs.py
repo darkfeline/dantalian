@@ -70,10 +70,10 @@ def init_library(root: 'str'):
 def open_library(root: 'str or None'=None):
     """Open a library.
 
-    If `root` is :const:`None`, search up the directory tree for the
-    first library (a directory that contains ``.dantalian``) we find and
-    use that.  If none are found, raises :exc:`LibraryError`.
-    Otherwise, `root` will be used.
+    If `root` is None, search up the directory tree for the first
+    library (a directory that contains ``.dantalian``) we find and use
+    that.  If none are found, raises :exc:`LibraryError`.  Otherwise,
+    `root` will be used.
 
     Args:
         root (str or None): A path.  Default is None.
