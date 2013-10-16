@@ -1,8 +1,8 @@
 FUSE/Mounted Library Specification
 ==================================
 
-The Library API requires a :meth:`mount()` method, which uses FUSE to
-mount a virtual file system representation of the library.
+The dantalian library API requires a :meth:`mount()` method, which uses
+FUSE to mount a virtual file system representation of the library.
 
 The mounted library provides a standard file-system-like interface to
 libraries.  While the dantalian implementation of the library already
@@ -44,6 +44,11 @@ FUSE provides syscall-like operation hooks to emulate a file system.
 Their implementations for mounted libraries are found as methods in the
 :class:`dantalian.operations.TagOperations` class.
 
+.. note::
+
+   The behavior of the following operations on tag space is subject to
+   change, due to planned additions to tag nodes.
+
 .. method:: chmod(path, mode)
    :noindex:
 
@@ -59,14 +64,9 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: create(path, mode)
    :noindex:
 
-   If `path` is in real space, forward to OS.  If `path` is in tag
-   space or virtual space, the operation is invalid and raises EINVAL.
-
-   .. note:
-
-      dantalian's library implementation allows for create() in tag
-      space.  This creates a file and hard links it in the directories
-      corresponding to the tags of the TagNode.
+   If `path` is in real space, forward to OS.  If `path` is also in tag
+   space, tag the file accordingly. If `path` is in virtual space, the
+   operation is invalid and raises EINVAL.
 
 .. method:: getattr(path, fh=None)
    :noindex:
@@ -90,33 +90,33 @@ Their implementations for mounted libraries are found as methods in the
    .. note::
 
       Note that this is different from standard.  Usually link(a, b)
-      creates a link at a to b, but this link(source, target) creates a
-      link at source to target.  This is a quirk in the FUSE library
-      used in dantalian.
+      creates a link at `b` to `a`, but this link(source, target)
+      creates a link at `source` to `target`.  This is a quirk in the
+      FUSE library used in dantalian.
 
    If `source` is in real space, link it (forward request to OS).  If
-   `source` is in tag space, tag the newly created link.  If `source`
-   is in virtual space, raise EINVAL.
+   `source` is also in tag space, tag the newly created link
+   accordingly.  If `source` is in virtual space, raise EINVAL.
 
 .. method:: mkdir(path, mode)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   tag space, additionally convert the new directory and tag it
-   accordingly.  If `path` is in virtual space, the operation is invalid
-   and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is also in tag
+   space, additionally convert the new directory and tag it accordingly.
+   If `path` is in virtual space, the operation is invalid and raises
+   EINVAL.
 
 .. method:: open(path, flags)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
 .. method:: read(path, size, offset, fh)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
    .. note:
 
@@ -125,14 +125,14 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: readdir(path, fh)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, get information from the node.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, get information from the node.
 
 .. method:: readlink(path)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
 .. method:: removexattr()
    :noindex:
@@ -144,21 +144,21 @@ Their implementations for mounted libraries are found as methods in the
 
    This one is tricky; here's a handy chart.
 
-   +---------+---------+-------------+-------------+
-   | Old     | Virtual | Tag         | Real        |
-   +=========+=========+=============+=============+
-   | Virtual | EINVAL  | EINVAL      | EINVAL      |
-   +---------+---------+-------------+-------------+
-   | Tag     | EINVAL  | untag, tag  | move, untag |
-   +---------+---------+-------------+-------------+
-   | Real    | EINVAL  | tag, remove | move        |
-   +---------+---------+-------------+-------------+
+   +------------+---------+-------------+-------------+
+   | From To -> | Virtual | Tag         | Real        |
+   +============+=========+=============+=============+
+   | Virtual    | EINVAL  | EINVAL      | EINVAL      |
+   +------------+---------+-------------+-------------+
+   | Tag        | EINVAL  | untag, tag  | move, untag |
+   +------------+---------+-------------+-------------+
+   | Real       | EINVAL  | tag, remove | move        |
+   +------------+---------+-------------+-------------+
 
 .. method:: rmdir(path)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
 .. method:: setxattr()
    :noindex:
@@ -175,14 +175,11 @@ Their implementations for mounted libraries are found as methods in the
 
    .. note::
 
-      Note that this is different from standard.  Usually symlink(a, b)
-      creates a symlink at a to b, but this symlink(source, target)
-      creates a symlink at source to target.  This is a quirk in the
-      FUSE library used in dantalian.
+      This has the same quirk as `link()`.
 
    If `source` is in real space, link it (forward request to OS).  If
-   `source` is in tag space, tag the newly created symlink.  If `source`
-   is in virtual space, raise EINVAL.
+   `source` is also in tag space, tag the newly created symlink.  If
+   `source` is in virtual space, raise EINVAL.
 
 .. method:: truncate(path, length, fh=None)
    :noindex:
@@ -197,21 +194,21 @@ Their implementations for mounted libraries are found as methods in the
 .. method:: unlink(path)
    :noindex:
 
-   If `source` is in real space, forward to OS.  If
-   `source` is in tag space, untag the file instead.  If `source`
-   is in virtual space, raise EINVAL.
+   If `source` is in real space, but not tag space, forward to OS.  If
+   `source` is in tag space, untag the file instead.  If `source` is in
+   virtual space, raise EINVAL.
 
 .. method:: utimens(path, times=None)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
 .. method:: write(path, data, offset, fh)
    :noindex:
 
-   If `path` is in real or tag space, forward to OS.  If `path` is in
-   virtual space, the operation is invalid and raises EINVAL.
+   If `path` is in real space, forward to OS.  If `path` is in virtual
+   space, the operation is invalid and raises EINVAL.
 
    .. note:
 

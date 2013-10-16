@@ -13,16 +13,18 @@ those described in BaseFSLibrary (Filename/path conflicts will be
 resolved according to :ref:`rename_alg`.):
 
 .. note::
-   dantalian respects symbolic links to directories outside of the
-   library (Internal symbolic links should always be converted by
-   dantalian.  Handmade symbolic links to library-internal paths subject
-   to breakage and Armageddon.).  For simple operations, dantalian will
-   act as though these directories are a part of the library.  For
-   complex operations, these external directories will be ignored (This
-   is because dantalian is not really descending symbolic links, but
-   only acting on the directories stored internally. This simulates only
-   descending into internal symbolic links.).  The latter case will be
-   noted below if applicable.
+
+   dantalian respects symbolic links to directories outside of the library
+   (Symbolic links to directories *inside* of the library, on the other hand,
+   should always be converted by dantalian.  Handmade symbolic links to
+   library-internal paths subject to breakage and Armageddon.).
+
+   For simple operations, dantalian will act as though external symlinked
+   directories are a part of the library.  For complex operations, these
+   external directories will be ignored (This is because dantalian is not
+   really descending symbolic links, but only acting on the directories stored
+   internally. This simulates only descending into internal symbolic links.).
+   The latter case will be noted below if applicable.
 
 .. method:: tag(file, tag)
    :noindex:
@@ -36,6 +38,17 @@ resolved according to :ref:`rename_alg`.):
 
    `file` should not be tagged with `tag` after call, regardless of
    whether it was before.
+
+.. method:: mktag(tag)
+   :noindex:
+
+   The directory corresponding to `tag` is created.  Do nothing if it exists.
+
+.. method:: rmtag(tag)
+   :noindex:
+
+   The directory corresponding to `tag` is removed.  Do nothing if it doesn't
+   exist.
 
 .. method:: listtags(file)
    :noindex:
@@ -52,6 +65,8 @@ resolved according to :ref:`rename_alg`.):
 
    Mount a virtual representation of the library representation `tree`
    at `path`.
+
+The following are methods that are not in the abstract library interface:
 
 .. method:: convert(dir)
    :noindex:
@@ -83,8 +98,8 @@ resolved according to :ref:`rename_alg`.):
    :noindex:
 
    Rename all hard links to `file` in the library to `new`.  File name
-   conflicts are resolved and reported.  Any errors
-   will be reported and renaming will resume for remaining hard links.
+   conflicts are resolved and reported.  Any errors will be reported and
+   renaming will resume for remaining hard links.
 
 .. note::
 
@@ -95,14 +110,14 @@ resolved according to :ref:`rename_alg`.):
    :noindex:
 
    Fix the absolute paths of symbolic links in the library to internally
-   stored directories.  Hard link relationships of the symbolic links
-   are preserved *only in the library*.  (This is because the Linux
-   kernel/POSIX system calls do not allow for editing symbolic links in
-   place.  They must be unlinked and remade.)  Symbolic links are
-   unlinked and a new symbolic link is made then relinked.  Filename
-   conflicts are resolved and reported (if a file with the same name is
-   made in between deleting and creating the symbolic link, for
-   example).
+   stored directories after the library's path has been changed.  Hard
+   link relationships of the symbolic links are preserved *only in the
+   library*.  (This is because the Linux kernel/POSIX system calls do
+   not allow for editing symbolic links in place.  They must be unlinked
+   and remade.)  Symbolic links are unlinked and a new symbolic link is
+   made then relinked.  Filename conflicts are resolved and reported (if
+   a file with the same name is made in between deleting and creating
+   the symbolic link, for example).
 
 .. method:: maketree()
 

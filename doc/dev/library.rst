@@ -3,10 +3,10 @@
 Library Specification
 =====================
 
-dantalian is an implementation of the dantalian library system, an
-abstract system.  Much like how POSIX system calls define an interface
+dantalian is an implementation of the dantalian library, an abstract
+interface.  Much like how POSIX system calls define an interface
 providing a standard file system interface abstraction, the dantalian
-library system defines a standard interface for a multidimensionally
+library defines a standard interface for a multidimensionally
 hierarchical tagging system.
 
 dantalian provides a transparent implementation of the library that lies
@@ -54,30 +54,13 @@ new path.
    ``//albums``, and a directory ``artists`` in ``albums`` with tag
    ``//albums/artists``.
 
-   Due to dantalian's implementation, the special root tag ``//``
-   exists as an implementation detail.  The only documented appearance
-   of the root tag is when calling
+   Due to dantalian's implementation, the special root tag ``//`` exists
+   as an implementation detail.  The only documented appearance of the
+   root tag is when calling
    :meth:`dantalian.library.BaseLibrary.listtag()`, which will include
    the root tag if the file is hard linked under the library root
    directory.  The root tag will work everywhere a tag will, but again,
    is an implementation detail specific to dantalian's implementation.
-
-Tag Existence
--------------
-
-Tag existence is dynamic.  A tag is "created" when an object is first
-tagged with it, and "exists" so long as there are objects tagged with
-it.  For implementations, the main point of concern is that all tags
-"exist" at all times.  How that is handled internally is up to the
-implementation.
-
-.. note::
-
-   Since tags correspond directly to directories in dantalian's
-   implementation, tag existence is a bit different.  By necessity, a
-   tag exists when it is associated with objects, but may still exist
-   when no more associations exist.  dantalian does not purge empty
-   directories.
 
 Tagging
 -------
@@ -119,6 +102,16 @@ must implement the following methods:
    `file` should not be tagged with `tag` after call, regardless of
    whether it was before.
 
+.. method:: mktag(tag)
+   :noindex:
+
+   `tag` is created.  Do nothing if it exists.
+
+.. method:: rmtag(tag)
+   :noindex:
+
+   `tag` is removed.  Do nothing if it doesn't exist.
+
 .. method:: listtags(file)
    :noindex:
 
@@ -151,3 +144,6 @@ library root directory reserved for internal use.  It is treated
 normally, i.e., as a directory and as a tag, but in almost all cases it
 should not be used as a tag and should be considered an implementation
 detail.
+
+Everywhere a tag is needed in a library's method calls, a path to a directory
+can be substituted.
