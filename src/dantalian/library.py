@@ -9,14 +9,11 @@ import shlex
 import threading
 import socket
 from functools import lru_cache
-from itertools import chain
 
 from dantalian import fuse
 from dantalian import tree
 from dantalian import path as dpath
 from dantalian.errors import DependencyError
-from dantalian.library import BaseLibrary
-from dantalian.library import LibraryError
 
 __all__ = []
 logger = logging.getLogger(__name__)
@@ -93,7 +90,7 @@ def open_library(root: 'str or None'=None):
 
 
 @_public
-class Library(BaseLibrary):
+class Library:
 
     """
     Attributes
@@ -694,58 +691,10 @@ class SocketOperations(threading.Thread):
 
 
 @_public
-class RootNode(tree.Node, tree.BaseRootNode):
+class LibraryError(Exception):
+    pass
 
-    """
-    A special Node that doesn't actually look for tags, merely
-    projecting the library root into virtual space.
 
-    """
-
-    def __init__(self, root):
-        """
-        Parameters
-        ----------
-        root : Library
-            Library for root
-
-        """
-        super().__init__()
-        assert not isinstance(root, str)
-        self.root = root
-        self[Library.fuserootdir('')] = Library.rootdir(root.root)
-
-    def __iter__(self):
-        return chain(super().__iter__(), self._files())
-
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except KeyError as e:
-            if key in self._files():
-                return os.path.join(self.root.root, key)
-            else:
-                raise KeyError("{!r} not found".format(key)) from e
-
-    def _files(self):
-        return os.listdir(self.root.root)
-
-    def dump(self):
-        """Dump object.
-
-        Dumps the node in the following format::
-
-            ['RootNode', {name: child}]
-
-        """
-        return ['RootNode', dict(
-            (x, self[x].dump()) for x in self.children)]
-
-    @staticmethod
-    @tree._add_map('RootNode')
-    def load(root, node):
-        x = RootNode(root)
-        map = node[2]
-        for k in map:
-            x[k] = tree.load(root, map[k])
-        return x
+@_public
+class TagError(LibraryError):
+    pass

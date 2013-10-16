@@ -29,7 +29,7 @@ class BaseNode(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def __setitem__(self, key, item):
+    def __setitem__(self, key, value):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -90,25 +90,6 @@ class BaseNode(metaclass=abc.ABCMeta):
             return next._get(path_list)
 
 
-@_public
-class BorderNode(BaseNode, metaclass=abc.ABCMeta):
-    """
-    BorderNode is an abstract class for subclasses of BaseNode that
-    reaches outside of the virtual space.
-
-    """
-
-
-@_public
-class BaseTagNode(BorderNode):
-    pass
-
-
-@_public
-class BaseRootNode(BorderNode):
-    pass
-
-
 _load_map = {}
 
 
@@ -139,13 +120,6 @@ class Node(BaseNode):
     """
     Mock directory.  Node works like a dictionary mapping names to
     nodes and keeps some internal file attributes.
-
-    Implements
-    ----------
-    * __iter__
-    * __getitem__
-    * __setitem__
-    * __delitem__
 
     File Attributes
     ---------------
@@ -211,7 +185,65 @@ class Node(BaseNode):
 
 
 @_public
-class TagNode(Node, BaseTagNode):
+class RootNode(Node):
+
+    """
+    A special Node that doesn't actually look for tags, merely
+    projecting the library root into virtual space.
+
+    """
+
+    def __init__(self, root):
+        """
+        Parameters
+        ----------
+        root : Library
+            Library for root
+
+        """
+        super().__init__()
+        assert not isinstance(root, str)
+        self.root = root
+        self[root.fuserootdir('')] = root.rootdir(root.root)
+
+    def __iter__(self):
+        return chain(super().__iter__(), self._files())
+
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError as e:
+            if key in self._files():
+                return os.path.join(self.root.root, key)
+            else:
+                raise KeyError("{!r} not found".format(key)) from e
+
+    def _files(self):
+        return os.listdir(self.root.root)
+
+    def dump(self):
+        """Dump object.
+
+        Dumps the node in the following format::
+
+            ['RootNode', {name: child}]
+
+        """
+        return ['RootNode', dict(
+            (x, self[x].dump()) for x in self.children)]
+
+    @staticmethod
+    @_add_map('RootNode')
+    def load(root, node):
+        x = RootNode(root)
+        map = node[2]
+        for k in map:
+            x[k] = load(root, map[k])
+        return x
+
+
+@_public
+class TagNode(Node):
 
     """
     TagNode adds a method, tagged(), which returns a generated dict
@@ -265,53 +297,8 @@ class TagNode(Node, BaseTagNode):
 def fs2tag(node, root, tags):
     """Convert a Node instance to a TagNode instance"""
     x = TagNode(root, tags)
-    x.children.update(dict(node.children))
+    x.children.update(node.children)
     return x
-
-
-@_public
-def split(tree, path):
-    """Get node and path components
-
-    Parameters
-    ----------
-    tree : RootNode
-        Root node
-    path : str
-        Path
-
-    Returns
-    -------
-    (cur, path) : (str, str) or None
-        `cur` is the furthest node along the path, and `path` is a list
-        of strings indicating the path from the given node.  If node is
-        the last file in the path, path is an empty list.
-
-        If path is broken, return None instead.
-
-    """
-    assert len(path) > 0
-    assert path[0] == "/"
-    logger.debug("resolving path %r", path)
-    path = [x for x in path.lstrip('/').split('/') if x != ""]
-    logger.debug("path list %r", path)
-    cur = tree
-    while path:
-        logger.debug("resolving %r", path[0])
-        try:
-            a = cur[path[0]]
-        except KeyError:
-            logger.warn("path broken")
-            return None
-        if isinstance(a, str):
-            logger.debug("BorderNode found, %r, %r", cur, path)
-            return (cur, path)
-        else:
-            logger.debug("next node")
-            cur = a
-            del path[0]
-    logger.debug("found node %r", cur)
-    return (cur, [])
 
 
 def _uniqmap(files):
@@ -337,6 +324,7 @@ def _uniqmap(files):
             map[name] = f
         else:
             logger.debug("collision; changing")
+            # TODO check this logic here
             new = dpath.fuse_resolve(f)
             if new in map:
                 logger.debug("redoing %r", map[new])
