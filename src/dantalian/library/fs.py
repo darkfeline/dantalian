@@ -722,7 +722,7 @@ class RootNode(tree.Node, tree.BaseRootNode):
         try:
             return super().__getitem__(key)
         except KeyError as e:
-            if key in self.files():
+            if key in self._files():
                 return os.path.join(self.root.root, key)
             else:
                 raise KeyError("{!r} not found".format(key)) from e
