@@ -180,6 +180,7 @@ class Library:
 
         """
 
+        file = os.path.normpath(file)  # get rid of trailing slashes
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
