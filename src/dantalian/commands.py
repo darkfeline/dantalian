@@ -38,7 +38,7 @@ _sock = _make_appender(t_sock)
 
 @_public
 @_library
-def tag(lib: 'BaseLibrary', *args):
+def tag(lib: 'Library', *args):
     """Tag file.
 
     Tag `file` with `tag` (Hard links `file` under `tag` directory with
@@ -47,7 +47,7 @@ def tag(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -71,7 +71,7 @@ def tag(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def untag(lib: 'BaseLibrary', *args):
+def untag(lib: 'Library', *args):
     """Untag file.
 
     Remove tag `tag` from `file` (Removes the hard link to `file` under
@@ -79,7 +79,7 @@ def untag(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -100,7 +100,7 @@ def untag(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def tags(lib: 'BaseLibrary', *args):
+def tags(lib: 'Library', *args):
     """List tags.
 
     List all the tags of `file` (Lists the directories that have hard
@@ -108,7 +108,7 @@ def tags(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -125,7 +125,7 @@ def tags(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def find(lib: 'BaseLibrary', *args):
+def find(lib: 'Library', *args):
     """Find files with tags.
 
     Intersect tag search.  Lists all files that have all of the given
@@ -134,7 +134,7 @@ def find(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -151,7 +151,7 @@ def find(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def rm(lib: 'BaseLibrary', *args):
+def rm(lib: 'Library', *args):
     """Remove file.
 
     Remove the files given (Removes all hard links to the files under
@@ -159,7 +159,7 @@ def rm(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -175,7 +175,7 @@ def rm(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def rename(lib: 'BaseLibrary', *args):
+def rename(lib: 'Library', *args):
     """Rename file.
 
     Rename all hard links of `file` to `new`.  New names are subject to
@@ -183,7 +183,7 @@ def rename(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -199,7 +199,7 @@ def rename(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def convert(lib: 'BaseLibrary', *args):
+def convert(lib: 'Library', *args):
     """Convert directory.
 
     Convert directories so they can be tagged.  (Move directories to
@@ -208,7 +208,7 @@ def convert(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -229,7 +229,7 @@ def convert(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def fix(lib: 'BaseLibrary', *args):
+def fix(lib: 'Library', *args):
     """Fix symlinks.
 
     Fix symlinks after the library has been moved.  If it hasn't been
@@ -237,7 +237,7 @@ def fix(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -251,7 +251,7 @@ def fix(lib: 'BaseLibrary', *args):
 
 @_public
 @_library
-def clean(lib: 'BaseLibrary', *args):
+def clean(lib: 'Library', *args):
     """Clean converted directories.
 
     Internally tracked converted directories which no longer have
@@ -259,7 +259,7 @@ def clean(lib: 'BaseLibrary', *args):
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
@@ -295,14 +295,14 @@ def init(*args):
 
 @_public
 @_library
-def mount(lib: 'BaseLibrary', *args):
+def mount(lib: 'Library', *args):
     """Mount FUSE at the given path.
 
     The library must not be a FUSE-mounted virtual library.
 
     Parameters
     ----------
-    lib : BaseLibrary
+    lib : Library
         Library instance.
     *args
         Arguments passed on to ArgumentParser (See code).
