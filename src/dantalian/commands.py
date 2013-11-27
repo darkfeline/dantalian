@@ -347,8 +347,10 @@ def mount(lib: 'Library', *args):
     parser.add_argument('path')
     args = parser.parse_args(args)
     tree = lib.mount(args.path, lib.maketree())
+    tree = tree.dump()
+    logger.debug('Dumping tree as JSON: %r', tree)
     with open(lib.treefile(lib.root), 'w') as f:
-        json.dump(f, tree.dump())
+        json.dump(tree, f)
     logger.debug('exit')
 
 
