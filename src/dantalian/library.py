@@ -449,7 +449,7 @@ class Library:
             with open(self.treefile(self.root)) as f:
                 return tree.load(self, json.load(f))
         else:
-            return RootNode(self)
+            return tree.RootNode(self)
 
     def mount(self, path, tree):
         addr = self.fusesock(self.root)
