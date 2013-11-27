@@ -12,7 +12,11 @@ Get a copy of the code from the repository of the version or commit you
 are building::
 
    $ git clone https://github.com/darkfeline/dantalian.git
-   # Use development branch?
+
+   # stable branch
+   $ git checkout master
+
+   # development branch
    $ git checkout develop
 
 Build the documentation::
@@ -31,9 +35,9 @@ Packages will be in the ``dist`` directory.
 Built Package
 -------------
 
-Built packages can also be made for distribution, e.g., for a
-package repository.  Likely, this will entail
-repository/system/architecture/package-manager-specific configuration.
+Built packages can also be made for distribution, e.g., for a package
+repository.  Likely, this will entail configuration specific to the
+distribution, repository, and/or package manager that you are using.
 
 A simple vanilla package can be built by creating a ``setup.cfg`` with
 the following text::

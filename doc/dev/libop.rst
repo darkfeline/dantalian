@@ -9,22 +9,24 @@ Library
 
 Library is the actual implementation that dantalian provides.  It
 implements the following public methods and invariants in addition to
-those described in BaseFSLibrary (Filename/path conflicts will be
+those described in :ref:`library class` (Filename/path conflicts will be
 resolved according to :ref:`rename_alg`.):
 
 .. note::
 
-   dantalian respects symbolic links to directories outside of the library
-   (Symbolic links to directories *inside* of the library, on the other hand,
-   should always be converted by dantalian.  Handmade symbolic links to
-   library-internal paths subject to breakage and Armageddon.).
+   dantalian respects symbolic links to directories outside of the
+   library (Symbolic links to directories *inside* of the library, on
+   the other hand, should always be converted by dantalian.  Handmade
+   symbolic links to library-internal paths subject to breakage and
+   Armageddon.).
 
-   For simple operations, dantalian will act as though external symlinked
-   directories are a part of the library.  For complex operations, these
-   external directories will be ignored (This is because dantalian is not
-   really descending symbolic links, but only acting on the directories stored
-   internally. This simulates only descending into internal symbolic links.).
-   The latter case will be noted below if applicable.
+   For simple operations, dantalian will act as though external
+   symlinked directories are a part of the library.  For complex
+   operations, these external directories will be ignored (This is
+   because dantalian is not really descending symbolic links, but only
+   acting on the directories stored internally. This simulates only
+   descending into internal symbolic links.).  The latter case will be
+   noted below if applicable.
 
 .. method:: tag(file, tag)
    :noindex:

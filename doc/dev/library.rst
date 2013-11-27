@@ -83,6 +83,8 @@ can be tagged with themselves.
    were to support directory hard links, then the library specification
    applies normally.
 
+.. _library class:
+
 Library class and methods
 -------------------------
 
