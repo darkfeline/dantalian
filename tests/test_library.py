@@ -43,29 +43,47 @@ class TestLibraryMethods(unittest.TestCase):
         self.assertEqual(a, b)
         self.assertEqual(set(a), set(b))
 
-    def test_tag(self):
+    def test_tag_ok_tag(self):
         l = self.library
         os.chdir('library')
         l.tag('a', '//A')
         self.assertTagged(os.path.join('A', 'a'), 'a')
         l.tag('a', '//A/D')
         self.assertTagged(os.path.join('A', 'D', 'a'), 'a')
+
+    def test_tag_ok_path_rel(self):
+        l = self.library
+        os.chdir('library')
         l.tag('a', 'B')
         self.assertTagged(os.path.join('B', 'a'), 'a')
         l.tag('a', 'C/')
         self.assertTagged(os.path.join('C', 'a'), 'a')
 
-    def test_untag(self):
+    def test_tag_ok_path_abs(self):
+        l = self.library
+        os.chdir('library')
+        l.tag('a', os.path.join(self.root, 'library', 'B'))
+        self.assertTagged(os.path.join('B', 'a'), 'a')
+        l.tag('a', os.path.join(self.root, 'library', 'C/'))
+        self.assertTagged(os.path.join('C', 'a'), 'a')
+
+    def test_untag_ok_tag(self):
         l = self.library
         os.chdir('library')
         self.assertTagged(os.path.join('C', 'b'), 'b')
         l.untag('b', '//C')
         self.assertNotTagged(os.path.join('C', 'b'), 'b')
-        l.tag('b', '//C')
+
+    def test_untag_ok_path_rel(self):
+        l = self.library
+        os.chdir('library')
         self.assertTagged(os.path.join('C', 'b'), 'b')
         l.untag('b', 'C')
         self.assertNotTagged(os.path.join('C', 'b'), 'b')
-        l.tag('b', '//C')
+
+    def test_untag_ok_path_rel_trailing(self):
+        l = self.library
+        os.chdir('library')
         self.assertTagged(os.path.join('C', 'b'), 'b')
         l.untag('b', 'C/')
         self.assertNotTagged(os.path.join('C', 'b'), 'b')
@@ -75,8 +93,6 @@ class TestLibraryMethods(unittest.TestCase):
         os.chdir('library')
         self.assertSameTags(l.listtags('a'), ['//'])
         self.assertSameTags(l.listtags('b'), ['//', '//C'])
-        l.tag('b', '//A')
-        self.assertSameTags(l.listtags('b'), ['//', '//C', '//A'])
 
     def test_convert(self):
         l = self.library
