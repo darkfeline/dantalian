@@ -73,7 +73,6 @@ class BaseNode(metaclass=abc.ABCMeta):
         return self._get(path)
 
     def _get(self, path_list):
-        assert len(path_list) > 0
         logger.debug("path list %r", path_list)
         try:
             next = path_list[0]
