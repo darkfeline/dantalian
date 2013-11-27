@@ -6,7 +6,7 @@ import sys
 import socket
 
 from dantalian import commands
-from dantalian.library import fs as library
+from dantalian import library
 
 parser = argparse.ArgumentParser(
     prog="dantalian", add_help=False,
