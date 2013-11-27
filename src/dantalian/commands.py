@@ -100,6 +100,40 @@ def untag(lib: 'Library', *args):
 
 @_public
 @_library
+def mktag(lib, *args):
+    """Make tag.
+
+    Args:
+        lib: Library instance
+        *args: Arguments passed on to ArgumentParser
+
+    """
+    logger.debug('mktag(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian mktag", add_help=False)
+    parser.add_argument('tag')
+    args = parser.parse_args(args)
+    lib.mktag(args.tag)
+
+
+@_public
+@_library
+def rmtag(lib, *args):
+    """Remove tag.
+
+    Args:
+        lib: Library instance
+        *args: Arguments passed on to ArgumentParser
+
+    """
+    logger.debug('rmtag(%r, %r)', lib, args)
+    parser = argparse.ArgumentParser(prog="dantalian rmtag", add_help=False)
+    parser.add_argument('tag')
+    args = parser.parse_args(args)
+    lib.rmtag(args.tag)
+
+
+@_public
+@_library
 def tags(lib: 'Library', *args):
     """List tags.
 

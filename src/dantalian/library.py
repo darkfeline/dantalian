@@ -12,6 +12,7 @@ from functools import lru_cache
 
 from dantalian import fuse
 from dantalian import tree
+
 from dantalian import path as dpath
 from dantalian.errors import DependencyError
 
@@ -248,6 +249,18 @@ class Library:
                     os.unlink(f)
                 except OSError as e:
                     logger.warning('Caught OSError: %s', e)
+
+    def mktag(self, tag):
+        if dpath.istag(tag):
+            os.mkdir(dpath.pathfromtag(tag, self.root))
+        else:
+            os.mkdir(tag)
+
+    def rmtag(self, tag):
+        if dpath.istag(tag):
+            shutil.rmtree(dpath.pathfromtag(tag, self.root))
+        else:
+            shutil.rmtree(tag)
 
     def _listpaths(self, file):
         """Return a list of paths to all hard links to `file`.
