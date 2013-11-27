@@ -184,7 +184,12 @@ class Node(BaseNode):
 
 
 @_public
-class RootNode(Node):
+class BorderNode(Node, metaclass=abc.ABCMeta):
+    """Abstract class for nodes that bridge the file system"""
+
+
+@_public
+class RootNode(BorderNode):
 
     """
     A special Node that doesn't actually look for tags, merely
@@ -242,7 +247,7 @@ class RootNode(Node):
 
 
 @_public
-class TagNode(Node):
+class TagNode(BorderNode):
 
     """
     TagNode adds a method, tagged(), which returns a generated dict
