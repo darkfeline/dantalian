@@ -45,6 +45,15 @@ class BaseNode(metaclass=abc.ABCMeta):
     def load(root, node):
         raise NotImplementedError
 
+    def _dump_recur(self):
+        """Recursive dump of children
+
+        Values in children dict can be str (path), so won't have dump method.
+
+        """
+        return dict((x, self[x].dump()) for x in self.children if
+                    hasattr(self[x], 'dump'))
+
     def get(self, path):
         """Get node and path components
 
@@ -170,8 +179,7 @@ class Node(BaseNode):
             ['Node', {name: child}]
 
         """
-        return ['Node', dict(
-            (x, self[x].dump()) for x in self.children)]
+        return ['Node', self._dump_recur()]
 
     @staticmethod
     @_add_map('Node')
@@ -233,8 +241,7 @@ class RootNode(BorderNode):
             ['RootNode', {name: child}]
 
         """
-        return ['RootNode', dict(
-            (x, self[x].dump()) for x in self.children)]
+        return ['RootNode', self._dump_recur()]
 
     @staticmethod
     @_add_map('RootNode')
@@ -284,8 +291,7 @@ class TagNode(BorderNode):
             ['TagNode', [tag], {name: child}]
 
         """
-        return ['TagNode', self.tags, dict(
-            (x, self[x].dump()) for x in self.children)]
+        return ['TagNode', self.tags, self._dump_recur()]
 
     @staticmethod
     @_add_map('TagNode')
