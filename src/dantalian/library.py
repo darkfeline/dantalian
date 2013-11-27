@@ -461,7 +461,13 @@ class Library:
         logger.info("making tree")
         if os.path.exists(self.treefile(self.root)):
             with open(self.treefile(self.root)) as f:
-                return tree.load(self, json.load(f))
+                try:
+                    data = json.load(f)
+                except ValueError:
+                    logger.warn('Problem loading tree config')
+                    return tree.RootNode(self)
+                else:
+                    return tree.load(self, data)
         else:
             return tree.RootNode(self)
 
