@@ -13,6 +13,7 @@ version 0.5
 - Added unit tests.
 - Many bugfixes.
 - Major documentation improvements.
+- Added ``mktag`` and ``rmtag`` commands.
 
 version 0.4
 -----------
