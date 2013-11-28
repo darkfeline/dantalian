@@ -85,15 +85,15 @@ class BaseNode(metaclass=abc.ABCMeta):
         logger.debug("path list %r", path_list)
         try:
             next = path_list[0]
-        except IndexError:
+        except IndexError:  # case done
             return (self, path_list, 0)
         try:
             next = self[next]
-        except KeyError:
+        except KeyError:  # case broken path
             return (self, path_list, 1)
-        if isinstance(next, str):
-            return (self, next, 0)
-        else:
+        if isinstance(next, str):  # case no more nodes
+            return (self, path_list, 0)
+        else:  # case more nodes
             path_list.pop(0)
             return next._get(path_list)
 
@@ -185,8 +185,7 @@ class Node(BaseNode):
     @_add_map('Node')
     def load(root, node):
         x = Node()
-        map = node[1]
-        for k in map:
+        for k in node[-1]:
             x[k] = load(root, map[k])
         return x
 
@@ -247,8 +246,7 @@ class RootNode(BorderNode):
     @_add_map('RootNode')
     def load(root, node):
         x = RootNode(root)
-        map = node[2]
-        for k in map:
+        for k in node[-1]:
             x[k] = load(root, map[k])
         return x
 
@@ -297,8 +295,7 @@ class TagNode(BorderNode):
     @_add_map('TagNode')
     def load(root, node):
         x = TagNode(node[1])
-        map = node[2]
-        for k in map:
+        for k in node[-1]:
             x[k] = load(root, map[k])
         return x
 
