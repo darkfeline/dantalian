@@ -65,7 +65,8 @@ class FUSEOperations(LoggingMixIn, Operations):
         logger.debug("getattr(%r, %r)", path, fh)
         node, path = self._getnode(path)
         if path:
-            logger.debug("getting from file system")
+            logger.debug("getting from file system, node %r, path %r", node,
+                         path)
             st = os.lstat(_getpath(node, path))
             return dict((key, getattr(st, key)) for key in ATTRS)
         else:
