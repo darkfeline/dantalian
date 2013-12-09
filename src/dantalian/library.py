@@ -381,11 +381,11 @@ class Library:
         """
         logger.debug("find(%r)", tags)
         assert len(tags) > 0
-        inodes = functools.reduce(
-            set.intersection, (set(
-                os.lstat(x) for x in dpath.listdir(
-                    dpath.pathfromtag(y, self.root))
-            ) for y in tags))
+        tagpaths = (dpath.pathfromtag(tag) if dpath.istag(tag) else tag
+                    for tag in tags)
+        inodes = (set(os.lstat(x) for x in dpath.listdir(path))
+                  for path in tagpaths)
+        inodes = functools.reduce(set.intersection, inodes)
         logger.debug("found unique inodes %r", inodes)
         map = dict((os.lstat(x), x) for x in dpath.listdir(
             dpath.pathfromtag(tags[0], self.root)))
