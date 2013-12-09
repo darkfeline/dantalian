@@ -688,7 +688,7 @@ class SocketOperations(threading.Thread):
         while True:
             path, x = os.path.split(path)
             name.append(x)
-            node, path, ret = self.tree.getpath(path)
+            node, path, ret = self.tree.get(path)
             if ret == 1:
                 continue
             else:
