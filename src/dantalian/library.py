@@ -695,7 +695,7 @@ class SocketOperations(threading.Thread):
                 break
         if path:  # tried to make node outside vfs
             return
-        name = reversed(name)
+        name = list(reversed(name))
         for next in name[:-1]:
             node[name] = tree.Node()
             node = node[name]
