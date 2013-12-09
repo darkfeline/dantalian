@@ -186,7 +186,7 @@ class Node(BaseNode):
     def load(root, node):
         x = Node()
         for k in node[-1]:
-            x[k] = load(root, map[k])
+            x[k] = load(root, node[-1][k])
         return x
 
 
@@ -247,7 +247,7 @@ class RootNode(BorderNode):
     def load(root, node):
         x = RootNode(root)
         for k in node[-1]:
-            x[k] = load(root, map[k])
+            x[k] = load(root, node[-1][k])
         return x
 
 
@@ -294,9 +294,9 @@ class TagNode(BorderNode):
     @staticmethod
     @_add_map('TagNode')
     def load(root, node):
-        x = TagNode(node[1])
+        x = TagNode(root, node[1])
         for k in node[-1]:
-            x[k] = load(root, map[k])
+            x[k] = load(root, node[-1][k])
         return x
 
 
