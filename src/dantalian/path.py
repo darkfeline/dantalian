@@ -48,6 +48,7 @@ def tagfrompath(path, root):
         Absolute path to library root directory.
 
     """
+    logger.debug('tagfrompath(%r, %r)', path, root)
     return '//' + os.path.relpath(path, root)
 
 
