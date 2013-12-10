@@ -14,6 +14,7 @@ import logging
 import shlex
 import os
 import json
+from functools import partial
 
 from dantalian import library
 
@@ -354,47 +355,50 @@ def mount(lib: 'Library', *args):
     logger.debug('exit')
 
 
+def _rebase_path(root, path):
+    """Rebase path as an absolute path relative to the FUSE mount root"""
+    path = os.path.relpath(path, root)
+    assert not path.startswith('..')
+    return '/' + path
+
+
 @_public
 @_sock
-def mknode(sock: 'socket', *args):
+def mknode(sock: 'socket', mountroot, *args):
     """Make a node in FUSE.
 
-    Parameters
-    ----------
-    sock : socket
-        sock (socket): A socket object for a library's FUSE socket.
-    args*
-        Arguments passed on to ArgumentParser (See code).
+    Args:
+        sock: A socket object for a library's FUSE socket.
+        *args: Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('mknode(%r, %r)', sock, args)
     parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
-    parser.add_argument('path')
-    parser.add_argument('tags', nargs="+")
+    rebaser = partial(_rebase_path, mountroot)
+    parser.add_argument('path', type=rebaser)
+    parser.add_argument('tags', type=rebaser, nargs="+")
     args = parser.parse_args(args)
     sock.send(" ".join(
-        ['mknode'] + [shlex.quote('/' + args.path)] +
-        [shlex.quote(x) for x in args.tags]
+        ['mknode'] + [shlex.quote(args.path)] +
+        [shlex.quote('/' + x) for x in args.tags]  # make them tags
     ).encode())
 
 
 @_public
 @_sock
-def rmnode(sock: 'socket', *args):
+def rmnode(sock: 'socket', mountroot, *args):
     """Remove a node in FUSE.
 
-    Parameters
-    ----------
-    sock : socket
-        sock (socket): A socket object for a library's FUSE socket.
-    args*
-        Arguments passed on to ArgumentParser (See code).
+    Args:
+        sock: A socket object for a library's FUSE socket.
+        *args: Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('mknode(%r, %r)', sock, args)
     parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
-    parser.add_argument('path')
+    rebaser = partial(_rebase_path, mountroot)
+    parser.add_argument('path', type=rebaser)
     args = parser.parse_args(args)
     sock.send(" ".join(
-        ['rmnode'] + [shlex.quote('/' + args.path)]
+        ['rmnode'] + [shlex.quote(args.path)]
     ).encode())

@@ -381,8 +381,8 @@ class Library:
         """
         logger.debug("find(%r)", tags)
         assert len(tags) > 0
-        tagpaths = (dpath.pathfromtag(tag) if dpath.istag(tag) else tag
-                    for tag in tags)
+        tagpaths = (dpath.pathfromtag(tag, self.root) if dpath.istag(tag) else
+                    tag for tag in tags)
         inodes = (set(os.lstat(x) for x in dpath.listdir(path))
                   for path in tagpaths)
         inodes = functools.reduce(set.intersection, inodes)
@@ -630,18 +630,17 @@ class SocketOperations(threading.Thread):
 
         do_command(arg1, arg2, arg3)
 
+    Path arguments to commands are absolute relative to the FUSE mount
+    root.
+
     """
 
     def __init__(self, sock, root, tree):
         """
-        Parameters
-        ----------
-        sock : socket
-            Server socket.
-        root : BaseLibrary
-            Library instance.
-        tree : RootNode
-            RootNode instance.
+        Args:
+            sock: Server socket
+            root: Library instance
+            tree: RootNode instance
 
         """
         super().__init__()
@@ -681,9 +680,19 @@ class SocketOperations(threading.Thread):
                 logger.warning('Received unknown command %r', cmd)
                 continue
             else:
-                x(*msg)
+                try:
+                    x(*msg)
+                except Exception as e:
+                    logger.warning('Exception in SocketOperations %r', e)
 
     def do_mknode(self, path, *tags):
+        """
+        Args:
+            path: path of node to make
+            *tags: tags in tag format, not paths
+
+        """
+        logger.debug('mknode(%r, %r)', path, tags)
         name = []
         while True:
             path, x = os.path.split(path)
@@ -702,8 +711,9 @@ class SocketOperations(threading.Thread):
         node[name[-1]] = tree.TagNode(self.root, tags)
 
     def do_rmnode(self, path):
+        logger.debug('rmnode(%r)', path)
         path, name_node = os.path.split(path)
-        node, path, ret = self.tree.getpath(path)
+        node, path, ret = self.tree.get(path)
         if path:
             return
         assert ret == 0

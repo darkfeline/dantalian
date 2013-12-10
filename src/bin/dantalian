@@ -46,7 +46,7 @@ elif args.command in commands.t_sock:
     addr = library.Library.fusesock(lib._realroot)
     sock = socket.socket(socket.AF_UNIX)
     sock.connect(addr)
-    getattr(commands, args.command)(sock, *args.args)
+    getattr(commands, args.command)(sock, lib.root, *args.args)
 else:
     print('Command not found')
     sys.exit(1)
