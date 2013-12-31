@@ -1,11 +1,11 @@
 Introduction
 ============
 
-dantalian is a tag-based file organization system, much like Tagsistant.
-dantalian is very much for hardcore organizers and/or technically
-skilled individuals, people who want maximum flexibility in how they
-organize their own files.  dantalian emphasizes transparency,
-consistency and well-defined behavior.
+dantalian is a multi-dimensionally hierarchical tag-based file
+organization system.  dantalian is very much for hardcore organizers
+and/or technically skilled individuals, people who want maximum
+flexibility in how they organize their own files.  dantalian emphasizes
+transparency, consistency and well-defined behavior.
 
 It uses hard links, by creating hard links in subdirectories ("tags").
 This provides a very flexible and transparent system.
@@ -13,7 +13,7 @@ This provides a very flexible and transparent system.
 If you
 
 - like reading specifications (in a sense)
-- wouldn't trust a incompletely documented tool with organizing your
+- wouldn't trust an incompletely documented tool with organizing your
   files
 - want maximum flexibility (tag hierarchy, no restrictions on tagged
   objects (*all* files *and* directories), arbitrary subsets of tags
@@ -31,7 +31,8 @@ then dantalian is for you.  On the other hand, if you
 - don't care too much if a file accidentally gets lost or untagged or
   misplaced
 - don't want to get to know your tools and just want it *to work* (most
-  of the time) (I like to call it Apple user mentality =))
+  of the time, as opposed to taking time to learn a tool that works all
+  of the time)
 
 then unfortunately, dantalian is *not* for you.
 
@@ -54,37 +55,35 @@ FUSE
 ^^^^
 FUSE mount allows the following features:
 
-  - Allows better interaction on a file system level (trivial
-    interoperability with other applications)
-  - Virtual tag combination directories (currently only tag unions, e.g.
-    AND).
+- Allows better interaction on a file system level (trivial
+  interoperability with other applications)
+- Virtual tag combination directories (currently only tag unions, e.g.
+  AND).
+- Dynamic management through socket operations.
 
 Upcoming Features
 -----------------
 
 - Support scripts for media metadata/tags.
-- Remove converted directories that are no longer referenced.
+- Merge libraries into a single larger one (possibly irreversible).
 
 FUSE
 ^^^^
 
-- Dynamic management through socket operations.
 - Caching to improve performance at memory cost (optional, non-cached
   mounting will still be allowed).
-- Merge libraries into a single larger one (possibly irreversible).
 - Unique mount (special mount where each file only appears once, for
   doing things like deleting duplicate files, iterating over files,
   etc.).
-- Special MORE directories for large number of files in a single
-  directory.
-
+- Special MORE directories when there is a large number of files in a
+  single directory.
 
 Requirements
 ------------
 
 - Python 3
 - GNU findutils
-- fuse
+- FUSE
 - a POSIX filesystem
 
 .. warning::

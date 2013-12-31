@@ -1,18 +1,16 @@
-Users Guide
-===========
+User Guide
+==========
 
-Welcome to dantalian's Users Guide!
+Welcome to dantalian's User Guide!
 
-dantalian provides several tiers of features and abstraction, so in
-order to explain how to use it, this guide is split into the relevant
-sections listed below.
+The guide is split into several sections, listed below.  Users new to
+dantalian are highly suggested to read the :ref:`tutorial`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   /user/install
-   /user/quickstart
-   /user/links
-   /user/library
-   /user/fuse
-   /user/bugs
+   user/install
+   user/tutorial
+   user/guide
+   user/reference
+   user/links

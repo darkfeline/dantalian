@@ -1,19 +1,19 @@
-import abc
 import os
 import subprocess
 import logging
 import json
-import importlib
 import functools
 import re
 import shutil
 import shlex
 import threading
 import socket
+from functools import lru_cache
 
-from dantalian import operations as ops
+from dantalian import fuse
 from dantalian import tree
-from dantalian import path as libpath
+
+from dantalian import path as dpath
 from dantalian.errors import DependencyError
 
 __all__ = []
@@ -26,32 +26,35 @@ def _public(f):
 
 
 @_public
-def init_library(root):
+def init_library(root: 'str'):
 
-    """Initialize a library at `root`
+    """Initialize a library at `root`.
 
-    Calling :meth:`init` on an existing library does no harm.  Returns an
-    instance of :class:`Library`.
+    Args:
+        root (str): A path.
+
+    Returns:
+        A Library instance for the initialized library.
 
     """
 
     logger.debug('init(%r)', root)
     root = os.path.abspath(root)
 
-    root_dir = libpath.rootdir(root)
+    root_dir = Library.rootdir(root)
     logger.debug('mkdir %r', root_dir)
     try:
         os.mkdir(root_dir)
     except FileExistsError:
         logger.debug('skipping %r; exists', root_dir)
 
-    root_file = libpath.rootfile(root)
+    root_file = Library.rootfile(root)
     if not os.path.exists(root_file):
         logger.debug('writing %r', root_file)
         with open(root_file, 'w') as f:
             f.write(root)
 
-    dirs_dir = libpath.dirsdir(root)
+    dirs_dir = Library.dirsdir(root)
     logger.debug('mkdir %r', dirs_dir)
     try:
         os.mkdir(dirs_dir)
@@ -62,132 +65,141 @@ def init_library(root):
 
 
 @_public
-def open_library(root=None):
-    """
-    If `root` is :data:`None`, search up the directory tree for the
-    first library (a directory that contains ``.dantalian``) we find and
-    use that.  If none are found, raises :exc:`LibraryError`.
-    Otherwise, `root` will be used.  Return a Library or subclass.
+def open_library(root: 'str or None'=None):
+    """Open a library.
+
+    If `root` is None, search up the directory tree for the first
+    library (a directory that contains ``.dantalian``) we find and use
+    that.  If none are found, raises :exc:`LibraryError`.  Otherwise,
+    `root` will be used.
+
+    Args:
+        root (str or None): A path.  Default is None.
+
+    Returns:
+        A Library instance or suitable subclass.
+
     """
     if root is None:
         logger.debug("Finding library...")
         root = _find_root(os.getcwd())
         logger.debug("Found %r", root)
-    if os.path.isdir(libpath.fuserootdir(root)):
+    if os.path.isdir(Library.fuserootdir(root)):
         return ProxyLibrary(root)
     else:
         return Library(root)
 
 
 @_public
-class BaseLibrary(metaclass=abc.ABCMeta):
+class Library:
 
     """
-    BaseLibrary is the fundamental abstract library class.  It requires
-    the following methods and invariants:
-
-    tag(file, tag)
-        `file` should be tagged with `tag` after call, regardless of
-        whether it was before.
-    untag(file, tag)
-        `file` should not be tagged with `tag` after call, regardless of
-        whether it was before.
-    listtags(file)
-        Return a list of all of the tags of `file`.
-    find(tags)
-        Return a list of files that have all of the given tags in `tags`.
-    mount(path, tree)
-        Mount a virtual representation of the library representation
-        `tree` at `path`.  This may be left unimplemented or with a
-        dummy implementation.
-    """
-
-    @abc.abstractmethod
-    def tag(self, file, tag):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def untag(self, file, tag):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def listtags(self, file):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def find(self, tags):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def mount(self, path, tree):
-        pass
-
-
-@_public
-class BaseFSLibrary(BaseLibrary, metaclass=abc.ABCMeta):
+    Attributes
+    ----------
+    root: str
+        Absolute path to library root.
 
     """
-    BaseFSLibrary is the abstract class for libraries implemented on a
-    file system.  It requires the following methods and invariants in
-    addition to those described in BaseLibrary:
 
-    tag(file, tag)
-        If `file` does not have a hard link under the `tag` directory,
-        make one.  `file` has at least one hard link under the `tag`
-        directory after call.
-    untag(file, tag)
-        `file` has no hard links under the `tag` directory after call,
-        regardless of whether it did before.
-    """
+    @staticmethod
+    @lru_cache()
+    def rootdir(root):
+        return os.path.join(root, '.dantalian')
 
+    @staticmethod
+    @lru_cache()
+    def fuserootdir(root):
+        return os.path.join(root, '.dantalian-fuse')
 
-@_public
-class Library(BaseFSLibrary):
+    @classmethod
+    @lru_cache()
+    def rootfile(cls, root):
+        return os.path.join(cls.rootdir(root), 'root')
 
-    """
-    Implementation of methods that work directly with library on the file
-    system.
-    """
+    @classmethod
+    @lru_cache()
+    def dirsdir(cls, root):
+        return os.path.join(cls.rootdir(root), 'dirs')
+
+    @classmethod
+    @lru_cache()
+    def treefile(cls, root):
+        return os.path.join(cls.rootdir(root), 'tree')
+
+    @classmethod
+    @lru_cache()
+    def fusesock(cls, root):
+        return os.path.join(cls.rootdir(root), 'fuse.sock')
 
     @property
     def _moved(self):
-        with open(libpath.rootfile(self.root)) as f:
+        with open(self.rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
             return None
         else:
             return old_root
 
-    def __init__(self, root):
-        """If `root` is not a library, raise LibraryError."""
+    def __init__(self, root: 'str'):
+        """
+        Should not be initialized directly; use open_library instead.
+
+        Args:
+            root (str): Path to the library.
+
+        Raises:
+            LibraryError: root is not a library.
+
+        """
         logger.debug("open library root %r", root)
-        if not os.path.isdir(root) or not os.path.isdir(libpath.rootdir(root)):
+        if not os.path.isdir(root) or not os.path.isdir(self.rootdir(root)):
             raise LibraryError("{} isn't a library".format(root))
         self.root = os.path.abspath(root)
         logger.info('Library initialized')
         logger.debug('root is %r', self.root)
 
     def tag(self, file, tag):
-        """Tag `file` with `tag`
+        """Tag file with tag.
 
-        `file` is relative to current dir. `tag` is relative to library
-        root.  If `file` is already tagged, nothing happens.  This
-        includes if the file is hardlinked under another name.
+        If `file` is already tagged, nothing happens.  This includes if
+        the file is hardlinked under another name.
+
+        Parameters
+        ----------
+        file : str
+             Path to the file, relative to the working directory.
+        tag : str
+            Tag, relative to the library root, starting with '/'.
+
+        Raises
+        ------
+        IsADirectoryError
+            file is an unconverted directory.
+        NotADirectoryError
+            tag is not a directory/tag.
+
         """
 
+        file = os.path.normpath(file)  # get rid of trailing slashes
         if os.path.isdir(file) and not os.path.islink(file):
             raise IsADirectoryError(
                 '{} is a directory; convert it first'.format(file))
-        destdir = self.tagpath(tag)
+        if dpath.istag(tag):
+            p_dest = dpath.pathfromtag(tag, self.root)
+        else:
+            if not os.path.isdir(tag):
+                raise NotADirectoryError(
+                    '{} is not a directory/tag'.format(tag))
+            p_dest = tag
         logger.info(
             'Checking if %r is already tagged with %r', file, tag)
-        for f in libpath.listdir(destdir):
-            if libpath.samefile(f, file):
+        for f in dpath.listdir(p_dest):
+            if os.path.samefile(f, file):
                 return
         logger.info('Check okay')
         name = os.path.basename(file)
         while True:
-            dest = os.path.join(destdir, libpath.resolve_name(destdir, name))
+            dest = os.path.join(p_dest, dpath.resolve_name(p_dest, name))
             logger.debug('linking %r %r', file, dest)
             try:
                 os.link(file, dest)
@@ -197,19 +209,38 @@ class Library(BaseFSLibrary):
                 break
 
     def untag(self, file, tag):
-        """Remove `tag` from `file`.
+        """Remove tag from file.
 
-        `file` is relative to current dir. `tag` is relative to library
-        root.  If file is not tagged, nothing happens.  Removes *all*
-        hard links to `file` with `tag`.
+        If file is not tagged, nothing happens.  Remove *all* hard
+        links to the file in the directory corresponding to the given
+        tag.  Log a warning when an OSError is caught.
+
+        Parameters
+        ----------
+        file : str
+             Path to the file, relative to the working directory.
+        tag : str
+            Tag, relative to the library root, starting with '/'.
+
+        Raises
+        ------
+        NotADirectoryError
+            tag is not a directory/tag.
+
         """
         logger.debug('untag(%r, %r)', file, tag)
         assert isinstance(file, str)
         assert isinstance(tag, str)
-        dest = self.tagpath(tag)
+        if dpath.istag(tag):
+            p_dest = dpath.pathfromtag(tag, self.root)
+        else:
+            if not os.path.isdir(tag):
+                raise NotADirectoryError(
+                    '{} is not a directory/tag'.format(tag))
+            p_dest = tag
         inode = os.lstat(file)
         logger.debug('file inode is %r', inode)
-        for f in libpath.listdir(dest):
+        for f in dpath.listdir(p_dest):
             logger.debug('checking %r', f)
             st = os.lstat(f)
             logger.debug('inode is %r', st)
@@ -220,22 +251,44 @@ class Library(BaseFSLibrary):
                 except OSError as e:
                     logger.warning('Caught OSError: %s', e)
 
+    def mktag(self, tag):
+        if dpath.istag(tag):
+            os.mkdir(dpath.pathfromtag(tag, self.root))
+        else:
+            os.mkdir(tag)
+
+    def rmtag(self, tag):
+        if dpath.istag(tag):
+            shutil.rmtree(dpath.pathfromtag(tag, self.root))
+        else:
+            shutil.rmtree(tag)
+
     def _listpaths(self, file):
-        """Return a list of paths to all hard links to `file`
+        """Return a list of paths to all hard links to `file`.
 
         This descends into symbolic links and trims ``.dantalian/dirs``.
         Specifically, returns all paths that would account for `file`'s
         tags.
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it
-        cannot be found, :exc:`DependencyError` is raised.  Output paths
-        are absolute.
+        cannot be found, :exc:`DependencyError` is raised.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+
+        Returns:
+            A list of absolute paths (strings).
+
+        Raises:
+            DependencyError: find could not be found.
+
         """
         assert isinstance(file, str)
         try:
             output = subprocess.check_output([
                 'find', '-L', self.root, '-path',
-                libpath.rootdir(self.root), '-prune', '-o', '-samefile', file,
+                self.rootdir(self.root), '-prune', '-o', '-samefile', file,
                 '-print'])
         except FileNotFoundError:
             raise DependencyError("find could not be found; \
@@ -244,14 +297,25 @@ class Library(BaseFSLibrary):
         return output
 
     def _liststrictpaths(self, file):
-        """Return a list of paths to all hard links to `file`
+        """Return a list of paths to all hard links to `file`.
 
-        This does not descend into symbolic links.  Thus, returns all
-        unique hard links.
+        This does not descend into symbolic links, but does descend into
+        ``.dantalian``.  Thus, returns all unique hard links.
 
         Relies on 'find' utility, for sheer simplicity and speed.  If it
         cannot be found, :exc:`DependencyError` is raised.  Output paths
         are absolute.
+
+        Args:
+            file (str): Path to the file, relative to the working
+                directory.
+
+        Returns:
+            A list of absolute paths (strings).
+
+        Raises:
+            DependencyError: find could not be found.
+
         """
         assert isinstance(file, str)
         try:
@@ -267,47 +331,64 @@ class Library(BaseFSLibrary):
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
         files = self._listpaths(file)
-        return [
-            '/' if os.path.dirname(f) == self.root else
-            os.path.dirname(f).replace(self.root, '', 1) for f in files]
+        return ['//' + os.path.dirname(os.path.relpath(f, self.root))
+                for f in files]
 
     def convert(self, dir):
         """Convert a directory to a symlink.
 
-        If `dir` is in ``.dantalian/dirs`` (smartassery),
-        convert raises LibraryError.  If `dir` is a
-        symlink (probably already converted), convert returns
-        without doing anything.  If `dir` is not a directory,
-        NotADirectoryError will be raised.  If `alt` is given, the
-        alternate name will be used for the copy kept in
-        ``.dantalian/dirs``.
+        If `dir` is in ``.dantalian/dirs`` (smartassery), convert raises
+        LibraryError.  If `dir` is a symlink (probably already
+        converted), convert returns without doing anything.  If `dir` is
+        not a directory, NotADirectoryError will be raised.
+
+        Args:
+            dir (str): Path to directory.
+
+        Raises:
+            NotADirectoryError: dir is not a directory.
+            LibraryError: dir is in the directory for converted
+                directories.
+
         """
-        logger.debug('convert(%r, %r)', dir)
-        _convertto(dir, libpath.dirsdir(self.root))
+        logger.debug('convert(%r)', dir)
+        _convertto(dir, self.dirsdir(self.root))
 
     def cleandirs(self):
-        """Clean converted directories
+        """Clean converted directories.
 
         Remove directories in the library's converted directories
         directory which do not have a symlink in the library that
-        references them.  Nuke them with shutil.rmtree
+        references them.  Nuke them with shutil.rmtree.
+
         """
         _cleandirs(self.root)
 
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
-        `tags` is a list. `tags` is left unchanged.  Returns a list.
-        File paths are absolute and are paths to the hard link under the
-        first tag given.
+        Parameters
+        ----------
+        tags : list
+            List of tags.  List is not changed.
+
+        Returns
+        -------
+        list
+            List of absolute paths, to the hard link under the first tag
+            given.
+
         """
         logger.debug("find(%r)", tags)
         assert len(tags) > 0
-        inodes = functools.reduce(
-            set.intersection,
-            (set(os.lstat(x) for x in libpath.listdir(y)) for y in tags))
+        tagpaths = (dpath.pathfromtag(tag, self.root) if dpath.istag(tag) else
+                    tag for tag in tags)
+        inodes = (set(os.lstat(x) for x in dpath.listdir(path))
+                  for path in tagpaths)
+        inodes = functools.reduce(set.intersection, inodes)
         logger.debug("found unique inodes %r", inodes)
-        map = dict((os.lstat(x), x) for x in libpath.listdir(tags[0]))
+        map = dict((os.lstat(x), x) for x in dpath.listdir(
+            dpath.pathfromtag(tags[0], self.root)))
         logger.debug("using map %r", map)
         return [map[x] for x in inodes]
 
@@ -321,6 +402,7 @@ class Library(BaseFSLibrary):
 
         This removes all hard links in the library to `file`!  If no
         other hard links exist, `file` is deleted.
+
         """
         assert isinstance(file, str)
         error = 0
@@ -339,6 +421,7 @@ class Library(BaseFSLibrary):
         Rename all hard links in the library of `file` to `new`.  If
         `file` is not tagged, nothing happens.  If a file cannot be
         renamed, log an error and continue.
+
         """
         assert isinstance(file, str)
         assert isinstance(new, str)
@@ -347,7 +430,9 @@ class Library(BaseFSLibrary):
         for file in files:
             dir = os.path.dirname(file)
             while True:
-                dest = os.path.join(dir, libpath.resolve_name(dir, new))
+                dest = os.path.join(dir, new)
+                if os.path.exists(dest) and not os.path.samefile(file, dest):
+                    dest = os.path.join(dir, dpath.resolve_name(dir, new))
                 logger.debug('Moving %r to %r', file, dest)
                 try:
                     os.rename(file, dest)
@@ -356,84 +441,38 @@ class Library(BaseFSLibrary):
                 else:
                     break
 
-    def tagpath(self, tag):
-        """Get absolute path of `tag`.
-
-        Raise TagError if tag doesn't exist
-        :rtype: :class:`str`
-
-        """
-        path = os.path.join(self.root, tag)
-        assert path == os.path.abspath(path)
-        if not os.path.isdir(path):
-            raise TagError(
-                "Tag {} doesn't exist (or isn't a directory)".format(tag))
-        return path
-
     def fix(self):
         logger.info('Checking if moved')
         if not self._moved:
             logger.info('Not moved so doing nothing')
             return
         logger.info('Move detected; fixing')
-        files = libpath.findsymlinks(self.root)
+        files = dpath.findsymlinks(self.root)
         logger.debug('Found symlinks %r', files)
-        olddir = libpath.dirsdir(self._moved)
-        newdir = libpath.dirsdir(self.root)
-        libpath.fixsymlinks(files, olddir, newdir)
-        logger.debug('Writing %r', libpath.rootfile(self.root))
-        with open(libpath.rootfile(self.root), 'w') as f:
+        olddir = self.dirsdir(self._moved)
+        newdir = self.dirsdir(self.root)
+        dpath.fixsymlinks(files, olddir, newdir)
+        logger.debug('Writing %r', self.rootfile(self.root))
+        with open(self.rootfile(self.root), 'w') as f:
             f.write(self.root)
         logger.info('Finished fixing')
 
     def maketree(self):
         logger.info("making tree")
-        if os.path.exists(libpath.ctreefile(self.root)):
-            logger.info("using custom")
-            name = 'custom'
-            path = libpath.ctreefile(self.root)
-            custom = importlib.SourceFileLoader(name, path).load_module(name)
-            return custom.maketree(self.root)
-        else:
-            logger.info("using config")
-            return self._maketree(libpath.treefile(self.root))
-
-    def _maketree(self, config):
-        """Make a FSNode tree
-
-        config is file path.
-        """
-        logger.debug("_maketree(%r, %r)", self, config)
-        with open(config) as f:
-            dat = json.load(f)
-        r = tree.RootNode(self)
-        for x in dat:
-            mount_, tags = x['mount'], x['tags']
-            logger.debug("doing %r, %r", mount_, tags)
-            mount_ = mount_.lstrip('/').split('/')
-            y = r
-            for x in mount_[:-1]:
-                logger.debug("trying %r", x)
+        if os.path.exists(self.treefile(self.root)):
+            with open(self.treefile(self.root)) as f:
                 try:
-                    if not isinstance(y[x], str):
-                        y = y[x]
-                    else:
-                        raise KeyError
-                except KeyError:
-                    logger.debug("making FSNode at %r[%r]", y, x)
-                    y[x] = tree.FSNode()
-                    y = y[x]
-            x = mount_[-1]
-            if x not in y:
-                logger.debug("making TagNode at %r[%r]", y, x)
-                y[x] = tree.TagNode(self, tags)
-            else:
-                logger.debug("replacing node at %r[%r]", y, x)
-                y[x] = tree.fs2tag(y[x])
-        return r
+                    data = json.load(f)
+                except ValueError:
+                    logger.warn('Problem loading tree config')
+                    return tree.RootNode(self)
+                else:
+                    return tree.load(self, data)
+        else:
+            return tree.RootNode(self)
 
     def mount(self, path, tree):
-        addr = libpath.fusesock(self.root)
+        addr = self.fusesock(self.root)
         try:
             os.unlink(addr)
             logger.debug("Removed old socket")
@@ -448,19 +487,20 @@ class Library(BaseFSLibrary):
         thread.start()
         logger.debug("Started socket listening thread")
         logger.debug("Mounting fuse at %r with %r", path, tree)
-        ops.mount(path, self, tree)
+        fuse.mount(path, self, tree)
         thread.stop()
+        return tree
 
 
 def _cleandirs(root):
     if not shutil.rmtree.avoids_symlink_attacks:
         logger.warning('Vulnerable to symlink attacks')
-    dirsdir = libpath.dirsdir(root)
+    dirsdir = Library.dirsdir(root)
     prefix = re.compile(re.escape(dirsdir))
-    symlinks = libpath.findsymlinks(root)
-    symlinks = filter(prefix.match, symlinks)
+    symlinks = dpath.findsymlinks(root)
     linkedto = [os.readlink(x[0]) for x in symlinks]
-    dirs = libpath.listdir(dirsdir)
+    linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
+    dirs = dpath.listdir(dirsdir)
     for x in linkedto:
         try:
             dirs.remove(x)
@@ -475,8 +515,14 @@ def _cleandirs(root):
 def _convertto(dir, target):
 
     """
-    dir: directory to convert
-    target: dantalian dirs directory
+    Args:
+        dir (str): directory to convert
+        target (str): dantalian dirs directory
+
+    Raises:
+        NotADirectoryError: dir is not a directory.
+        LibraryError: dir is in the directory for converted directories.
+
     """
 
     dir = os.path.abspath(dir)
@@ -494,12 +540,12 @@ def _convertto(dir, target):
 
     logger.info("Checking %r is not in dirs", dir)
     dirname, basename = os.path.split(os.path.abspath(dir))
-    if libpath.samefile(dirname, target):
+    if os.path.samefile(dirname, target):
         raise LibraryError("{} is in special directory".format(dirname))
     logger.info("Check okay")
 
     while True:
-        target = os.path.join(target, libpath.resolve_name(dir, basename))
+        target = os.path.join(target, dpath.resolve_name(dir, basename))
         logger.debug("moving %r to %r", dir, target)
         try:
             os.rename(dir, target)
@@ -514,14 +560,16 @@ def _convertto(dir, target):
 def _find_root(dir):
     """Find the first library above `dir`.
 
-    If none are found, raises :exc:`LibraryError`.
+    Returns:
+        A string of the absolute path to the library.
 
-    :rtype: :class:`str
+    Raises:
+        LibraryError: No libraries were found.
 
     """
     assert os.path.isdir(dir)
     dir = os.path.abspath(dir)
-    root_dir = libpath.rootdir('')
+    root_dir = Library.rootdir('')
     logger.debug("finding root; starting with %r", dir)
     while dir:
         logger.debug("trying %r", dir)
@@ -537,10 +585,16 @@ def _find_root(dir):
 @_public
 class ProxyLibrary(Library):
 
+    """
+    Subclass of Library which overrides a number of methods for a
+    FUSE-mounted library.
+
+    """
+
     def __init__(self, root):
         logger.debug("open fuse library %r", root)
         super().__init__(root)
-        with open(libpath.rootfile(self.root)) as f:
+        with open(self.rootfile(self.root)) as f:
             self._realroot = f.read()
         logger.debug("real library is %r", self._realroot)
 
@@ -557,15 +611,37 @@ class ProxyLibrary(Library):
 
     def convert(self, dir):
         logger.debug('convert(%r, %r)', dir)
-        _convertto(dir, libpath.dirsdir(self._realroot))
+        _convertto(dir, self.dirsdir(self._realroot))
 
 
 @_public
 class SocketOperations(threading.Thread):
 
+    """
+    A Thread that manages a FUSE-mounted library and its socket, reading
+    from the socket and processing commands.
+
+    Methods that begin with ``do_`` are commands.  The following input
+    to the socket::
+
+        command arg1 arg2 arg3
+
+    will result in the method call::
+
+        do_command(arg1, arg2, arg3)
+
+    Path arguments to commands are absolute relative to the FUSE mount
+    root.
+
+    """
+
     def __init__(self, sock, root, tree):
         """
-        `sock` is server socket. `root` is library. `tree` is root node.
+        Args:
+            sock: Server socket
+            root: Library instance
+            tree: RootNode instance
+
         """
         super().__init__()
         self.sock = sock
@@ -604,27 +680,35 @@ class SocketOperations(threading.Thread):
                 logger.warning('Received unknown command %r', cmd)
                 continue
             else:
-                x(*msg)
+                try:
+                    x(*msg)
+                except Exception as e:
+                    logger.warning('Exception in SocketOperations %r', e)
 
     def do_mknode(self, path, *tags):
-        name = []
-        while True:
-            path, x = os.path.split(path)
-            name.append(x)
-            try:
-                node, path = tree.split(self.tree, path)
-            except TypeError:
-                continue
-            else:
-                if path:  # tried to make node outside vfs
-                    return
-                name = list(reversed(name))
-                for next in name[:-1]:
-                    node[name] = tree.FSNode()
-                    node = node[name]
-                x = tree.TagNode(self.root, tags)
-                node[name[-1]] = x
-                break
+        """
+        Args:
+            path: path of node to make
+            *tags: tags in tag format, not paths
+
+        """
+        logger.debug('mknode(%r, %r)', path, tags)
+        node, path, ret = self.tree.get(path)
+        if not path or ret == 0:  # path exists or leads into real space
+            return
+        for x in path[:-1]:
+            node[x] = tree.Node()
+            node = node[x]
+        node[path[-1]] = tree.TagNode(self.root, tags)
+
+    def do_rmnode(self, path):
+        logger.debug('rmnode(%r)', path)
+        path, name_node = os.path.split(path)
+        node, path, ret = self.tree.get(path)
+        if path:
+            return
+        assert ret == 0
+        del node[name_node]
 
 
 @_public
