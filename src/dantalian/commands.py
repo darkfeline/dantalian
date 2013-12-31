@@ -16,7 +16,7 @@ import os
 import json
 from functools import partial
 
-from dantalian import library
+from dantalian import path as dpath
 
 __all__ = ['t_global', 't_library', 't_sock']
 t_global = []
@@ -355,8 +355,30 @@ def mount(lib: 'Library', *args):
     logger.debug('exit')
 
 
+def _fix_path(root, path):
+    """Fixes path
+
+    If path is a tag, return as is.  Otherwise rebase path to root.
+
+    Args:
+        root: A string.  Absolute path where FUSE is mounted.
+        path: A string.  Path relative to root.
+
+    """
+    if dpath.istag(path):
+        return path
+    else:
+        return _rebase_path(root, path)
+
+
 def _rebase_path(root, path):
-    """Rebase path as an absolute path relative to the FUSE mount root"""
+    """Rebase path as an absolute path relative to the FUSE mount root
+
+    Args:
+        root: A string.  Absolute path where FUSE is mounted.
+        path: A string.  Path relative to root.
+
+    """
     path = os.path.relpath(path, root)
     assert not path.startswith('..')
     return '/' + path
@@ -369,18 +391,19 @@ def mknode(sock: 'socket', mountroot, *args):
 
     Args:
         sock: A socket object for a library's FUSE socket.
+        mountroot: Absolute path where FUSE is mounted.
         *args: Arguments passed on to ArgumentParser (See code).
 
     """
     logger.debug('mknode(%r, %r)', sock, args)
     parser = argparse.ArgumentParser(prog="dantalian mknode", add_help=False)
-    rebaser = partial(_rebase_path, mountroot)
+    rebaser = partial(_fix_path, mountroot)
     parser.add_argument('path', type=rebaser)
     parser.add_argument('tags', type=rebaser, nargs="+")
     args = parser.parse_args(args)
     sock.send(" ".join(
         ['mknode'] + [shlex.quote(args.path)] +
-        [shlex.quote('/' + x) for x in args.tags]  # make them tags
+        [shlex.quote(x) for x in args.tags]  # make them tags
     ).encode())
 
 
@@ -391,6 +414,7 @@ def rmnode(sock: 'socket', mountroot, *args):
 
     Args:
         sock: A socket object for a library's FUSE socket.
+        mountroot: Absolute path where FUSE is mounted.
         *args: Arguments passed on to ArgumentParser (See code).
 
     """

@@ -693,22 +693,13 @@ class SocketOperations(threading.Thread):
 
         """
         logger.debug('mknode(%r, %r)', path, tags)
-        name = []
-        while True:
-            path, x = os.path.split(path)
-            name.append(x)
-            node, path, ret = self.tree.get(path)
-            if ret == 1:
-                continue
-            else:
-                break
-        if path:  # tried to make node outside vfs
+        node, path, ret = self.tree.get(path)
+        if not path or ret == 0:  # path exists or leads into real space
             return
-        name = list(reversed(name))
-        for next in name[:-1]:
-            node[name] = tree.Node()
-            node = node[name]
-        node[name[-1]] = tree.TagNode(self.root, tags)
+        for x in path[:-1]:
+            node[x] = tree.Node()
+            node = node[x]
+        node[path[-1]] = tree.TagNode(self.root, tags)
 
     def do_rmnode(self, path):
         logger.debug('rmnode(%r)', path)
