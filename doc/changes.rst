@@ -11,8 +11,8 @@ version 0.5
 - Wrote FUSE syscall specifications.
 - Added ``rmnode`` socket command.
 - Added unit tests.
-- Many bugfixes.
-- Major documentation improvements.
+- Bugfixes.
+- Documentation improvements.
 - Added ``mktag`` and ``rmtag`` commands.
 
 version 0.4
