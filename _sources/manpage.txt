@@ -71,6 +71,16 @@ untag
    Removes TAG from FILE.  If FILE isn't tagged, does nothing.  Has the
    same ``-s`` options as **tag**
 
+mktag
+   Usage: **dantalian mktag** *TAG*
+
+   Make TAG.
+
+rmtag
+   Usage: **dantalian rmtag** *TAG*
+
+   Remove TAG.
+
 tags
    Usage: **dantalian tags** *FILE*
 
@@ -127,6 +137,11 @@ mknode
    Usage: **dantalian mknode** *PATH* *TAGS*...
 
    Make a TagNode
+
+rmnode
+   Usage: **dantalian mknode** *PATH* *TAGS*...
+
+   Remove a Node or TagNode
 
 CONFIGURATION FILES
 -------------------

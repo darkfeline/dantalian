@@ -61,18 +61,20 @@
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
 <p>Library is the actual implementation that dantalian provides.  It
 implements the following public methods and invariants in addition to
-those described in BaseFSLibrary (Filename/path conflicts will be
+those described in <a class="reference internal" href="library.html#library-class"><em>Library class and methods</em></a> (Filename/path conflicts will be
 resolved according to <a class="reference internal" href="../user/reference/names.html#rename-alg"><em>File Renaming Algorithm</em></a>.):</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">dantalian respects symbolic links to directories outside of the
-library (Internal symbolic links should always be converted by
-dantalian.  Handmade symbolic links to library-internal paths subject
-to breakage and Armageddon.).  For simple operations, dantalian will
-act as though these directories are a part of the library.  For
-complex operations, these external directories will be ignored (This
-is because dantalian is not really descending symbolic links, but
-only acting on the directories stored internally. This simulates only
+<p>dantalian respects symbolic links to directories outside of the
+library (Symbolic links to directories <em>inside</em> of the library, on
+the other hand, should always be converted by dantalian.  Handmade
+symbolic links to library-internal paths subject to breakage and
+Armageddon.).</p>
+<p class="last">For simple operations, dantalian will act as though external
+symlinked directories are a part of the library.  For complex
+operations, these external directories will be ignored (This is
+because dantalian is not really descending symbolic links, but only
+acting on the directories stored internally. This simulates only
 descending into internal symbolic links.).  The latter case will be
 noted below if applicable.</p>
 </div>
@@ -89,6 +91,19 @@ after call.</p>
 <tt class="descname">untag</tt><big>(</big><em>file</em>, <em>tag</em><big>)</big></dt>
 <dd><p><cite>file</cite> should not be tagged with <cite>tag</cite> after call, regardless of
 whether it was before.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">mktag</tt><big>(</big><em>tag</em><big>)</big></dt>
+<dd><p>The directory corresponding to <cite>tag</cite> is created.  Do nothing if it exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">rmtag</tt><big>(</big><em>tag</em><big>)</big></dt>
+<dd><p>The directory corresponding to <cite>tag</cite> is removed.  Do nothing if it doesn&#8217;t
+exist.</p>
 </dd></dl>
 
 <dl class="method">
@@ -110,6 +125,7 @@ whether it was before.</p>
 at <cite>path</cite>.</p>
 </dd></dl>
 
+<p>The following are methods that are not in the abstract library interface:</p>
 <dl class="method">
 <dt>
 <tt class="descname">convert</tt><big>(</big><em>dir</em><big>)</big></dt>
@@ -143,8 +159,8 @@ directories.</p>
 <dt>
 <tt class="descname">rename</tt><big>(</big><em>file</em>, <em>new</em><big>)</big></dt>
 <dd><p>Rename all hard links to <cite>file</cite> in the library to <cite>new</cite>.  File name
-conflicts are resolved and reported.  Any errors
-will be reported and renaming will resume for remaining hard links.</p>
+conflicts are resolved and reported.  Any errors will be reported and
+renaming will resume for remaining hard links.</p>
 </dd></dl>
 
 <div class="admonition note">
@@ -156,14 +172,14 @@ directories.</p>
 <dt>
 <tt class="descname">fix</tt><big>(</big><big>)</big></dt>
 <dd><p>Fix the absolute paths of symbolic links in the library to internally
-stored directories.  Hard link relationships of the symbolic links
-are preserved <em>only in the library</em>.  (This is because the Linux
-kernel/POSIX system calls do not allow for editing symbolic links in
-place.  They must be unlinked and remade.)  Symbolic links are
-unlinked and a new symbolic link is made then relinked.  Filename
-conflicts are resolved and reported (if a file with the same name is
-made in between deleting and creating the symbolic link, for
-example).</p>
+stored directories after the library&#8217;s path has been changed.  Hard
+link relationships of the symbolic links are preserved <em>only in the
+library</em>.  (This is because the Linux kernel/POSIX system calls do
+not allow for editing symbolic links in place.  They must be unlinked
+and remade.)  Symbolic links are unlinked and a new symbolic link is
+made then relinked.  Filename conflicts are resolved and reported (if
+a file with the same name is made in between deleting and creating
+the symbolic link, for example).</p>
 </dd></dl>
 
 <dl class="method">

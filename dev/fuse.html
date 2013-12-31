@@ -55,8 +55,8 @@
             
   <div class="section" id="fuse-mounted-library-specification">
 <h1>FUSE/Mounted Library Specification<a class="headerlink" href="#fuse-mounted-library-specification" title="Permalink to this headline">¶</a></h1>
-<p>The Library API requires a <tt class="xref py py-meth docutils literal"><span class="pre">mount()</span></tt> method, which uses FUSE to
-mount a virtual file system representation of the library.</p>
+<p>The dantalian library API requires a <tt class="xref py py-meth docutils literal"><span class="pre">mount()</span></tt> method, which uses
+FUSE to mount a virtual file system representation of the library.</p>
 <p>The mounted library provides a standard file-system-like interface to
 libraries.  While the dantalian implementation of the library already
 provides such an interface, other implementations may not by default.
@@ -65,40 +65,62 @@ existing file-system-like interface.</p>
 <div class="section" id="virtual-spaces">
 <h2>Virtual Spaces<a class="headerlink" href="#virtual-spaces" title="Permalink to this headline">¶</a></h2>
 <p>In describing mounted library behavior, it is useful to divide the file
-system space into three categories.</p>
+system space into a number of categories.</p>
+<p>Directories corresponding to nodes are considered to be in virtual
+space.  (Nodes are virtual space.)</p>
+<p>Directories and files corresponding to real directories and files on the
+file system are considered to be in real space.</p>
+<p>There is also a subcategory for directories and files in real space:
+real space files and directories pulled in by TagNodes are additionally
+considered to be in tag space.  Note that this is not recursive.  Given
+the following:</p>
+<div class="highlight-python"><pre>TagNode/
+   dir1/
+      file1
+   dir2/
+   file2</pre>
+</div>
+<p>TagNode is in virtual space as it is a node.  Everything under it is in
+real space, but only <tt class="docutils literal"><span class="pre">dir1</span></tt>, <tt class="docutils literal"><span class="pre">dir2</span></tt>, and <tt class="docutils literal"><span class="pre">file2</span></tt> are in tag space.
+<tt class="docutils literal"><span class="pre">file1</span></tt> is not in tag space.</p>
 </div>
 <div class="section" id="fuse-operations">
 <h2>FUSE Operations<a class="headerlink" href="#fuse-operations" title="Permalink to this headline">¶</a></h2>
 <p>FUSE provides syscall-like operation hooks to emulate a file system.
 Their implementations for mounted libraries are found as methods in the
 <tt class="xref py py-class docutils literal"><span class="pre">dantalian.operations.TagOperations</span></tt> class.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The behavior of the following operations on tag space is subject to
+change, due to planned additions to tag nodes.</p>
+</div>
 <dl class="method">
 <dt>
 <tt class="descname">chmod</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real or tag space, forward to OS.  If <cite>path</cite> is in
+virtual space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">chown</tt><big>(</big><em>path</em>, <em>uid</em>, <em>gid</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real or tag space, forward to OS.  If <cite>path</cite> is in
+virtual space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">create</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is tagged,
-additionally add its tags.  If <cite>path</cite> is a node, the operation is
-invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is also in tag
+space, tag the file accordingly. If <cite>path</cite> is in virtual space, the
+operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">getattr</tt><big>(</big><em>path</em>, <em>fh=None</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-get attributes from node.</p>
+<dd><p>If <cite>path</cite> is in real or tag space, forward to OS.  If <cite>path</cite> is in
+virtual space, get file attributes from the node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -116,54 +138,53 @@ get attributes from node.</p>
 <dl class="method">
 <dt>
 <tt class="descname">link</tt><big>(</big><em>source</em>, <em>target</em><big>)</big></dt>
-<dd><p>Note that this is different from standard.  Usually link(a, b)
-creates a link at a to b, but this link(source, target) creates a
-link at source to target.</p>
-<p>If <cite>source</cite> is tagged, tag it.  If <cite>source</cite> is outside, link it.  If
-<cite>source</cite> is a node, raise EINVAL</p>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that this is different from standard.  Usually link(a, b)
+creates a link at <cite>b</cite> to <cite>a</cite>, but this link(source, target)
+creates a link at <cite>source</cite> to <cite>target</cite>.  This is a quirk in the
+FUSE library used in dantalian.</p>
+</div>
+<p>If <cite>source</cite> is in real space, link it (forward request to OS).  If
+<cite>source</cite> is also in tag space, tag the newly created link
+accordingly.  If <cite>source</cite> is in virtual space, raise EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">mkdir</tt><big>(</big><em>path</em>, <em>mode</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
-additionally convert it and add tags.  If <cite>path</cite> is a node, the
-operation is invalid and raises EINVAL.</p>
-<p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
-<p>If <cite>path</cite> points beyond a node, forward the request to the OS (via
-built-in os module).  Once a directory is created, it is converted
-and tagged with all of the tags of the furthest node.  Otherwise the
-operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is also in tag
+space, additionally convert the new directory and tag it accordingly.
+If <cite>path</cite> is in virtual space, the operation is invalid and raises
+EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">open</tt><big>(</big><em>path</em>, <em>flags</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">read</tt><big>(</big><em>path</em>, <em>size</em>, <em>offset</em>, <em>fh</em><big>)</big></dt>
-<dd><p><cite>path</cite> is ignored.  Forward the request to the OS (via built-in os
-module) with the file descriptor.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">readdir</tt><big>(</big><em>path</em>, <em>fh</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-a directory listing containing &#8216;.&#8217; and &#8216;..&#8217; is made and generated
-entries from the node&#8217;s __iter__ are added.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, get information from the node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">readlink</tt><big>(</big><em>path</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
@@ -178,30 +199,30 @@ the operation is invalid and raises EINVAL.</p>
 <dd><p>This one is tricky; here&#8217;s a handy chart.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="16%" />
-<col width="34%" />
-<col width="34%" />
+<col width="26%" />
+<col width="19%" />
+<col width="28%" />
+<col width="28%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Old</th>
-<th class="head">To Node</th>
-<th class="head">To Tagged</th>
-<th class="head">To Outside</th>
+<tr class="row-odd"><th class="head">From To -&gt;</th>
+<th class="head">Virtual</th>
+<th class="head">Tag</th>
+<th class="head">Real</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Node</td>
+<tr class="row-even"><td>Virtual</td>
 <td>EINVAL</td>
 <td>EINVAL</td>
 <td>EINVAL</td>
 </tr>
-<tr class="row-odd"><td>Tagged</td>
+<tr class="row-odd"><td>Tag</td>
 <td>EINVAL</td>
 <td>untag, tag</td>
 <td>move, untag</td>
 </tr>
-<tr class="row-even"><td>Outside</td>
+<tr class="row-even"><td>Real</td>
 <td>EINVAL</td>
 <td>tag, remove</td>
 <td>move</td>
@@ -213,9 +234,8 @@ the operation is invalid and raises EINVAL.</p>
 <dl class="method">
 <dt>
 <tt class="descname">rmdir</tt><big>(</big><em>path</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  (If it&#8217;s tagged, it&#8217;s
-not a dir, but we&#8217;ll let the OS handle that =))  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
@@ -233,41 +253,42 @@ the operation is invalid and raises EINVAL.</p>
 <dl class="method">
 <dt>
 <tt class="descname">symlink</tt><big>(</big><em>source</em>, <em>target</em><big>)</big></dt>
-<dd><p>Note that this is different from standard.  Usually link(a, b)
-creates a link at a to b, but this link(source, target) creates a
-link at source to target.</p>
-<p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This has the same quirk as <cite>link()</cite>.</p>
+</div>
+<p>If <cite>source</cite> is in real space, link it (forward request to OS).  If
+<cite>source</cite> is also in tag space, tag the newly created symlink.  If
+<cite>source</cite> is in virtual space, raise EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">truncate</tt><big>(</big><em>path</em>, <em>length</em>, <em>fh=None</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If it is tagged,
-additionally add its tags.  If <cite>path</cite> is a node, the operation is
-invalid and raises EINVAL. <cite>fh</cite> is ignored.</p>
+<dd><p>If <cite>path</cite> is in real or tag space, forward to OS.  If <cite>path</cite> is in
+virtual space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">unlink</tt><big>(</big><em>path</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is tagged, untag.  If <cite>path</cite> is outside, forward to OS.  If
-<cite>path</cite> is a node, the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>source</cite> is in real space, but not tag space, forward to OS.  If
+<cite>source</cite> is in tag space, untag the file instead.  If <cite>source</cite> is in
+virtual space, raise EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">utimens</tt><big>(</big><em>path</em>, <em>times=None</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descname">write</tt><big>(</big><em>path</em>, <em>data</em>, <em>offset</em>, <em>fh</em><big>)</big></dt>
-<dd><p>If <cite>path</cite> is outside or tagged, forward to OS.  If <cite>path</cite> is a node,
-the operation is invalid and raises EINVAL.  <cite>fh</cite> is used; <cite>path</cite> is
-only used for verification.</p>
+<dd><p>If <cite>path</cite> is in real space, forward to OS.  If <cite>path</cite> is in virtual
+space, the operation is invalid and raises EINVAL.</p>
 </dd></dl>
 
 </div>
@@ -293,6 +314,38 @@ necessary.</p>
 <p>TagNodes pull the intersection set of files of a given set of tags under
 themselves.</p>
 </div>
+<div class="section" id="node-file-attributes">
+<h2>Node File Attributes<a class="headerlink" href="#node-file-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Nodes implement a basic set of default file attributes.</p>
+<dl class="docutils">
+<dt>atime, ctime, mtime</dt>
+<dd>Defaults to time of node creation</dd>
+<dt>uid, gid</dt>
+<dd>Defaults to process&#8217;s uid and gid</dd>
+<dt>mode</dt>
+<dd>Set directory bit, and permission bits 0o777 minus umask bits.</dd>
+<dt>size</dt>
+<dd>Constant 4096</dd>
+</dl>
+<p>Currently these are dummy values and do not change, save for nlinks.</p>
+</div>
+<div class="section" id="socket-commands">
+<h2>Socket Commands<a class="headerlink" href="#socket-commands" title="Permalink to this headline">¶</a></h2>
+<p>Socket commands allow interaction with the mounted FUSE process, thereby
+dynamically modifying parts of the virtual FUSE-mounted library.  Socket
+commands may be invoked by the relevant commands of the dantalian CLI
+script, or by <tt class="docutils literal"><span class="pre">echo</span></tt>ing the commands directly into the FUSE library
+socket.  The dantalian CLI script simply writes the commands to the
+socket as well.</p>
+<p>Currently, there are the following commands:</p>
+<dl class="docutils">
+<dt>mknode path tag1 [tag2 ...]</dt>
+<dd>Make a TagNode at the given path with the given tags.  Make
+intermediary Nodes if needed.</dd>
+<dt>rmnode path</dt>
+<dd>Remove the Node at the given path.</dd>
+</dl>
+</div>
 </div>
 
 
@@ -307,6 +360,8 @@ themselves.</p>
 <li><a class="reference internal" href="#virtual-spaces">Virtual Spaces</a></li>
 <li><a class="reference internal" href="#fuse-operations">FUSE Operations</a></li>
 <li><a class="reference internal" href="#nodes">Nodes</a></li>
+<li><a class="reference internal" href="#node-file-attributes">Node File Attributes</a></li>
+<li><a class="reference internal" href="#socket-commands">Socket Commands</a></li>
 </ul>
 </li>
 </ul>

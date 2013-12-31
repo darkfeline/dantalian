@@ -55,10 +55,10 @@
             
   <div class="section" id="library-specification">
 <span id="library-spec"></span><h1>Library Specification<a class="headerlink" href="#library-specification" title="Permalink to this headline">¶</a></h1>
-<p>dantalian is an implementation of the dantalian library system, an
-abstract system.  Much like how POSIX system calls define an interface
+<p>dantalian is an implementation of the dantalian library, an abstract
+interface.  Much like how POSIX system calls define an interface
 providing a standard file system interface abstraction, the dantalian
-library system defines a standard interface for a multidimensionally
+library defines a standard interface for a multidimensionally
 hierarchical tagging system.</p>
 <p>dantalian provides a transparent implementation of the library that lies
 closely on top of the underlying file system.  Details pertaining to
@@ -97,29 +97,13 @@ a file or a tag, respectively.</p>
 a directory <tt class="docutils literal"><span class="pre">albums</span></tt> in the root directory is synonymous with tag
 <tt class="docutils literal"><span class="pre">//albums</span></tt>, and a directory <tt class="docutils literal"><span class="pre">artists</span></tt> in <tt class="docutils literal"><span class="pre">albums</span></tt> with tag
 <tt class="docutils literal"><span class="pre">//albums/artists</span></tt>.</p>
-<p class="last">Due to dantalian&#8217;s implementation, the special root tag <tt class="docutils literal"><span class="pre">//</span></tt>
-exists as an implementation detail.  The only documented appearance
-of the root tag is when calling
+<p class="last">Due to dantalian&#8217;s implementation, the special root tag <tt class="docutils literal"><span class="pre">//</span></tt> exists
+as an implementation detail.  The only documented appearance of the
+root tag is when calling
 <tt class="xref py py-meth docutils literal"><span class="pre">dantalian.library.BaseLibrary.listtag()</span></tt>, which will include
 the root tag if the file is hard linked under the library root
 directory.  The root tag will work everywhere a tag will, but again,
 is an implementation detail specific to dantalian&#8217;s implementation.</p>
-</div>
-</div>
-<div class="section" id="tag-existence">
-<h2>Tag Existence<a class="headerlink" href="#tag-existence" title="Permalink to this headline">¶</a></h2>
-<p>Tag existence is dynamic.  A tag is &#8220;created&#8221; when an object is first
-tagged with it, and &#8220;exists&#8221; so long as there are objects tagged with
-it.  For implementations, the main point of concern is that all tags
-&#8220;exist&#8221; at all times.  How that is handled internally is up to the
-implementation.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Since tags correspond directly to directories in dantalian&#8217;s
-implementation, tag existence is a bit different.  By necessity, a
-tag exists when it is associated with objects, but may still exist
-when no more associations exist.  dantalian does not purge empty
-directories.</p>
 </div>
 </div>
 <div class="section" id="tagging">
@@ -142,7 +126,7 @@ applies normally.</p>
 </div>
 </div>
 <div class="section" id="library-class-and-methods">
-<h2>Library class and methods<a class="headerlink" href="#library-class-and-methods" title="Permalink to this headline">¶</a></h2>
+<span id="library-class"></span><h2>Library class and methods<a class="headerlink" href="#library-class-and-methods" title="Permalink to this headline">¶</a></h2>
 <p>The library interface is defined in the
 <tt class="xref py py-class docutils literal"><span class="pre">dantalian.library.BaseLibrary</span></tt> class.  Library implementation
 must implement the following methods:</p>
@@ -158,6 +142,18 @@ it was before.</p>
 <tt class="descname">untag</tt><big>(</big><em>file</em>, <em>tag</em><big>)</big></dt>
 <dd><p><cite>file</cite> should not be tagged with <cite>tag</cite> after call, regardless of
 whether it was before.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">mktag</tt><big>(</big><em>tag</em><big>)</big></dt>
+<dd><p><cite>tag</cite> is created.  Do nothing if it exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">rmtag</tt><big>(</big><em>tag</em><big>)</big></dt>
+<dd><p><cite>tag</cite> is removed.  Do nothing if it doesn&#8217;t exist.</p>
 </dd></dl>
 
 <dl class="method">
@@ -193,6 +189,8 @@ library root directory reserved for internal use.  It is treated
 normally, i.e., as a directory and as a tag, but in almost all cases it
 should not be used as a tag and should be considered an implementation
 detail.</p>
+<p>Everywhere a tag is needed in a library&#8217;s method calls, a path to a directory
+can be substituted.</p>
 </div>
 </div>
 
@@ -207,7 +205,6 @@ detail.</p>
 <li><a class="reference internal" href="#">Library Specification</a><ul>
 <li><a class="reference internal" href="#library-sublayer">Library Sublayer</a></li>
 <li><a class="reference internal" href="#library-objects">Library objects</a></li>
-<li><a class="reference internal" href="#tag-existence">Tag Existence</a></li>
 <li><a class="reference internal" href="#tagging">Tagging</a></li>
 <li><a class="reference internal" href="#library-class-and-methods">Library class and methods</a></li>
 <li><a class="reference internal" href="#implementation-specifics">Implementation specifics</a></li>
