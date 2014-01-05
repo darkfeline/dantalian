@@ -1,14 +1,39 @@
 dantalian README
 ================
 
-If this is a properly built source distribution, documentation can be
-found in doc/_build/html.
+Project Website: http://darkfeline.github.io/dantalian/
 
-Documentation for the most current stable release can be found online at
-http://darkfeline.github.io/dantalian/
+dantalian is a multi-dimensionally hierarchical tag-based file
+organization system, implemented using hard links.
 
-Thread on Arch Linux forums:
-https://bbs.archlinux.org/viewtopic.php?pid=1215914
+More in depth documentation may be found in this distribution, if it had
+been built or included, or online at
+http://dantalian.readthedocs.org/en/
 
-Github repository:
-https://github.com/darkfeline/dantalian
+Installation
+------------
+
+dantalian can be installed like all Python packages::
+
+  $ python setup.py install
+
+This will install dantalian globally, which may or may not be preferred
+and will probably require root.  Alternatively::
+
+  $ python setup.py install --user
+
+will install dantalian locally for the current user.
+
+Usage
+-----
+
+dantalian provides a script which can be invoked::
+
+  $ dantalian <command>
+
+dantalian also installs a python package that can be imported by any
+Python scripts::
+
+  >>> import dantalian
+
+See the manpage and the documentation for more information
