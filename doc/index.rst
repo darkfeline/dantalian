@@ -15,9 +15,6 @@ built on |today|.
 
 dantalian is still in active development.
 
-New users are advised to jump to :ref:`first steps` for a quick
-tutorial.
-
 .. toctree::
    :maxdepth: 1
 

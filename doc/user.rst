@@ -10,6 +10,5 @@ dantalian are highly suggested to read the :ref:`tutorial`.
    :maxdepth: 1
 
    user/install
-   user/tutorial
-   user/guide
+   user/guides
    user/reference
