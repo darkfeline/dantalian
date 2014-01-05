@@ -1,10 +1,9 @@
 User Guide
 ==========
 
-Welcome to dantalian's User Guide!
+This section of Dantalian's documentation is for end users.
 
-The guide is split into several sections, listed below.  Users new to
-dantalian are highly suggested to read the :ref:`tutorial`.
+The guide is split into several sections, listed below.
 
 .. toctree::
    :maxdepth: 1
