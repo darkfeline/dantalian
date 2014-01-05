@@ -1,47 +1,33 @@
-Introduction
-============
+What is Dantalian?
+==================
 
-dantalian is a multi-dimensionally hierarchical tag-based file
-organization system.  dantalian is very much for hardcore organizers
+Dantalian is a multi-dimensionally hierarchical tag-based file
+organization system, born from a user's frustration with current file
+organization solutions.  Dantalian is very much for hardcore organizers
 and/or technically skilled individuals, people who want maximum
-flexibility in how they organize their own files.  dantalian emphasizes
+flexibility in how they organize their own files.  Dantalian emphasizes
 transparency, consistency and well-defined behavior.
 
-It uses hard links, by creating hard links in subdirectories ("tags").
+It uses hard links, by creating hard links in directories ("tags").
 This provides a very flexible and transparent system.
 
-If you
+Keep in mind that Dantalian is not designed for all users.  Dantalin is
+primarily designed for power users who need powerful organization
+options, but others may also find it useful (or not).
 
-- like reading specifications (in a sense)
-- wouldn't trust an incompletely documented tool with organizing your
-  files
-- want maximum flexibility (tag hierarchy, no restrictions on tagged
-  objects (*all* files *and* directories), arbitrary subsets of tags
-  like unions and intersects (this tag and this tag or that tag but not
-  this tag, etc.)
-- want maximum scalability (hundreds of tags, thousands of tags,
-  hundreds of thousands of tags, and as many files)
-- want things to behave exactly with no ambiguity (everything happens
-  explicitly, with no "smart" behavior, like "It looks like you want to
-  do A, so I'll do A for you without telling you.")
-
-then dantalian is for you.  On the other hand, if you
-
-- don't like organizing your files
-- don't care too much if a file accidentally gets lost or untagged or
-  misplaced
-- don't want to get to know your tools and just want it *to work* (most
-  of the time, as opposed to taking time to learn a tool that works all
-  of the time)
-
-then unfortunately, dantalian is *not* for you.
+.. warning::
+   dantalian uses hard links heavily.  Make sure you are familiar with
+   how hard links work.  They are very powerful, but can be messy and/or
+   dangerous if you are not familiar with them.  Especially take care
+   not to accidently break hard links, e.g. by copying and removing
+   files.  dantalian leverages the advantages hard links provide, but
+   won't protect you from yourself!
 
 Features
 --------
 
 - Simple implementation
-- All files (including symlinks to directories) can be tagged
-  indiscriminately.
+- All files, including tags, can be tagged indiscriminately.
 - Libraries are transparent.  You can interact with them on a basic
   level with coreutils, e.g. ``mv``, ``ls``, ``ln``.
 - Libraries are portable.  Moving is as simple as rsyncing it over and
@@ -50,15 +36,15 @@ Features
 - Metadata is "stored" in the directory structure.
 - Files can be moved and/or linked elsewhere without breaking anything.
 - Almost no restrictions on tagged files' names.
+- Tags can be organized hierarchically.
 
-FUSE
-^^^^
-FUSE mount allows the following features:
+With FUSE
+^^^^^^^^^
 
-- Allows better interaction on a file system level (trivial
-  interoperability with other applications)
-- Virtual tag combination directories (currently only tag unions, e.g.
-  AND).
+- Allows easy interaction on a file system level (trivial
+  interoperability with other applications).
+- Special virtual 'query' tag directories (currently only tag unions,
+  e.g. AND).
 - Dynamic management through socket operations.
 
 Upcoming Features
@@ -67,8 +53,8 @@ Upcoming Features
 - Support scripts for media metadata/tags.
 - Merge libraries into a single larger one (possibly irreversible).
 
-FUSE
-^^^^
+With FUSE
+^^^^^^^^^
 
 - Caching to improve performance at memory cost (optional, non-cached
   mounting will still be allowed).
@@ -81,15 +67,10 @@ FUSE
 Requirements
 ------------
 
-- Python 3
-- GNU findutils
-- FUSE
-- a POSIX filesystem
+- `Python 3`_
+- `GNU findutils`_
+- FUSE_ (Optional, but needed for FUSE features)
 
-.. warning::
-   dantalian uses hard links heavily.  Make sure you are familiar with
-   how hard links work.  They are very powerful, but can be messy and/or
-   dangerous if you are not familiar with them.  Especially take care
-   not to accidently break hard links, e.g. by copying and removing
-   files.  dantalian leverages the advantages hard links provide, but
-   won't protect you from yourself!
+.. _Python 3: http://www.python.org/
+.. _FUSE: http://fuse.sourceforge.net/
+.. _GNU findutils: https://www.gnu.org/software/findutils/
