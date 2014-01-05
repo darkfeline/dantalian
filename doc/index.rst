@@ -9,8 +9,9 @@ dantalian Documentation
 
    *— The Mystic Archives of Dantalian*
 
-This is the documentation for dantalian, a transparent tag-based file
-organization system, version |release|, built on |today|.
+This is the documentation for dantalian, a multi-dimensionally
+hierarchical tag-based file organization system, for version |release|,
+built on |today|.
 
 dantalian is still in active development.
 
@@ -23,5 +24,4 @@ tutorial.
    intro
    user
    dev
-   changes
    bugs
