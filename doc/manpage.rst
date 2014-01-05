@@ -1,4 +1,4 @@
-dantalian - dantalian cli script
+dantalian - Dantalian CLI script
 ================================
 
 SYNOPSIS
@@ -9,20 +9,23 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-**dantalian** is the command line utility for dantalian, a transparent
+**dantalian** is the command line utility for Dantalian, a transparent
 tag-based file organization system.
 
 Comprehensive documentation can be found online at
-https://dantalian.readthedocs.org/ (note which version of dantalian the
-documentation is for).  The documentation may also be distributed and
-installed locally, in which case it can probably be found in the usual
-location.
+https://dantalian.readthedocs.org/ (note the version).  The
+documentation may also be distributed and installed locally, in which
+case it can probably be found in the usual location.
 
 OPTIONS
 -------
 
 --root *ROOT*
    Specify a specific library to use.
+
+The following options are for debugging purposes.  If you run into a
+bug, run **dantalian** with ``--loglevel=DEBUG --logfile=output.log``
+and include the log with the bug report.
 
 --loglevel *LEVEL*
    Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN,
@@ -32,18 +35,14 @@ OPTIONS
 --logfilter *MODULE*
    Show only messages from the given module
 
-The last three options are for debugging purposes.  If you run into a
-bug, run **dantalian** with ``--loglevel=DEBUG --logfile=output.log``
-and include the log with the bug report.
-
 COMMANDS
 --------
 
-There are three types of commands: universal, library, and fuse.
+There are three types of commands: universal, library, and FUSE.
 Universal commands are used without a reference to a library.  Library
 commands must be used with a library (either detected automatically or
-specified with ``--root``.  Fuse commands must be used with a
-fuse-mounted library.
+specified with ``--root``.  FUSE commands must be used with a
+FUSE-mounted library.
 
 UNIVERSAL
 ^^^^^^^^^
