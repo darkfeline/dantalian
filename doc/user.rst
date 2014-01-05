@@ -10,4 +10,5 @@ The guide is split into several sections, listed below.
 
    user/install
    user/guides
+   user/examples
    user/reference
