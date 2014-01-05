@@ -13,9 +13,10 @@ http://dantalian.readthedocs.org/en/
 Dependencies
 ------------
 
-Dantalian is written in Python 3, and additionally requires `GNU
+Dantalian is written in `Python 3`_, and additionally requires `GNU
 findutils`_ and FUSE_ for important features.
 
+.. _Python 3: http://www.python.org/
 .. _FUSE: http://fuse.sourceforge.net/
 .. _GNU findutils: https://www.gnu.org/software/findutils/
 
