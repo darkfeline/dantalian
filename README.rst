@@ -6,9 +6,13 @@ Project Website: http://darkfeline.github.io/dantalian/
 Dantalian is a multi-dimensionally hierarchical tag-based file
 organization system, implemented using hard links.
 
-More in depth documentation may be found in this distribution, if it had
-been built or included, or online at
-http://dantalian.readthedocs.org/en/
+Comprehensive documentation can be found online at
+http://dantalian.readthedocs.org/en/ Documentation may or may not also
+be included with this distribution, in built or source form.  In the
+event that the documentation source has been included, but not built, it
+can be built using Sphinx_ and Python 3.
+
+.. _Sphinx: http://sphinx-doc.org/
 
 Dependencies
 ------------
