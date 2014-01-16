@@ -17,5 +17,4 @@ The guide is split into several sections, listed below.
    user/advanced
    user/guides
    user/utils
-   user/bugs
    user/reference
