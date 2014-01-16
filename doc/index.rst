@@ -9,8 +9,10 @@ dantalian Documentation
 
    *— The Mystic Archives of Dantalian*
 
+Website: http://darkfeline.github.io/dantalian/
+
 This is the documentation for dantalian, a multi-dimensionally
-hierarchical tag-based file organization system, for version |release|,
+hierarchical tag-based file organization system, version |release|,
 built on |today|.
 
 dantalian is still in active development.
@@ -18,7 +20,5 @@ dantalian is still in active development.
 .. toctree::
    :maxdepth: 1
 
-   intro
    user
    dev
-   bugs

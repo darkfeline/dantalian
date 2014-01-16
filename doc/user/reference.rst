@@ -7,7 +7,4 @@ usage.
 .. toctree::
    :maxdepth: 1
 
-   Commands (Manpage) </manpage>
-   reference/library
-   reference/fuse
-   reference/names
+   user/reference/commands

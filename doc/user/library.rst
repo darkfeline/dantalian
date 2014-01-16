@@ -1,3 +1,5 @@
+.. _libraries:
+
 Libraries
 =========
 
@@ -54,7 +56,7 @@ While the above may seem complicated, for most users, it should not be a
 problem.  If you run into the above situations, chances are, you're an
 advanced enough user to figure out why and how to fix them.
 
-.. _name-conflicts:
+.. _name_conflicts:
 
 Name conflicts
 --------------
