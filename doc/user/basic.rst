@@ -21,9 +21,6 @@ the path where you want to create the library::
 
    $ dantalian init path/to/directory
 
-Check the :doc:`manpage </manpage>` for the available commands and their
-usage.
-
 Tags
 ----
 
@@ -58,3 +55,43 @@ if the current working directory is tag1, we can refer to tag2 as
 
 Basic Commands
 --------------
+
+See the :ref:`commands` for a full reference to Dantalian's commands.
+
+Tagging and Untagging
+^^^^^^^^^^^^^^^^^^^^^
+
+Tags can be created and removed using the commands ``dantalian mktag``
+and ``dantalian rmtag``.  This can be done manually using the standard
+utility ``mkdir``.
+
+::
+
+   dantalian mktag kitties
+   dantalian rmtag kitties
+   mkdir kitties
+   rmdir kitties
+
+Note that the commands are not entirely interchangeable, since you can
+use unique tag qualifiers with ``dantalian mktag`` and family, but not
+mkdir::
+
+   dantalian mktag //path/to/tag/from/library/root
+
+
+Tags can be applied to and removed from files using ``dantalian tag``
+and ``dantalian untag``, with support for tagging multiple files with
+one tag (by default), or for tagging one file with multiple tags (by
+passing ``-s``; see the :ref:`commands`.).  This can be done manually
+with ``ln`` and ``rm``.
+
+Basic Queries
+^^^^^^^^^^^^^
+
+You can list the tags of a file with ``dantalian tags``.
+
+You can perform an AND search on tags with ``dantalin find``.
+
+You can list the files of a single tag simply using ``ls`` in the
+respective directory.  You can do this with AND tag queries using
+Dantalian FUSE features.

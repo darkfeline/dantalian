@@ -57,4 +57,10 @@ then name collision resolution will be propagated outward until there
 are no name collisions.  This state is guaranteed as file systems cannot
 assign the same inode number to two different files.
 
+Basically, File name conflicts will be resolved by adding the inode
+number (which is guaranteed to be unique per file system) at the end of
+the file name, but before the extension,  e.g., if two files are both
+named ``file.mp3``, the latter will appear as ``file.12345.mp3``,
+assuming its inode number is ``12345``.
+
 Node names use ``node`` instead of an inode number for resolution.
