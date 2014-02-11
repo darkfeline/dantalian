@@ -53,8 +53,8 @@ init
 
    dantalian init [DIR]
 
-Initializes a library in DIR.  If DIR is omitted, initializes a
-library in the current directory.
+Initializes a library in DIR.  If DIR is omitted, initializes a library
+in the current directory.
 
 Library Commands
 ----------------

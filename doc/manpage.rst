@@ -22,11 +22,6 @@ OPTIONS
 
 --root *ROOT*
    Specify a specific library to use.
-
-The following options are for debugging purposes.  If you run into a
-bug, run **dantalian** with ``--loglevel=DEBUG --logfile=output.log``
-and include the log with the bug report.
-
 --loglevel *LEVEL*
    Show only logged messages LEVEL and below.  Can be DEBUG, INFO, WARN,
    ERROR, or CRITICAL, case insensitive.
@@ -35,14 +30,24 @@ and include the log with the bug report.
 --logfilter *MODULE*
    Show only messages from the given module
 
+Note that global options must come before the command, and command
+specific options and arguments come after the command.
+
 COMMANDS
 --------
 
-There are three types of commands: universal, library, and FUSE.
-Universal commands are used without a reference to a library.  Library
-commands must be used with a library (either detected automatically or
-specified with ``--root``.  FUSE commands must be used with a
-FUSE-mounted library.
+There are three types of commands: universal commands, library commands,
+and socket commands.
+
+Universal commands are used without a reference to any specific library.
+
+Library commands are used with a library, either detected automatically
+or specified with the ``--root`` global option.  These either affect or
+query against the given library.
+
+Socket commands can only be used with a FUSE-mounted library.  Like
+library commands, they take a library, however, socket commands interact
+dynamically with the library's FUSE representation model.
 
 UNIVERSAL
 ^^^^^^^^^
@@ -102,20 +107,36 @@ rm
 rename
    Usage: **dantalian rename** *FILE* *NEW*
 
-   Renames all hard links of FILE to NEW.
+   Renames all hard links of FILE to NEW.  File name conflicts are
+   resolved and reported.  Any errors will be reported and renaming will
+   resume for remaining hard links.
 
 convert
    Usage: **dantalian convert** *DIR*...
 
-   Converts directories so they can be tagged.  (Moves directories to
-   special location '.dantalian/dirs' and replaces the original with a
-   symlink pointing to the absolute path).
+
+   Store directory dir internally and replace the original with a
+   symbolic link with the same name pointing to the absolute path of the
+   stored directory. Resolve name conflict if necessary (if a file with
+   the same name is made in between moving the directory and creating
+   the symbolic link, for example).
 
 fix
    Usage: **dantalian fix**
 
+
    Fixes symlinks after the library has been moved.  If it hasn't been
    moved, does nothing.
+
+   Fix the absolute paths of symbolic links in the library to internally
+   stored directories after the library’s path has been changed. Hard
+   link relationships of the symbolic links are preserved *only in the
+   library*.  (This is because the Linux kernel/POSIX system calls do
+   not allow for editing symbolic links in place. They must be unlinked
+   and remade.) Symbolic links are unlinked and a new symbolic link is
+   made then relinked. Filename conflicts are resolved and reported (if
+   a file with the same name is made in between deleting and creating
+   the symbolic link, for example).
 
 clean
    Usage: **dantalian clean**
@@ -126,8 +147,8 @@ clean
 mount
    Usage: **dantalian mount** *DIR*
 
-   Mounts the FUSE file system at DIR according to the configuration
-   files.
+   Mounts a virtual FUSE file system representation of the library at
+   DIR.
 
 FUSE
 ^^^^
@@ -135,7 +156,9 @@ FUSE
 mknode
    Usage: **dantalian mknode** *PATH* *TAGS*...
 
-   Make a TagNode
+
+   Make a TagNode at PATH using the given TAGS.  Make any intermediary
+   Nodes as needed.
 
 rmnode
    Usage: **dantalian mknode** *PATH* *TAGS*...
