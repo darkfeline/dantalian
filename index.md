@@ -7,23 +7,22 @@ title: Dantalian
 
 ## About
 
-Dantalian is a multi-dimensionally hierarchical tag-based file organization system.
+Dantalian is a multi-dimensionally hierarchical tag-based file
+organization system.
 
-## Source code
+## Links
 
-<https://github.com/darkfeline/dantalian>
+Source code
+: <https://github.com/darkfeline/dantalian>
 
-## Bug tracker
+Bug tracker
+: <https://github.com/darkfeline/dantalian/issues>
 
-<https://github.com/darkfeline/dantalian/issues>
+Documentation
+: <http://dantalian.readthedocs.org/en/>
 
-## Documentation
-
-<http://dantalian.readthedocs.org/en/>
-
-## Arch Linux forum thread
-
-<https://bbs.archlinux.org/viewtopic.php?pid=1326530>
+Arch Linux forum thread
+: <https://bbs.archlinux.org/viewtopic.php?pid=1326530>
 
 ## Mailing List
 
