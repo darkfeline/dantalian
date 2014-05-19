@@ -1,0 +1,4 @@
+name: Dantalian
+markdown: kramdown
+highlighter: pygments
+baseurl: /dantalian

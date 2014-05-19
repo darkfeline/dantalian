@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>{{ page.title }}</title>
+  <meta name="viewport" content="width=device-width">
+  <!-- syntax highlighting CSS -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/syntax.css" type="text/css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css" type="text/css">
+</head>
+
+<body>
+  <div class="site">
+    <div class="header">
+      <h1 class="title">
+        <a href="{{ site.baseurl }}/">{{ site.name }}</a>
+      </h1>
+      <a class="extra" href="{{ site.baseurl }}/">home</a>
+      <a class="extra" href="{{ site.baseurl }}/news.html">news</a>
+    </div>{{ content }}
+
+    <div class="footer">
+      <div class="contact">
+        <p>
+          Webmaster<br />
+          <!--Space--><br />
+          <!-- Space for info -->
+        </p>
+      </div>
+
+      <div class="contact">
+        <p>
+          <a href="https://github.com/darkfeline">github.com/darkfeline</a><br />
+          darkfeline@abagofapples.com<br />
+          <!--Space-->
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
