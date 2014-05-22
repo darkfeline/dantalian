@@ -141,6 +141,20 @@ class Library:
     def fusesock(self):
         return os.path.join(self.rootdir, 'fuse.sock')
 
+    # __init__ {{{2
+    def __init__(self, root):
+        """
+        Should not be initialized directly; use open_library instead.
+
+        Args:
+            root: Path to the library.
+
+        Raises:
+            LibraryError: root is not a library.
+
+        """
+        self.root = os.path.abspath(root)
+
     # _moved {{{2
     @property
     def _moved(self):
@@ -216,20 +230,6 @@ class Library:
                 probably findutils is not installed")
         output = [x.decode() for x in output.split(0)]
         return output
-
-    # __init__ {{{2
-    def __init__(self, root):
-        """
-        Should not be initialized directly; use open_library instead.
-
-        Args:
-            root: Path to the library.
-
-        Raises:
-            LibraryError: root is not a library.
-
-        """
-        self.root = os.path.abspath(root)
 
     # operations {{{2
     # tag {{{3
