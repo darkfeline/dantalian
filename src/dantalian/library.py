@@ -155,7 +155,8 @@ class Library:
         """
         self.root = os.path.abspath(root)
 
-    # _moved {{{2
+    # helper methods {{{2
+    # _moved {{{3
     @property
     def _moved(self):
         """Has the library been moved?"""
@@ -166,7 +167,7 @@ class Library:
         else:
             return old_root
 
-    # _listpaths {{{2
+    # _listpaths {{{3
     def _listpaths(self, file):
         """Return a list of paths to all hard links to file.
 
@@ -198,7 +199,7 @@ class Library:
         output = [x.decode() for x in output.split(0)]
         return output
 
-    # _liststrictpaths {{{2
+    # _liststrictpaths {{{3
     def _liststrictpaths(self, file):
         """Return a list of paths to all hard links to file.
 
