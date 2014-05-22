@@ -380,7 +380,6 @@ class Library:
         dirsdir = self.dirsdir
         prefix = re.compile(re.escape(dirsdir))
         symlinks = dpath.findsymlinks(self.root)
-        linkedto = [os.readlink(x[0]) for x in symlinks]
         linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
         dirs = dpath.listdir(dirsdir)
         for x in linkedto:
