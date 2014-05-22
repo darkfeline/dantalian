@@ -13,7 +13,7 @@ from functools import lru_cache
 from dantalian import fuse
 from dantalian import tree
 
-from dantalian import path as dpath
+from dantalian import pathlib
 from dantalian.errors import DependencyError
 
 __all__ = []
