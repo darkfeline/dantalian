@@ -375,7 +375,23 @@ class Library:
         references them.  Nuke them with shutil.rmtree.
 
         """
-        _cleandirs(self.root)
+        if not shutil.rmtree.avoids_symlink_attacks:
+            logger.warning('Vulnerable to symlink attacks')
+        dirsdir = self.dirsdir
+        prefix = re.compile(re.escape(dirsdir))
+        symlinks = dpath.findsymlinks(self.root)
+        linkedto = [os.readlink(x[0]) for x in symlinks]
+        linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
+        dirs = dpath.listdir(dirsdir)
+        for x in linkedto:
+            try:
+                dirs.remove(x)
+            except ValueError:
+                logger.warning("Broken link %r", x)
+        logger.debug("Found unreferenced dirs %r", dirs)
+        for x in dirs:
+            logger.debug("Nuking %r", x)
+            shutil.rmtree(x)
 
     # find {{{3
     def find(self, tags):
@@ -511,27 +527,6 @@ class Library:
         return tree
 
 
-# _cleandirs {{{1
-def _cleandirs(root):
-    if not shutil.rmtree.avoids_symlink_attacks:
-        logger.warning('Vulnerable to symlink attacks')
-    dirsdir = Library.dirsdir(root)
-    prefix = re.compile(re.escape(dirsdir))
-    symlinks = dpath.findsymlinks(root)
-    linkedto = [os.readlink(x[0]) for x in symlinks]
-    linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
-    dirs = dpath.listdir(dirsdir)
-    for x in linkedto:
-        try:
-            dirs.remove(x)
-        except ValueError:
-            logger.warning("Broken link %r", x)
-    logger.debug("Found unreferenced dirs %r", dirs)
-    for x in dirs:
-        logger.debug("Nuking %r", x)
-        shutil.rmtree(x)
-
-
 # _convertto {{{1
 def _convertto(dir, target):
 
@@ -615,6 +610,7 @@ class ProxyLibrary(Library):
 
     """
 
+    # TODO fix this
     def cleandirs(self):
         _cleandirs(self._realroot)
 
