@@ -2,6 +2,10 @@
 
 ## version 0.6
 
+* Dantalian now uses `-print0` when calling `find`.  Thus, it should now
+  be safe to use Dantalian with filenames and directory names that
+  contain newlines.  You shouldn't use newlines in filenames ever, but
+  now Dantalian supports it.
 * Rewrote documentation.
 
 ## version 0.5

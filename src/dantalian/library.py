@@ -8,12 +8,11 @@ import shutil
 import shlex
 import threading
 import socket
-from functools import lru_cache
 
 from dantalian import fuse
 from dantalian import tree
 
-from dantalian import pathlib
+from dantalian import pathlib as dpath
 from dantalian.errors import DependencyError
 
 __all__ = []
@@ -25,114 +24,127 @@ def _public(f):
     return f
 
 
+# init_library {{{1
 @_public
-def init_library(root: 'str'):
+def init_library(root):
 
-    """Initialize a library at `root`.
+    """Initialize a library at the given path.
+
+    This is safe to call on an existing library.
 
     Args:
-        root (str): A path.
+        root: path to library
 
     Returns:
-        A Library instance for the initialized library.
+        A Library instance.
 
     """
 
     logger.debug('init(%r)', root)
-    root = os.path.abspath(root)
+    library = Library(root)
 
-    root_dir = Library.rootdir(root)
+    # make dantalian private directory
+    root_dir = library.rootdir
     logger.debug('mkdir %r', root_dir)
     try:
         os.mkdir(root_dir)
     except FileExistsError:
         logger.debug('skipping %r; exists', root_dir)
 
-    root_file = Library.rootfile(root)
+    # make root file
+    root_file = library.rootfile
     if not os.path.exists(root_file):
         logger.debug('writing %r', root_file)
         with open(root_file, 'w') as f:
             f.write(root)
 
-    dirs_dir = Library.dirsdir(root)
+    # make dirs directory
+    dirs_dir = library.dirsdir
     logger.debug('mkdir %r', dirs_dir)
     try:
         os.mkdir(dirs_dir)
     except FileExistsError:
         logger.debug('skipping %r; exists', dirs_dir)
 
-    return Library(root)
+    return library
 
 
+# open_library {{{1
 @_public
-def open_library(root: 'str or None'=None):
+def open_library(root=None):
     """Open a library.
 
-    If `root` is None, search up the directory tree for the first
-    library (a directory that contains ``.dantalian``) we find and use
-    that.  If none are found, raises :exc:`LibraryError`.  Otherwise,
-    `root` will be used.
+    If root is given, it will be used as the path to the library.
+    Otherwise, search up the directory tree using the current
+    directory for the first library (a directory that contains a
+    .dantalian subdirectory) we find and use that.  If none are
+    found, raise LibraryError.
 
     Args:
-        root (str or None): A path.  Default is None.
+        root: Path to the library.  Optional.
+
+    Raises:
+        LibraryError: No libraries found.
 
     Returns:
         A Library instance or suitable subclass.
 
     """
+    # find library
     if root is None:
         logger.debug("Finding library...")
         root = _find_root(os.getcwd())
         logger.debug("Found %r", root)
-    if os.path.isdir(Library.fuserootdir(root)):
-        return ProxyLibrary(root)
-    else:
-        return Library(root)
+    # validate library
+    library = Library(root)
+    if not os.path.isdir(library.root) or not os.path.isdir(library.rootdir):
+        raise LibraryError("{} isn't a library".format(root))
+    # check for fuse
+    if os.path.isdir(library.fuserootdir):
+        library = ProxyLibrary(root)
+    return Library
 
 
-@_public
+# Library {{{1
 class Library:
 
     """
-    Attributes
-    ----------
-    root: str
-        Absolute path to library root.
+    Attributes:
+        root: Absolute path to library root.
 
     """
 
-    @staticmethod
-    @lru_cache()
-    def rootdir(root):
-        return os.path.join(root, '.dantalian')
+    ROOT_DIR = '.dantalian'
 
-    @staticmethod
-    @lru_cache()
-    def fuserootdir(root):
-        return os.path.join(root, '.dantalian-fuse')
-
-    @classmethod
-    @lru_cache()
-    def rootfile(cls, root):
-        return os.path.join(cls.rootdir(root), 'root')
-
-    @classmethod
-    @lru_cache()
-    def dirsdir(cls, root):
-        return os.path.join(cls.rootdir(root), 'dirs')
-
-    @classmethod
-    @lru_cache()
-    def treefile(cls, root):
-        return os.path.join(cls.rootdir(root), 'tree')
-
-    @classmethod
-    @lru_cache()
-    def fusesock(cls, root):
-        return os.path.join(cls.rootdir(root), 'fuse.sock')
+    # paths {{{2
+    @property
+    def rootdir(self):
+        return os.path.join(self.root, self.ROOT_DIR)
 
     @property
+    def fuserootdir(self):
+        return os.path.join(self.root, '.dantalian-fuse')
+
+    @property
+    def rootfile(self):
+        return os.path.join(self.rootdir, 'root')
+
+    @property
+    def dirsdir(self):
+        return os.path.join(self.rootdir, 'dirs')
+
+    @property
+    def treefile(self):
+        return os.path.join(self.rootdir, 'tree')
+
+    @property
+    def fusesock(self):
+        return os.path.join(self.rootdir, 'fuse.sock')
+
+    # _moved {{{2
+    @property
     def _moved(self):
+        """Has the library been moved?"""
         with open(self.rootfile(self.root)) as f:
             old_root = f.read()
         if old_root == self.root:
@@ -140,43 +152,101 @@ class Library:
         else:
             return old_root
 
-    def __init__(self, root: 'str'):
+    # _listpaths {{{2
+    def _listpaths(self, file):
+        """Return a list of paths to all hard links to file.
+
+        This follows hard links, but doesn't descend into .dantalian.
+        Specifically, it returns all paths that would account for the
+        given file's tags.
+
+        Relies on find utility, for sheer simplicity and speed.  If it
+        cannot be found, :exc:`DependencyError` is raised.
+
+        Args:
+            file: Path to the file.
+
+        Returns:
+            A list of absolute paths.
+
+        Raises:
+            DependencyError: find could not be found.
+
+        """
+        assert isinstance(file, str)
+        try:
+            output = subprocess.check_output([
+                'find', '-L', self.root, '-path', self.rootdir, '-prune', '-o',
+                '-samefile', file, '-print0'])
+        except FileNotFoundError:
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
+        output = [x.decode() for x in output.split(0)]
+        return output
+
+    # _liststrictpaths {{{2
+    def _liststrictpaths(self, file):
+        """Return a list of paths to all hard links to file.
+
+        This does not descend into symbolic links, but does descend into
+        .dantalian.  Thus, returns all unique hard links.  Contrast with
+        _listpaths: if a file is tagged "a", and "a" is tagged "b", _listpaths
+        would return two paths, while _liststrictpaths would only return one.
+
+        Relies on 'find' utility, for sheer simplicity and speed.  If it
+        cannot be found, :exc:`DependencyError` is raised.  Output paths
+        are absolute.
+
+        Args:
+            file: Path to the file.
+
+        Returns:
+            A list of absolute paths.
+
+        Raises:
+            DependencyError: find could not be found.
+
+        """
+        assert isinstance(file, str)
+        try:
+            output = subprocess.check_output([
+                'find', self.root, '-samefile', file, '-print0'])
+        except FileNotFoundError:
+            raise DependencyError("find could not be found; \
+                probably findutils is not installed")
+        output = [x.decode() for x in output.split(0)]
+        return output
+
+    # __init__ {{{2
+    def __init__(self, root):
         """
         Should not be initialized directly; use open_library instead.
 
         Args:
-            root (str): Path to the library.
+            root: Path to the library.
 
         Raises:
             LibraryError: root is not a library.
 
         """
-        logger.debug("open library root %r", root)
-        if not os.path.isdir(root) or not os.path.isdir(self.rootdir(root)):
-            raise LibraryError("{} isn't a library".format(root))
         self.root = os.path.abspath(root)
-        logger.info('Library initialized')
-        logger.debug('root is %r', self.root)
 
+    # operations {{{2
+    # tag {{{3
     def tag(self, file, tag):
         """Tag file with tag.
 
-        If `file` is already tagged, nothing happens.  This includes if
-        the file is hardlinked under another name.
+        If file is already tagged, nothing happens.  This includes if
+        the file is hardlinked in the respective directory under
+        another name.
 
-        Parameters
-        ----------
-        file : str
-             Path to the file, relative to the working directory.
-        tag : str
-            Tag, relative to the library root, starting with '/'.
+        Args:
+            file: Path to the file.
+            tag: Tag.
 
-        Raises
-        ------
-        IsADirectoryError
-            file is an unconverted directory.
-        NotADirectoryError
-            tag is not a directory/tag.
+        Raises:
+            IsADirectoryError: file is an unconverted directory.
+            NotADirectoryError: tag is not a directory/tag.
 
         """
 
@@ -208,6 +278,7 @@ class Library:
             else:
                 break
 
+    # untag {{{3
     def untag(self, file, tag):
         """Remove tag from file.
 
@@ -251,82 +322,21 @@ class Library:
                 except OSError as e:
                     logger.warning('Caught OSError: %s', e)
 
+    # mktag {{{3
     def mktag(self, tag):
         if dpath.istag(tag):
             os.mkdir(dpath.pathfromtag(tag, self.root))
         else:
             os.mkdir(tag)
 
+    # rmtag {{{3
     def rmtag(self, tag):
         if dpath.istag(tag):
             shutil.rmtree(dpath.pathfromtag(tag, self.root))
         else:
             shutil.rmtree(tag)
 
-    def _listpaths(self, file):
-        """Return a list of paths to all hard links to `file`.
-
-        This descends into symbolic links and trims ``.dantalian/dirs``.
-        Specifically, returns all paths that would account for `file`'s
-        tags.
-
-        Relies on 'find' utility, for sheer simplicity and speed.  If it
-        cannot be found, :exc:`DependencyError` is raised.
-
-        Args:
-            file (str): Path to the file, relative to the working
-                directory.
-
-        Returns:
-            A list of absolute paths (strings).
-
-        Raises:
-            DependencyError: find could not be found.
-
-        """
-        assert isinstance(file, str)
-        try:
-            output = subprocess.check_output([
-                'find', '-L', self.root, '-path',
-                self.rootdir(self.root), '-prune', '-o', '-samefile', file,
-                '-print'])
-        except FileNotFoundError:
-            raise DependencyError("find could not be found; \
-                probably findutils is not installed")
-        output = output.decode().rstrip().split('\n')
-        return output
-
-    def _liststrictpaths(self, file):
-        """Return a list of paths to all hard links to `file`.
-
-        This does not descend into symbolic links, but does descend into
-        ``.dantalian``.  Thus, returns all unique hard links.
-
-        Relies on 'find' utility, for sheer simplicity and speed.  If it
-        cannot be found, :exc:`DependencyError` is raised.  Output paths
-        are absolute.
-
-        Args:
-            file (str): Path to the file, relative to the working
-                directory.
-
-        Returns:
-            A list of absolute paths (strings).
-
-        Raises:
-            DependencyError: find could not be found.
-
-        """
-        assert isinstance(file, str)
-        try:
-            output = subprocess.check_output([
-                'find', self.root, '-samefile', file])
-        except FileNotFoundError:
-            raise DependencyError("find could not be found; \
-                probably findutils is not installed")
-        output = output.decode().rstrip().split('\n')
-        return output
-
+    # listtags {{{3
     def listtags(self, file):
         """Return a list of all tags of `file`"""
         assert isinstance(file, str)
@@ -334,6 +344,7 @@ class Library:
         return ['//' + os.path.dirname(os.path.relpath(f, self.root))
                 for f in files]
 
+    # convert {{{3
     def convert(self, dir):
         """Convert a directory to a symlink.
 
@@ -354,6 +365,7 @@ class Library:
         logger.debug('convert(%r)', dir)
         _convertto(dir, self.dirsdir(self.root))
 
+    # cleandirs {{{3
     def cleandirs(self):
         """Clean converted directories.
 
@@ -364,6 +376,7 @@ class Library:
         """
         _cleandirs(self.root)
 
+    # find {{{3
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
@@ -392,6 +405,7 @@ class Library:
         logger.debug("using map %r", map)
         return [map[x] for x in inodes]
 
+    # rm {{{3
     def rm(self, file):
         """Removes all tags from `file`.
 
@@ -415,6 +429,7 @@ class Library:
                 error = 1
         return error
 
+    # rename {{{3
     def rename(self, file, new):
         """Rename tracked file.
 
@@ -441,6 +456,7 @@ class Library:
                 else:
                     break
 
+    # fix {{{3
     def fix(self):
         logger.info('Checking if moved')
         if not self._moved:
@@ -457,6 +473,7 @@ class Library:
             f.write(self.root)
         logger.info('Finished fixing')
 
+    # maketree {{{3
     def maketree(self):
         logger.info("making tree")
         if os.path.exists(self.treefile(self.root)):
@@ -471,6 +488,7 @@ class Library:
         else:
             return tree.RootNode(self)
 
+    # mount {{{3
     def mount(self, path, tree):
         addr = self.fusesock(self.root)
         try:
@@ -492,6 +510,7 @@ class Library:
         return tree
 
 
+# _cleandirs {{{1
 def _cleandirs(root):
     if not shutil.rmtree.avoids_symlink_attacks:
         logger.warning('Vulnerable to symlink attacks')
@@ -512,6 +531,7 @@ def _cleandirs(root):
         shutil.rmtree(x)
 
 
+# _convertto {{{1
 def _convertto(dir, target):
 
     """
@@ -557,11 +577,15 @@ def _convertto(dir, target):
             break
 
 
+# _find_root {{{1
 def _find_root(dir):
-    """Find the first library above `dir`.
+    """Find the first library above dir.
+
+    Args:
+        dir: Path to directory.
 
     Returns:
-        A string of the absolute path to the library.
+        A string containing the absolute path to the library.
 
     Raises:
         LibraryError: No libraries were found.
@@ -569,20 +593,19 @@ def _find_root(dir):
     """
     assert os.path.isdir(dir)
     dir = os.path.abspath(dir)
-    root_dir = Library.rootdir('')
+    root_dir = Library.ROOT_DIR
     logger.debug("finding root; starting with %r", dir)
     while dir:
         logger.debug("trying %r", dir)
         if root_dir in os.listdir(dir):
             return dir
+        elif dir == '/':
+            raise LibraryError('No root found')
         else:
-            if dir == '/':
-                break
             dir = os.path.dirname(dir)
-    raise LibraryError('No root found')
 
 
-@_public
+# ProxyLibrary {{{1
 class ProxyLibrary(Library):
 
     """
@@ -590,13 +613,6 @@ class ProxyLibrary(Library):
     FUSE-mounted library.
 
     """
-
-    def __init__(self, root):
-        logger.debug("open fuse library %r", root)
-        super().__init__(root)
-        with open(self.rootfile(self.root)) as f:
-            self._realroot = f.read()
-        logger.debug("real library is %r", self._realroot)
 
     def cleandirs(self):
         _cleandirs(self._realroot)
@@ -614,7 +630,7 @@ class ProxyLibrary(Library):
         _convertto(dir, self.dirsdir(self._realroot))
 
 
-@_public
+# SocketOperations {{{1
 class SocketOperations(threading.Thread):
 
     """
@@ -711,6 +727,7 @@ class SocketOperations(threading.Thread):
         del node[name_node]
 
 
+# Exceptions {{{1
 @_public
 class LibraryError(Exception):
     pass
