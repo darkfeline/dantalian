@@ -1,16 +1,20 @@
 User Guide
 ==========
 
-Welcome to dantalian's User Guide!
+This guide is for end users and third-party developers (users looking
+for Dantalian's public API).
 
-The guide is split into several sections, listed below.  Users new to
-dantalian are highly suggested to read the :ref:`tutorial`.
+The guide is split into several sections, listed below.
 
 .. toctree::
    :maxdepth: 1
 
    user/install
-   user/tutorial
-   user/guide
+   user/basic
+   user/library
+   user/names
+   user/fuse
+   user/advanced
+   user/guides
+   user/utils
    user/reference
-   user/links

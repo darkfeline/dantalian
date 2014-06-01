@@ -17,7 +17,7 @@ import json
 from functools import partial
 
 from dantalian import library
-from dantalian import path as dpath
+from dantalian import pathlib as dpath
 
 __all__ = ['t_global', 't_library', 't_sock']
 t_global = []

@@ -1,37 +1,40 @@
-.. _install:
-
 Installation
 ============
 
-Simply install as you would any Python package: ``python setup.py
-install``
+Packages
+--------
+
+The easiest and recommended method of installation is via packages
+provided by your distribution.
+
+- Arch Linux (AUR): https://aur.archlinux.org/packages/dantalian/
+
+If there are no packages available for your distribution, you will need
+to install Dantalian manually.
+
+Manual Installation
+-------------------
 
 Dependencies
-------------
+^^^^^^^^^^^^
 
-Required
-^^^^^^^^
+Dantalian requires `Python 3`_ and GNU findutils_.  Dantalian optionally
+requires FUSE_, however, FUSE is needed for many features and you should
+install it unless you know you do not need it.
 
-- Python 3
-- GNU findutils.  This is something I debated over, but in order to find
-  hard links, iteration is the only option.  While a database could be
-  kept to keep track of hard links, changes not made through dantalian
-  would then require rebuilding the database.  Thus, I decided to use
-  findutils, as an optimized binary will run much faster than a
-  recursive Python search.  (It also saves me from writing extra code.)
+.. _Python 3: http://www.python.org/
+.. _findutils: http://www.gnu.org/software/findutils/
+.. _FUSE: http://fuse.sourceforge.net/
 
-Optional
-^^^^^^^^
+Installation
+^^^^^^^^^^^^
 
-- fuse.  There's a limit to what you can do with scripts alone, so
-  dantalian also uses fuse to present additional features (See
-  :ref:`fuse`).
+Dantalian uses Python's built-in ``distutils`` package and can be
+installed similarly as any Python package::
 
-Really Optional
-^^^^^^^^^^^^^^^
+   $ python setup.py install
 
-- Sphinx, to build the documentation.  The documentation is built for
-  each release, and it can be found online, so you shouldn't need this
-  at all, but if for some reason you want/need to build it yourself, or
-  you're using the latest development version, you'll need Sphinx to
-  build the docs.
+This will most likely require root, and will install Dantalian globally.
+You can use virtualenv, or install it for the user::
+
+   $ python setup.py install --user

@@ -1,13 +1,8 @@
-*.sw[op]
-__pycache__
-*.py[co]
+.*
+!/.git*
 
 /build
 /dist
 /doc/_build
 /MANIFEST
-
-/virt-env
-/notes
-/doc/tags
-.ropeproject
+/_site

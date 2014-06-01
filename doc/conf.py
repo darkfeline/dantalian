@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'dantalian'
+project = u'Dantalian'
 copyright = u'2013, darkfeline'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -219,7 +219,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('manpage', 'dantalian', u'dantalian cli script',
+    ('manpage', 'dantalian', u'Dantalian cli script',
      [u'darkfeline'], 1)
 ]
 
@@ -233,7 +233,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'dantalian', u'dantalian Documentation',
+  ('index', 'dantalian', u'Dantalian Documentation',
    u'darkfeline', 'dantalian', 'One line description of project.',
    'Miscellaneous'),
 ]

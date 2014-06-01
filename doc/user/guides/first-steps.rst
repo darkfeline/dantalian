@@ -1,7 +1,8 @@
-.. _first steps:
-
 First Steps
 ===========
+
+.. warning::
+   This guide may be out of date.
 
 What is dantalian?
 ------------------
@@ -141,23 +142,20 @@ Next, let's tag our song.  dantalian commands need to work on a library,
 so you either need to be working in the library or indicate the library
 with an optional argument (all of the following are identical)::
 
-   library $ dantalian tag /Genres/Rock ../Music/song.mp3
-   library $ cd Genres
-   Genres $ dantalian tag /Genres/Rock ../../Music/song.mp3
-   Genres $ cd
-   ~ $ dantalian --root library tag /Genres/Rock Music/song.mp3
-   ~ $ cd Music
-   Music $ dantalian --root ~/library tag /Genres/Rock song.mp3
+   library $ dantalian tag //Genres/Rock ../Music/song.mp3
+   Genres $ dantalian tag //Genres/Rock ../../Music/song.mp3
+   ~ $ dantalian --root library tag //Genres/Rock Music/song.mp3
+   Music $ dantalian --root ~/library tag //Genres/Rock song.mp3
 
 (You can do all of the above if you want.  dantalian doesn't do anything
 if it sees that the file is already tagged.)
 
 So let's tag our song::
 
-   library $ dantalian tag /Genres/Rock ../Music/song.mp3
-   library $ dantalian tag /Artists/Bob ../Music/song.mp3
-   library $ dantalian tag /Artists/Charlie ../Music/song.mp3
-   library $ dantalian tag /Albums/B&C's First Album ../Music/song.mp3
+   library $ dantalian tag //Genres/Rock ../Music/song.mp3
+   library $ dantalian tag //Artists/Bob ../Music/song.mp3
+   library $ dantalian tag //Artists/Charlie ../Music/song.mp3
+   library $ dantalian tag //Albums/B&C's First Album ../Music/song.mp3
 
 Now our library looks like this::
 
@@ -177,10 +175,10 @@ Now our library looks like this::
 That wasn't hard, was it?  Let's see what tags our song has::
 
    library $ dantalian tags ../Music/song.mp3
-   /Genres/Rock
-   /Artists/Bob
-   /Artists/Charlie
-   /Albums/B&C's First Album
+   //Genres/Rock
+   //Artists/Bob
+   //Artists/Charlie
+   //Albums/B&C's First Album
 
 Handy!
 
@@ -214,7 +212,7 @@ dantalian?)
 First, you need to convert it because it's a directory::
 
    library $ d convert "/Albums/B&C's First Album"
-   library $ d tag -s "Albums/B&C's First Album" /Artists/Bob /Artists/Charlie
+   library $ d tag -s "Albums/B&C's First Album" //Artists/Bob //Artists/Charlie
 
 Notice we used the ``-s`` switch to flip the tag and the file for the
 ``tag`` command.  Normally, you would give it one tag and one or more

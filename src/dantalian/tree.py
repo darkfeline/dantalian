@@ -5,7 +5,7 @@ import abc
 from time import time
 from itertools import chain
 
-from dantalian import path as dpath
+from dantalian import pathlib as dpath
 
 __all__ = []
 logger = logging.getLogger(__name__)
