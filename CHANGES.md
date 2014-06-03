@@ -2,10 +2,20 @@
 
 ## version 0.6
 
-* Dantalian now uses `-print0` when calling `find`.  Thus, it should now
+* `mktag` and `rmtag` are changed to only work on unique tag qualifiers,
+  to avoid ambiguity.  The old functionality using paths can be done
+  simply using `mkdir` and `rmdir` (or `rm -r`).
+* New multi-tag, multi-file `tag` and `untag` commands using the `-t`
+  and `-s` flags.
+* Revamped command line argument parsing.
+* Library initialization moved further down execution process.  Poorly
+  formed commands should now fail faster, without initializing the
+  library first.
+* dantalian now uses `-print0` when calling `find`.  Thus, it should now
   be safe to use Dantalian with filenames and directory names that
   contain newlines.  You shouldn't use newlines in filenames ever, but
-  now Dantalian supports it.
+  now dantalian supports it.
+* Added `--print0` option to `tags`, `find` commands.
 * Rewrote documentation.
 
 ## version 0.5

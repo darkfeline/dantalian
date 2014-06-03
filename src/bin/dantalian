@@ -1,27 +1,24 @@
 #!/usr/bin/env python
 
-import argparse
 import logging
-import sys
-import socket
 
-from dantalian import commands
-from dantalian import library
+from dantalian.argparse import parser
 
-parser = argparse.ArgumentParser(
-    prog="dantalian", add_help=False,
-    description="dantalian CLI tool.  Check docs for usage.")
-parser.add_argument(
-    'command', choices=(
-        commands.t_global + commands.t_library + commands.t_sock))
-parser.add_argument('args', nargs=argparse.REMAINDER)
-parser.add_argument('--loglevel', action='store', default='warn')
-parser.add_argument('--logfile', action='store', default='')
-parser.add_argument('--logfilter', action='store', default='')
-parser.add_argument('--root')
 args = parser.parse_args()
 
+# Set up logging
 logger = logging.getLogger()
+handler = logging.StreamHandler()
+logger.addHandler(handler)
+handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+handler.setLevel('WARNING')
+if args.log:
+    handler = logging.FileHandler(args.log)
+    logger.addHandler(handler)
+    handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s @%(name)s %(message)s'))
+    handler.setLevel('DEBUG')
+
 if args.logfile:
     handler = logging.FileHandler(args.logfile)
 else:
@@ -33,20 +30,4 @@ logger.setLevel(args.loglevel.upper())
 if args.logfilter:
     handler.addFilter(logging.Filter(args.logfilter))
 
-if args.command in commands.t_global:
-    getattr(commands, args.command)(*args.args)
-elif args.command in commands.t_library:
-    lib = library.open_library(getattr(args, 'root', None))
-    getattr(commands, args.command)(lib, *args.args)
-elif args.command in commands.t_sock:
-    lib = library.open_library(getattr(args, 'root', None))
-    if not isinstance(lib, library.ProxyLibrary):
-        print('Socket command can only be used with fuse')
-        sys.exit(1)
-    addr = library.Library.fusesock(lib._realroot)
-    sock = socket.socket(socket.AF_UNIX)
-    sock.connect(addr)
-    getattr(commands, args.command)(sock, lib.root, *args.args)
-else:
-    print('Command not found')
-    sys.exit(1)
+args.func(args)
