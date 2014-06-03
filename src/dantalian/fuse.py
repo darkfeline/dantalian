@@ -10,9 +10,9 @@ import tempfile
 import logging
 from time import time
 
-from dantalian.fuselib import FUSE, Operations, FuseOSError, LoggingMixIn
-from dantalian import tree
-from dantalian import pathlib as dpath
+from .fuselib import FUSE, Operations, FuseOSError, LoggingMixIn
+from . import tree
+from . import pathlib as dpath
 
 __all__ = []
 ATTRS = ('st_atime', 'st_ctime', 'st_mtime', 'st_uid', 'st_gid', 'st_mode',

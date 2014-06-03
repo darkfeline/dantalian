@@ -5,7 +5,7 @@ import subprocess
 from itertools import count
 from collections import defaultdict
 
-from dantalian.errors import DependencyError
+from .errors import DependencyError
 
 logger = logging.getLogger(__name__)
 __all__ = []

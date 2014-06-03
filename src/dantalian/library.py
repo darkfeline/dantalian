@@ -9,11 +9,10 @@ import shlex
 import threading
 import socket
 
-from dantalian import fuse
-from dantalian import tree
-
-from dantalian import pathlib as dpath
-from dantalian.errors import DependencyError
+from . import fuse
+from . import tree
+from . import pathlib as dpath
+from .errors import DependencyError
 
 __all__ = []
 logger = logging.getLogger(__name__)
