@@ -28,7 +28,7 @@ tmp_parser = subparsers.add_parser(
     parents=[_library_args])
 tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
 tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
-tmp_parser.add_argument('args', nargs=argparse.REMAINDER)
+tmp_parser.add_argument('args', nargs='*')
 tmp_parser.set_defaults(func=commands.tag)
 
 # untag {{{4
@@ -42,7 +42,7 @@ tmp_parser = subparsers.add_parser(
     parents=[_library_args])
 tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
 tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
-tmp_parser.add_argument('args', nargs=argparse.REMAINDER)
+tmp_parser.add_argument('args', nargs='*')
 tmp_parser.set_defaults(func=commands.untag)
 
 # mktag {{{4
