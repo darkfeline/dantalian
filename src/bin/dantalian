@@ -19,15 +19,4 @@ if args.log:
         '%(asctime)s %(levelname)s @%(name)s %(message)s'))
     handler.setLevel('DEBUG')
 
-if args.logfile:
-    handler = logging.FileHandler(args.logfile)
-else:
-    handler = logging.StreamHandler()
-logger.addHandler(handler)
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s @%(name)s %(message)s'))
-logger.setLevel(args.loglevel.upper())
-if args.logfilter:
-    handler.addFilter(logging.Filter(args.logfilter))
-
 args.func(args)
