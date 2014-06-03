@@ -101,7 +101,7 @@ def open_library(root=None):
     # check for fuse
     if os.path.isdir(library.fuserootdir):
         library = ProxyLibrary(root)
-    return Library
+    return library
 
 
 # Library {{{1
