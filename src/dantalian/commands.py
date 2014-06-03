@@ -43,6 +43,10 @@ def _unpack(args):
                 logger.error('Invalid number of arguments.')
                 sys.exit(1)
             tags = [args.args[0]]
+        else:
+            if len(args.args) != 0:
+                logger.error('Invalid number of arguments.')
+                sys.exit(1)
     return files, tags
 
 
