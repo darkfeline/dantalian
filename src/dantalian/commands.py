@@ -136,7 +136,7 @@ def rename(args):
 # convert {{{2
 def convert(args):
     lib = library.open_library(args.root)
-    for dir in args.dir:
+    for dir in args.dirs:
         try:
             lib.convert(dir)
         except NotADirectoryError:
