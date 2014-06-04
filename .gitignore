@@ -1,8 +1,7 @@
 .*
-!/.git*
+!.git*
 
 /build
 /dist
-/doc/_build
 /MANIFEST
 /_site
