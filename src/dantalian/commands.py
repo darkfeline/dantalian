@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 # Library commands {{{1
-# Tagging {{{2
+# Helper functions {{{2
 def _unpack(args):
     """Unpack tags and files arguments."""
     files = args.f
@@ -50,7 +50,7 @@ def _unpack(args):
     return files, tags
 
 
-# tag {{{3
+# tag {{{2
 def tag(args):
     files, tags = _unpack(args)
     lib = library.open_library(args.root)
@@ -77,7 +77,7 @@ def tag(args):
                 break
 
 
-# untag {{{3
+# untag {{{2
 def untag(args):
     files, tags = _unpack(args)
     lib = library.open_library(args.root)
@@ -176,8 +176,8 @@ def init(args):
     library.init_library(args.path)
 
 
-# Socket commands {{{2
-# Helper functions {{{3
+# Socket commands {{{1
+# Helper functions {{{2
 def _fix_path(root, path):
     """Fix path.
 
@@ -219,7 +219,7 @@ def _open_sock(root):
     return sock, lib.root
 
 
-# mknode {{{3
+# mknode {{{2
 def mknode(args):
     sock, mountroot = _open_sock(args.root)
     rebaser = partial(_fix_path, mountroot)
@@ -231,7 +231,7 @@ def mknode(args):
     ).encode())
 
 
-# rmnode {{{3
+# rmnode {{{2
 def rmnode(args):
     sock, mountroot = _open_sock(args.root)
     rebaser = partial(_rebase_path, mountroot)
