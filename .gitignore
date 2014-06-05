@@ -3,6 +3,7 @@
 
 /waf_build
 /build
+/waf_build
 /dist
 /MANIFEST
 /_site
