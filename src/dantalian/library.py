@@ -248,10 +248,10 @@ class Library:
         This does not descend into symbolic links, but does descend into
         .dantalian.  Thus, returns all unique hard links.
 
-        Contrast with _listpaths: if a file "foo" is tagged "a", and "a"
-        is tagged "b", _listpaths would return two paths, "a/foo" and
-        "b/a/foo", while _liststrictpaths would only return one,
-        ".dantalian/dirs/a/foo".
+        Contrast with _listpaths: if a file "foo" is tagged "a", "a" is in the
+        library root directory, and "a" is tagged "b", also in the root
+        directory, _listpaths would return two paths, "a/foo" and "b/a/foo",
+        while _liststrictpaths would only return one, ".dantalian/dirs/a/foo".
 
         Relies on find utility, for sheer simplicity and speed.  If it
         cannot be found, DependencyError is raised.
