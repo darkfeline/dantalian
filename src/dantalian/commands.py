@@ -144,7 +144,7 @@ def convert(args):
         try:
             lib.convert(dir)
         except NotADirectoryError:
-            logger.error('%r is not a directory; skipping.', dir)
+            logger.error('%r is not a directory.', dir)
         except library.LibraryError:
             logger.error('%r is already converted.', dir)
 
