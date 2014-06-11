@@ -229,7 +229,7 @@ class Library:
         except FileNotFoundError:
             raise DependencyError("find could not be found; \
                 probably findutils is not installed")
-        output = [x.decode() for x in output.split(0)]
+        output = [x.decode() for x in output.split(b'\0') if x]
         return output
 
     # _liststrictpaths {{{3
@@ -264,7 +264,7 @@ class Library:
         except FileNotFoundError:
             raise DependencyError("find could not be found; \
                 probably findutils is not installed")
-        output = [x.decode() for x in output.split(0)]
+        output = [x.decode() for x in output.split(b'\0') if x]
         return output
 
     # operations {{{2
