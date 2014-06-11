@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import os
+from waflib import TaskGen
+
+for i in range(1, 9):
+    TaskGen.declare_chain(
+        name='ronn-{}'.format(i),
+        rule=' '.join([
+            "ronn --roff --manual='Dantalian Manual'",
+            "--organization='Dantalian ${VERSION}' ${SRC} --pipe |",
+            "gzip > ${TGT}"]),
+        ext_in='.{}.ronn'.format(i),
+        ext_out='.{}.gz'.format(i),
+        reentrant=False,
+        install_path='${{MAN_PREFIX}}/man{}'.format(i),
+    )
+
+
+def build(ctx):
+    man_directory = ctx.path.abspath()
+    files = [x for x in os.listdir(man_directory)
+             if x.endswith('.ronn')]
+    ctx(source=' '.join(files))
