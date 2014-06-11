@@ -149,6 +149,16 @@ def convert(args):
             logger.error('%r is already converted.', dir)
 
 
+# revert {{{2
+def revert(args):
+    lib = library.open_library(args.root)
+    for dir in args.dirs:
+        try:
+            lib.revert(dir)
+        except library.LibraryError as e:
+            logger.error(str(e))
+
+
 # fix {{{2
 def fix(args):
     lib = library.open_library(args.root)

@@ -422,6 +422,31 @@ class Library:
                 os.symlink(target, dir)
                 break
 
+    # revert {{{3
+    def revert(self, symlink):
+        """Revert a converted directory back from a symlink.
+
+        Args:
+            symlink: Path to symlink.
+
+        """
+        symlink = os.path.abspath(symlink)
+        if not os.path.islink(symlink):
+            raise LibraryError('{} is not a symbolic link'.format(symlink))
+        target = os.readlink(symlink)
+        target_dirname, target_basename = os.path.split(target)
+        if not os.path.samefile(target_dirname, self.dirsdir):
+            raise LibraryError(
+                '{} is not a converted directory'.format(target_dirname))
+        # Check only one
+        links = self._liststrictpaths(symlink)
+        if len(links) != 1:
+            raise LibraryError(
+                '{} is tagged in multiple places'.format(symlink))
+        # Move directory back
+        os.unlink(symlink)
+        os.rename(target, symlink)
+
     # cleandirs {{{3
     def cleandirs(self):
         """Clean converted directories.

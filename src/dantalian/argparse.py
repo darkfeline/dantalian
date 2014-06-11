@@ -99,6 +99,13 @@ tmp_parser = subparsers.add_parser(
 tmp_parser.add_argument('dirs', nargs='+', metavar='DIR')
 tmp_parser.set_defaults(func=commands.convert)
 
+# revert {{{4
+tmp_parser = subparsers.add_parser(
+    'revert',
+    parents=[_library_args])
+tmp_parser.add_argument('dirs', nargs='+', metavar='DIR')
+tmp_parser.set_defaults(func=commands.revert)
+
 # fix {{{4
 tmp_parser = subparsers.add_parser(
     'fix',

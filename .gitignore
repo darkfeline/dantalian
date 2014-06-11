@@ -1,6 +1,7 @@
 .*
 !.git*
 
+/waf_build
 /build
 /dist
 /MANIFEST
