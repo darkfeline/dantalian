@@ -3,7 +3,7 @@
 ## version 0.6
 
 * Add `revert` command for reverting ("unconverting") converted
-  directories.  It only works of the directories only have one tag.
+  directories.  It only works on directories that only have one tag.
 * `mktag` and `rmtag` are changed to only work on unique tag qualifiers,
   to avoid ambiguity.  The old functionality using paths can be done
   simply using `mkdir` and `rmdir` (or `rm -r`).
