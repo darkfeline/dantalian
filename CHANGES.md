@@ -2,6 +2,8 @@
 
 ## version 0.6
 
+* Commands can now take multiple arguments where applicable (e.g.,
+  `mktag`).
 * Add `revert` command for reverting ("unconverting") converted
   directories.  It only works on directories that only have one tag.
 * `mktag` and `rmtag` are changed to only work on unique tag qualifiers,
