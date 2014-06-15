@@ -14,8 +14,8 @@ Dantalian is written in [Python 3][1], and additionally requires [GNU
 findutils][2] and [FUSE][3] for important features.
 
 [1]: http://www.python.org/
-[2]: http://fuse.sourceforge.net/
-[3]: https://www.gnu.org/software/findutils/
+[2]: https://www.gnu.org/software/findutils/
+[3]: http://fuse.sourceforge.net/
 
 Dantalian works on contiguous POSIX-compatible file systems.  Specific
 requirements may vary.
