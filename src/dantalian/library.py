@@ -485,13 +485,15 @@ class Library:
             the first tag given.
 
         """
+        search_path = (dpath.pathfromtag(tags[0], self.root) if
+                       dpath.istag(tags[0]) else tags[0])
         tagpaths = (dpath.pathfromtag(tag, self.root) if dpath.istag(tag) else
                     tag for tag in tags)
         inodes = (set(os.lstat(x) for x in dpath.listdir(path))
                   for path in tagpaths)
         inodes = functools.reduce(set.intersection, inodes)
         return [x for x in
-                dpath.listdir(dpath.pathfromtag(tagpaths[0], self.root))
+                dpath.listdir(search_path)
                 if os.lstat(x) in inodes]
 
     # rm {{{3
