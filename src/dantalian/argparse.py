@@ -75,6 +75,7 @@ tmp_parser = subparsers.add_parser(
 tmp_parser.add_argument('tags', nargs='+', metavar='TAG')
 tmp_parser.add_argument('--print0', action='store_const', const='\00',
                         default='\n', dest='endline')
+tmp_parser.add_argument('-t', metavar='DIR', dest='target_dir')
 tmp_parser.set_defaults(func=commands.find)
 
 # rm {{{4

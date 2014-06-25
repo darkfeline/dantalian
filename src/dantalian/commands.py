@@ -120,8 +120,27 @@ def tags(args):
 # find {{{2
 def find(args):
     lib = library.open_library(args.root)
+    if args.target_dir:
+        target = args.target_dir
+        if dpath.istag(target):
+            target = dpath.pathfromtag(target, lib.root)
+        if not os.path.isdir(target):
+            logger.error("%s is not a directory", target)
+
+        def func(f):
+            name = os.path.basename(f)
+            while True:
+                dest = os.path.join(target, dpath.resolve_name(target, name))
+                try:
+                    os.link(f, dest)
+                except FileExistsError:
+                    continue
+                else:
+                    break
+    else:
+        func = partial(print, end=args.endline)
     for f in lib.find(args.tags):
-        print(f, end=args.endline)
+        func(f)
 
 
 # rm {{{2
