@@ -1,5 +1,5 @@
-dantalian-find(1) --   Find files with tags
-===========================================
+dantalian-find(1) -- Find files with tags
+=========================================
 
 ## SYNOPSIS
 
