@@ -1,29 +1,35 @@
 dantalian-rename(1) -- Rename tagged file
 =========================================
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
-`dantalian` `rename` [<options>] <file> <new>
+**dantalian** **rename** [*options*] *file* *new*
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 This command attempts to rename all hard links of the given file to the
 given name.  If this is not possible, it will append an incrementing
 index to the end of the name, before the file extension, until a free
 name is found, for each hard link.
 
-## OPTIONS
+OPTIONS
+-------
 
-* `-h`, `--help`:
-  Print help information.
-* `--root`=<path>:
-  Specify the root directory of the library to use.
+**-h**, **--help**
+    Print help information.
 
-## EXAMPLES
+**--root**\=\ *path*
+    Specify the root directory of the library to use.
 
-Rename all hard links to foo.txt, to bar.txt:
+EXAMPLES
+--------
+
+Rename all hard links to foo.txt, to bar.txt::
 
     $ dantalian rename foo.txt bar.txt
 
 If the directory for one of the hard links already has a bar.txt,
-`dantalian` will try to rename it bar.1.txt, then bar.2.txt, and so on.
+**dantalian** will try to rename it bar.1.txt, then bar.2.txt, and so
+on.

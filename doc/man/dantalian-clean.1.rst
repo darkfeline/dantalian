@@ -1,18 +1,21 @@
 dantalian-clean(1) -- Clean stored converted directories
 ========================================================
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
-`dantalian` `clean` [<options>]
+**dantalian** **clean** [*options*]
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 This command removes directories that have been converted, but no longer
 have any symbolic links pointing to them in the library.
 
-## OPTIONS
+OPTIONS
+-------
 
-* `-h`, `--help`:
-  Print help information.
-* `--root`=<path>:
-  Specify the root directory of the library to use.
+**-h**, **--help**
+    Print help information.
+**--root**\=\ *path*
+    Specify the root directory of the library to use.

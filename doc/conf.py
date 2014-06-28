@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -47,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Dantalian'
-copyright = u'2013, darkfeline'
+copyright = u'2014, Allen Li'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -190,7 +191,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'dantalian.tex', u'dantalian Documentation',
-   u'darkfeline', 'manual'),
+   u'Allen Li', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -216,12 +217,28 @@ latex_documents = [
 
 # -- Options for manual page output --------------------------------------------
 
+HEADER_PATTERN = re.compile(
+    r'(?P<name>[-a-z]+)'
+    r'\((?P<section>\d+)\)'
+    r' +-- +'
+    r'(?P<description>\w.*?)\s*'
+)
+
+
+def generate_man_pages():
+    files = (x for x in os.listdir('man') if x.endswith('.rst'))
+    for filename in files:  # filename doesn't have .rst extension
+        full_path = os.path.join('man', filename)
+        with open(full_path) as f:
+            header = f.readline().rstrip();
+        print(header)
+        match = HEADER_PATTERN.match(header)
+        yield (full_path[:-4], match.group('name'), match.group('description'),
+               ['Allen Li'], match.group('section'))
+
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('manpage', 'dantalian', u'Dantalian cli script',
-     [u'darkfeline'], 1)
-]
+man_pages = list(generate_man_pages())
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -234,7 +251,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'dantalian', u'Dantalian Documentation',
-   u'darkfeline', 'dantalian', 'One line description of project.',
+   u'Allen Li', 'dantalian', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -246,3 +263,5 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+# vim: set tw=80:

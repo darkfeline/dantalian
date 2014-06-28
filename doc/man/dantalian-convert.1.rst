@@ -1,19 +1,23 @@
 dantalian-convert(1) -- Convert directories into taggable symbolic links
 ========================================================================
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
-`dantalian` `convert` [<options>] <directory>...
+**dantalian** **convert** [*options*] *directory*...
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 This command converts the given directories into symbolic links that can
 be tagged.  The directories are moved to a special library directory,
 and a symbolic link is created at its original path.
 
-## OPTIONS
+OPTIONS
+-------
 
-* `-h`, `--help`:
-  Print help information.
-* `--root`=<path>:
-  Specify the root directory of the library to use.
+**-h**, **--help**
+    Print help information.
+
+**--root**\=\ *path*
+    Specify the root directory of the library to use.

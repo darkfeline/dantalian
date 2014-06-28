@@ -1,18 +1,22 @@
 dantalian-fix(1) -- Fix symbolic links of converted directories
 ===============================================================
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
-`dantalian` `fix` [<options>]
+**dantalian** **fix** [*options*]
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 This command fixes the symbolic links of converted directories after the
 library has been moved or otherwise has its path changed.
 
-## OPTIONS
+OPTIONS
+-------
 
-* `-h`, `--help`:
-  Print help information.
-* `--root`=<path>:
-  Specify the root directory of the library to use.
+**-h**, **--help**
+    Print help information.
+
+**--root**\=\ *path*
+    Specify the root directory of the library to use.

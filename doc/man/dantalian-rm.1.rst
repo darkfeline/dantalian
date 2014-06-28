@@ -1,19 +1,23 @@
 dantalian-rm(1) -- Remove all tags of files
 ===========================================
 
-## SYNOPSIS
+SYNOPSIS
+--------
 
-`dantalian` `rm` [<options>] <file>...
+**dantalian** **rm** [*options*] *file*...
 
-## DESCRIPTION
+DESCRIPTION
+-----------
 
 This command removes all of the tags of the given files.  In most cases,
 this is the same as deleting the file entirely, unless there are hard
 links to the files outside of the library.
 
-## OPTIONS
+OPTIONS
+-------
 
-* `-h`, `--help`:
-  Print help information.
-* `--root`=<path>:
-  Specify the root directory of the library to use.
+**-h**, **--help**
+    Print help information.
+
+**--root**\=\ *path*
+    Specify the root directory of the library to use.
