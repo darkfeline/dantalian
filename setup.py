@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='dantalian',
@@ -9,6 +9,6 @@ setup(
     author_email='darkfeline@abagofapples.com',
     url='http://abagofapples.com/',
     package_dir={'': 'src'},
-    packages=['dantalian'],
+    packages=find_packages('src'),
     scripts=['src/bin/dantalian'],
 )
