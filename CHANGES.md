@@ -10,7 +10,7 @@
   to avoid ambiguity.  The old functionality using paths can be done
   simply using `mkdir` and `rmdir` (or `rm -r`).
 * New multi-tag, multi-file `tag` and `untag` commands using the `-t`
-  and `-s` flags.
+  and `-f` flags.
 * Revamped command line argument parsing.
 * Library initialization moved further down execution process.  Poorly
   formed commands should now fail faster, without initializing the
