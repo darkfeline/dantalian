@@ -2,36 +2,70 @@
 
 Project Website: <http://darkfeline.github.io/dantalian/>
 
-Dantalian is a multi-dimensionally hierarchical tag-based file
-organization system, implemented using hard links.
+Dantalian is a set of Python scripts to assist file organization and
+tagging using hard links.
 
 Comprehensive documentation can be found online at
 <http://dantalian.readthedocs.org/en/>
 
-## Dependencies
+## Features
 
-Dantalian is written in [Python 3][1], and additionally requires [GNU
-findutils][2] and [FUSE][3] for important features.
+* Organizes using the plain file system.
+* Extremely flexible (no tag limit, no tag naming restrictions,
+  hierarchical tags, no file naming restrictions, can tag all files and
+  directories).
+* Transparent to other applications, since it works directly with the
+  file system.
 
-[1]: http://www.python.org/
-[2]: https://www.gnu.org/software/findutils/
-[3]: http://fuse.sourceforge.net/
+## Requirements
 
 Dantalian works on contiguous POSIX-compatible file systems.  Specific
-requirements may vary.
+requirements may vary, but for most Linux users there should not be any
+problems.
 
 ## Installation
 
-Dantalian can be installed like all Python packages:
+Install using packages from your distribution if available.
+Otherwise, see below for manual installation.
+
+* [Arch Linux (AUR)](https://aur.archlinux.org/packages/dantalian/)
+* [Arch Linux (AUR) (git)](https://aur.archlinux.org/packages/dantalian-git/)
+
+Dependencies:
+
+* [Python 3](http://www.python.org/)
+* [GNU findutils](http://www.gnu.org/software/findutils/)
+* [FUSE](http://fuse.sourceforge.net/) (Optional, for FUSE features)
+
+Build dependencies:
+
+* [setuptools](https://pypi.python.org/pypi/setuptools)
+* [Sphinx](http://sphinx-doc.org/index.html)
+
+Installation is simple.  Obtain the sources, then run:
 
     $ python setup.py install
 
-This will install Dantalian globally, which may or may not be preferred
-and will probably require root.  Alternatively:
+This will most likely require root, and will install Dantalian globally
+on the system.  Otherwise, you can use virtualenv, or install it for the
+user:
 
     $ python setup.py install --user
 
-will install Dantalian locally for the current user.
+It is recommended to install the man pages as well.  The man pages can
+be built like so:
+
+    $ cd doc
+    $ make man
+
+The man pages can be found in `doc/_build/man`.  How they are
+installed depends on your system.  On Arch Linux, man pages are
+installed in `/usr/share/man` as gzipped archives, so you would do
+the following:
+
+    $ cd doc/_build/man
+    $ gzip ./*
+    # install ./* /usr/share/man/man1
 
 ## Usage
 
@@ -44,4 +78,9 @@ Python scripts:
 
     >>> import dantalian
 
-See the manpage and the documentation for more information.
+Check the man pages for specifics:
+
+    $ man 1 dantalian
+
+If the man pages are not installed, they can be found in
+reStructuredText form in `doc/man`.
