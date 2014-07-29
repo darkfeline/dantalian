@@ -18,9 +18,6 @@ OPTIONS
 **-h**, **--help**
     Print help information.
 
-**-t**, **--test**\=\ *arg*
-    Test
-
 COMMANDS
 --------
 
@@ -31,7 +28,7 @@ specified explicitly by path.
 
 Global commands do not require a library.  Socket commands require a
 virtual FUSE library, and simply write commands to the virtual FUSE
-library's command socket
+library's command socket.
 
 LIBRARY COMMANDS
 ^^^^^^^^^^^^^^^^
@@ -92,6 +89,9 @@ dantalian-rmnode(1)
 
 SEE ALSO
 --------
+
+dantalian-concepts(1)
+    Concepts and general information.
 
 Online documentation
     http://dantalian.readthedocs.org/

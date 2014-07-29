@@ -1,40 +1,57 @@
 Installation
 ============
 
-Packages
---------
+Dependencies
+------------
 
-The easiest and recommended method of installation is via packages
-provided by your distribution.
+* `Python 3 <http://www.python.org/>`_
+* `GNU findutils <http://www.gnu.org/software/findutils/>`_
+* `FUSE <http://fuse.sourceforge.net/>`_ (Optional, for FUSE features)
 
-- Arch Linux (AUR): https://aur.archlinux.org/packages/dantalian/
+Build dependencies:
+
+* `setuptools <https://pypi.python.org/pypi/setuptools>`_
+* `Sphinx <http://sphinx-doc.org/index.html>`_
+
+Using packages
+--------------
+
+The easiest method of installation is via packages.  However, Dantalian
+currently only has packages for Arch Linux.
 
 If there are no packages available for your distribution, you will need
-to install Dantalian manually.
+to install Dantalian manually.  If you are able, please consider making
+a package yourself (Refer to the :doc:`/dev` for information on
+packaging Dantalian).
+
+* `Arch Linux (AUR) <https://aur.archlinux.org/packages/dantalian/>`_
+* `Arch Linux (AUR) (git) <https://aur.archlinux.org/packages/dantalian-git/>`_
 
 Manual Installation
 -------------------
 
-Dependencies
-^^^^^^^^^^^^
+Make sure you have satisfied all of the dependencies above.  Dantalian
+is installed just like any Python package::
 
-Dantalian requires `Python 3`_ and GNU findutils_.  Dantalian optionally
-requires FUSE_, however, FUSE is needed for many features and you should
-install it unless you know you do not need it.
+    $ python setup.py install
 
-.. _Python 3: http://www.python.org/
-.. _findutils: http://www.gnu.org/software/findutils/
-.. _FUSE: http://fuse.sourceforge.net/
+This will most likely require root, and will install Dantalian globally
+on the system.  Otherwise, you can use virtualenv, or install it for the
+user::
 
-Installation
-^^^^^^^^^^^^
+    $ python setup.py install --user
 
-Dantalian uses Python's built-in ``distutils`` package and can be
-installed similarly as any Python package::
+It is recommended to install the man pages as well.  The man pages can
+be built like so::
 
-   $ python setup.py install
+    $ cd doc
+    $ make man
 
-This will most likely require root, and will install Dantalian globally.
-You can use virtualenv, or install it for the user::
+The man pages can be found in :file:`doc/_build/man`.  How they are
+installed depends on your system.  On Arch Linux, man pages are
+installed in :file:`/usr/share/man` as gzipped archives, so you would do
+the following::
 
-   $ python setup.py install --user
+    $ cd doc/_build/man
+    $ gzip ./*
+    # install ./* /usr/share/man/man1

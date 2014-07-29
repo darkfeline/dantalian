@@ -1,23 +1,24 @@
 Basic Usage
 ===========
 
+Dantalian is essentially a group of scripts to help manage hard link
+tagging as described previously.
+
 Libraries
 ---------
 
-Dantalian uses libraries to designate root directories in which files
-are organized.
+Libraries are used to designate root directories as an anchor point for
+tags and file organization.  They can be identified by the special
+``.dantalian`` directory that they contain.
 
-Libraries can be identified by the special ``.dantalian`` directory that
-they contain.
-
-For much more information about libraries, see :ref:`libraries`.
+For more information about libraries, see :doc:`library`.
 
 Creating libraries
 ^^^^^^^^^^^^^^^^^^
 
-Libraries can be initialized with the command ``dantalian init``.  This
-will create the library in the working directory.  Alternatively, pass
-the path where you want to create the library::
+Libraries can be initialized with the command :command:`dantalian
+init`.  This will create the library in the working directory.
+Alternatively, pass the path where you want to create the library::
 
    $ dantalian init path/to/directory
 
@@ -36,13 +37,13 @@ For example, in the following library::
        └── 1.txt
 
 There are two tags, ``//even`` and ``//odd``, and one file (assuming
-both ``1.txt`` are hard links to the same file) which is tagged (perhaps
-incorrectly) with both ``//even`` and ``//odd`` tags.
+both ``1.txt`` are hard links to the same file) which is tagged
+(perhaps incorrectly) with both ``//even`` and ``//odd`` tags.
 
 Tags can be referred to in two ways, by the path to its directory,
-whether relative or absolute, or by its unique tag qualifier.  A tag
-qualifier is simply the path of its directory, relative to the library
-root, prepended by ``//``.
+whether relative or absolute, or by its tag qualifier.  A tag qualifier
+is simply the path of its directory, relative to the library root,
+prepended by ``//``.
 
 For example, given the following::
 
@@ -53,45 +54,62 @@ For example, given the following::
 if the current working directory is tag1, we can refer to tag2 as
 ``tag2`` (relative path) or ``//tag1/tag2`` (tag qualifier).
 
+See also :manpage:`dantalian-concepts(1)`.
+
 Basic Commands
 --------------
 
-See the :ref:`commands` for a full reference to Dantalian's commands.
+Check the man pages for the command reference.
 
 Tagging and Untagging
 ^^^^^^^^^^^^^^^^^^^^^
 
-Tags can be created and removed using the commands ``dantalian mktag``
-and ``dantalian rmtag``.  This can be done manually using the standard
-utility ``mkdir``.
+Tags can be created and removed using the commands :command:`dantalian
+mktag` and :command:`dantalian rmtag`.  This can be done manually using
+the standard utility :command:`mkdir`.
 
 ::
 
-   dantalian mktag kitties
-   dantalian rmtag kitties
-   mkdir kitties
-   rmdir kitties
+   $ dantalian mktag //kitties
+   $ dantalian rmtag //kitties
+   $ mkdir kitties
+   $ rmdir kitties
 
-Note that the commands are not entirely interchangeable, since you can
-use unique tag qualifiers with ``dantalian mktag`` and family, but not
-mkdir::
+Note that :command:`mktag` and :command:`rmtag` only take tag
+qualifiers, and :command:`mkdir` and :command:`rmdir` only take
+pathnames.
 
-   dantalian mktag //path/to/tag/from/library/root
+Tags can be applied to and removed from files using :command:`dantalian
+tag` and :command:`dantalian untag` (see :manpage:`dantalian-tag(1)`
+and :manpage:`dantalian-untag(1)`).  This can also be done manually by
+manipulating the links with :command:`ln` and :command:`rm`.
 
+::
 
-Tags can be applied to and removed from files using ``dantalian tag``
-and ``dantalian untag``, with support for tagging multiple files with
-one tag (by default), or for tagging one file with multiple tags (by
-passing ``-s``; see the :ref:`commands`.).  This can be done manually
-with ``ln`` and ``rm``.
+    $ dantalian tag file1 tag1
+    $ dantalian tag file1 -t tag1 tag2 tag3
+    $ dantalian tag tag1 -f file1 file2 file3
+    $ dantalian tag -f file1 file2 -t tag1 tag2
+
+    $ dantalian untag file1 tag1
+    $ dantalian untag file1 -t tag1 tag2 tag3
+    $ dantalian untag tag1 -f file1 file2 file3
+    $ dantalian untag -f file1 file2 -t tag1 tag2
 
 Basic Queries
 ^^^^^^^^^^^^^
 
-You can list the tags of a file with ``dantalian tags``.
+You can list the tags of a file with :command:`dantalian tags`::
 
-You can perform an AND search on tags with ``dantalin find``.
+    $ dantalian tags file1
+    //spam
+    //eggs
 
-You can list the files of a single tag simply using ``ls`` in the
-respective directory.  You can do this with AND tag queries using
+You can perform an AND search on tags with :command:`dantalian find`::
+
+    $ dantalian find //spam //eggs
+    /home/foo/library/spam/file1
+
+You can list the files of a single tag simply using :command:`ls` in
+the respective directory.  You can do this with AND tag queries using
 Dantalian FUSE features.

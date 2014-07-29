@@ -9,7 +9,22 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-This command lists the files that have all of the given tags.
+This command lists the files that have all of the given tags, using the
+path corresponding to the first tag given.
+
+For example, if *foo* has *tag1* and *tag2*, then
+
+::
+
+    $ dantalian find tag1 tag2
+
+will print */path/to/tag1/foo*, while
+
+::
+
+    $ dantalian find tag2 tag1
+
+will print */path/to/tag2/foo*.
 
 OPTIONS
 -------

@@ -25,6 +25,7 @@ OPTIONS
 
 **-h**, **--help**
     Print help information.
+
 **--root**\=\ *path*
     Specify the root directory of the library to use.
 

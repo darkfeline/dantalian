@@ -72,7 +72,7 @@ can be done by::
 The socket processes commands much like a shell, so make sure to quote
 anything that contains spaces.
 
-A list of socket commands can be found in the :ref:`commands`.
+A list of socket commands can be found in the man pages.
 
 FUSE Operations
 ---------------

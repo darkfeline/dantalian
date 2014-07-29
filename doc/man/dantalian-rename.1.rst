@@ -9,10 +9,10 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-This command attempts to rename all hard links of the given file to the
-given name.  If this is not possible, it will append an incrementing
-index to the end of the name, before the file extension, until a free
-name is found, for each hard link.
+This command attempts to rename all hard links of the given file in the
+library to the given name.  If this is not possible, it will append an
+incrementing index to the end of the name, before the file extension,
+until a free name is found, for each hard link.
 
 OPTIONS
 -------

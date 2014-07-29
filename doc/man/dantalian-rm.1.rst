@@ -11,7 +11,8 @@ DESCRIPTION
 
 This command removes all of the tags of the given files.  In most cases,
 this is the same as deleting the file entirely, unless there are hard
-links to the files outside of the library.
+links to the files outside of the library.  Hard links to the files that
+reside outside of the library are not affected.
 
 OPTIONS
 -------

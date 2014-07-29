@@ -9,7 +9,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-This command lists the tags of the given file.
+This command lists the tags of the given file as tag qualifiers.
 
 OPTIONS
 -------
