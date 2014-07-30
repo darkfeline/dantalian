@@ -1,4 +1,9 @@
 .*
 !.gitignore
 
+/build
+/dist
+/doc
+/src
+
 /_site
