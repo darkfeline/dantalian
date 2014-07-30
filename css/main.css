@@ -29,7 +29,7 @@ h4 { margin-top: 0.5em; margin-bottom: 0.3em; }
 h5 { margin-top: 0.5em; margin-bottom: 0.3em; }
 h6 { margin-top: 0.5em; margin-bottom: 0.3em; }
 
-p { margin: 0.3em 0.7em; }
+p { margin: 0.4em 0.9em; }
 
 a         { color: #00a; }
 a:hover   { color: #000; }
@@ -143,7 +143,7 @@ dd {
 }
 
 .post ul, .post ol {
-  margin-left: 1.35em;
+  margin-left: 1.95em;
 }
 
 .post code {
