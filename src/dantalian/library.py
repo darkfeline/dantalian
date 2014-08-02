@@ -512,7 +512,7 @@ class Library:
         for f in self._liststrictpaths(file):
             logger.debug('unlinking %r', f)
             try:
-                os.unlink(file)
+                os.unlink(f)
             except OSError as e:
                 logger.warning('Encountered OSError: %s', e)
                 raise
