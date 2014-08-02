@@ -26,7 +26,7 @@ hierarchical tag-based transparent lightweight file organization system.
   {% for post in site.posts limit:2 %}
     <li>
       <span>{{ post.date | date_to_string }}</span>
-      <a href="{{ post.url }}">{{ post.title }}</a>
+      <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
       {{ post.excerpt }}
     </li>
   {% endfor %}
