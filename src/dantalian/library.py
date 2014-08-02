@@ -160,7 +160,7 @@ class Library:
     @property
     def _realroot(self):
         """Return the root path stored internally."""
-        with open(self.rootfile(self.root)) as f:
+        with open(self.rootfile) as f:
             return f.read()
 
     # _moved {{{3
@@ -553,11 +553,11 @@ class Library:
         logger.info('Move detected; fixing')
         files = dpath.findsymlinks(self.root)
         logger.debug('Found symlinks %r', files)
-        olddir = self.dirsdir(self._realroot)
-        newdir = self.dirsdir(self.root)
+        olddir = Library(self._realroot).dirsdir
+        newdir = self.dirsdir
         dpath.fixsymlinks(files, olddir, newdir)
-        logger.debug('Writing %r', self.rootfile(self.root))
-        with open(self.rootfile(self.root), 'w') as f:
+        logger.debug('Writing %r', self.rootfile)
+        with open(self.rootfile, 'w') as f:
             f.write(self.root)
         logger.info('Finished fixing')
 
