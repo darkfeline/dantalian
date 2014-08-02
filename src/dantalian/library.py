@@ -168,7 +168,7 @@ class Library:
     def _moved(self):
         """Has the library been moved?"""
         old_root = self._realroot
-        return old_root == self.root
+        return old_root != self.root
 
     # class methods {{{2
     # _find_root {{{3
