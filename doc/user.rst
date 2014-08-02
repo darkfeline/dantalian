@@ -15,6 +15,7 @@ The guide is split into several sections, listed below.
    user/tagging
    user/basic
    user/advanced
+   user/scale
    user/library
    user/names
    user/fuse
