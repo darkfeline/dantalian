@@ -207,7 +207,7 @@ def findsymlinks(dir):
             probably findutils is not installed")
     if not output:
         return []
-    output = [x.decode() for x in output.split(0)]
+    output = [x.decode() for x in output.split(b'\0') if x]
     symlinks = defaultdict(list)
     for file in output:
         stat = os.lstat(file)
