@@ -94,16 +94,16 @@ new link to it.  Simple, yet powerful and flexible.
 Creating, removing, and breaking links
 --------------------------------------
 
-Links can be created using :command:`ln`.  ``ln foo bar`` creates the
+Links can be created using ``ln``.  ``ln foo bar`` creates the
 link :file:`bar` pointing at the same file as :file:`foo`.  The
 corresponding system call is ``link()`` (see :manpage:`link(2)`).
 
 Links can be renamed (or moved, the two actions are synonymous) using
-:command:`mv`.  ``mv foo bar`` moves the link :file:`foo` to
+``mv``.  ``mv foo bar`` moves the link :file:`foo` to
 :file:`bar`.  The link will still be pointing at the same file.  The
 corresponding system call is ``rename()`` (see :manpage:`rename(2)`).
 
-Links can be removed (unlinked) using :command:`rm`.  Note that this
+Links can be removed (unlinked) using ``rm``.  Note that this
 removes links, not files.  When a file no longer has any links, there is
 no longer any way to access it, but programs using the file can continue
 doing so.  If there are no programs using it either, the disk space will
@@ -113,21 +113,22 @@ call is ``unlink()`` (see :manpage:`unlink(2)`).
 
 Take care not to accidentally break links.  Consider two links
 :file:`foo` and :file:`bar` pointing to the same file.  If I make a copy
-of the file (``cp foo baz``), the new link is *not* pointing at the same
-file as :file:`foo` or :file:`baz`; it is pointing at a new copy of the
-file.  Likewise, if you remove and recreate :file:`foo`, :file:`foo`
-will no longer be pointing at the same file as :file:`bar`, but a newly
-created file.  This last one may seem obvious, but *be careful when
-editing files*, since many programs actually do this when saving files
-(remove and recreate the link) instead of writing to the original file.
-For example, Emacs will by default move the link for the file you are
+of the file (``cp foo baz``), the new link :file:`baz` is *not* pointing
+at the same file as :file:`foo` or :file:`bar`; it is pointing at a new
+file with the same contents (a copy of the original file).  Likewise, if
+you remove :file:`foo` and create a new file (not link), :file:`foo`
+will no longer be pointing at the same file as :file:`bar`.  This last
+point may seem obvious, but *be careful when editing files*, since many
+programs actually do this when saving files (remove the existing link
+and create a new file) instead of writing to the original file.  For
+example, Emacs will by default move the link for the file you are
 editing as a backup and save the buffer as a new file, breaking your
-links.  Most non-bloated text editors will not break links (vim, vi,
-nano, gedit, etc.), but large, graphical editors of all sorts (office
-suites, photo editors, etc.) are less reliable.  (This is an unfortunate
-consequence of laypeople conflating files and links, and questionable
-programming.)  You should test any suspicious programs to see if they
-break links before taking advantage of hard link organization.
+links.  Most text editors will not break links (vim, vi, nano, gedit,
+etc.), but large, graphical editors of all sorts (office suites, photo
+editors, etc.) behave less reliably (this is an unfortunate consequence
+of laypeople conflating files and links, and questionable programming).
+You should test programs to see if they break links before taking
+advantage of hard link organization.
 
 Tagging with hard links
 -----------------------
