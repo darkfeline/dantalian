@@ -30,8 +30,8 @@ Some terminology to avoid ambiguity or confusion:
         :file:`bar`, :file:`baz` are all filenames.  When referring to
         the filename of a :term:`link`, the filename is the last
         component in the pathname.  For example, the filename of the
-        link :file:`pictures/pic1.jpg`, the filename is
-        :file:`pic1.jpg`.  Each link has exactly one filename.
+        link :file:`pictures/pic1.jpg` is :file:`pic1.jpg`.  Each link
+        has exactly one filename.
 
     link
         A directory entry pointing to a file.
