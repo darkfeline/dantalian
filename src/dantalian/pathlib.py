@@ -18,22 +18,32 @@ def _public(x):
 
 @_public
 def istag(tag):
+    """Check if tag is a tag qualifier.
+
+    A tag qualifier is a pathname that begins with at least two forward
+    slashes.  It is a pathname relative to a given libraray root
+    directory as opposed to the current working directory.
+
+    """
     return tag.startswith('//')
 
 
 @_public
 def pathfromtag(tag, root):
-    """Get absolute path from tag.
+    """Get the pathname of a tag qualifier.
+
+    If root is relative, the returned pathname will be relative, and if
+    root is absolute, the returned pathname will be absolute.
 
     Args:
-        tag: Tag.
-        root: Absolute path to library root directory.
+        tag: Tag qualifier.
+        root: Pathname of library root directory.
 
     Raises:
-        ValueError: Invalid tag.
+        ValueError: Invalid tag qualifier.
 
     Returns:
-        Absolute path.
+        Pathname.
 
     """
     if not istag(tag):
@@ -43,14 +53,14 @@ def pathfromtag(tag, root):
 
 @_public
 def tagfrompath(path, root):
-    """Get tag from path.
+    """Get the tag qualifier corresponding to the given pathname.
 
     Args:
-        path: Path.
-        root: Absolute path to library root directory.
+        path: Pathname.
+        root: Pathname of library root directory.
 
     Returns:
-        Tag.
+        Tag qualifier.
 
     """
     return '//' + os.path.relpath(path, root)
@@ -58,28 +68,42 @@ def tagfrompath(path, root):
 
 @_public
 def listdir(path):
-    """Return full paths of files in `path`.
+    """Return full pathnames of a directory.
+
+    Unlike os.listdir(), which only returns the names of the directory's
+    contents, this function joins the names with the given directory's
+    path.  Consequently, the values returned by this function can be
+    used to reference the directory's contents directly.
 
     Returns:
-        list
+        A list of pathnames.
 
     """
     return [os.path.join(path, f) for f in os.listdir(path)]
 
 
+# TODO Rename resolve_filename()
 @_public
-def resolve_name(dir, name):
-    """Find a free name for the file, using an incrementing number.
+def resolve_name(directory, name):
+    """Find a free filename in the given directory.
+
+    Given a desired filename, this function attempts to find a filename
+    that is not currently being used in the given directory, adding an
+    incrementing index to the filename as necessary.
+
+    Note that the returned filename might not work, as a file with that
+    name might be created between being checked in the function and when
+    it is actually used.  Program accordingly.
 
     Args:
-        name: Name of file
-        dir: Directory to look in.
+        name: Desired filename.
+        directory: Pathname of directory to look in.
 
     Returns:
         Filename.
 
     """
-    files = os.listdir(dir)
+    files = os.listdir(directory)
     if name not in files:
         return name
     base, ext = os.path.splitext(name)
@@ -90,28 +114,33 @@ def resolve_name(dir, name):
             return x
 
 
+# TODO Rename resolve_pathname()
 @_public
-def resolve_name_path(path):
-    """Find a free name for the file, using an incrementing number.
+def resolve_name_path(pathname):
+    """Find a free pathname for a file.
+
+    This function is a convenience wrapper around resolve_name().
 
     Args:
-        path: Path to file.
+        pathname: Pathname of file.
 
     Returns:
-        Absolute path.
+        Pathname.
 
     """
-    dir, name = os.path.split(path)
-    return os.path.join(dir, resolve_name(dir, name))
+    dirname, filename = os.path.split(pathname)
+    return os.path.join(dirname, resolve_name(dirname, filename))
 
 
 @_public
 def fuse_resolve(name, path):
-    """Find a unique name for the file, using the file's inode number.
+    """Generate a unique filename for a file using its inode number.
+
+    This function doesn't follow symbolic links.
 
     Args:
-        name: Name of file
-        path: Path to file.
+        name: Desired filename.
+        path: Pathname of file.
 
     Returns:
         Filename.
@@ -124,10 +153,12 @@ def fuse_resolve(name, path):
 
 @_public
 def fuse_resolve_path(path):
-    """Find a unique name for the file, using the file's inode number.
+    """Generate a unique filename for a file using its inode number.
+
+    This function is a convenience wrapper around fuse_resolve().
 
     Args:
-        path: Path to file.
+        pathname: Pathname of file.
 
     Returns:
         Filename.
@@ -138,13 +169,16 @@ def fuse_resolve_path(path):
 
 @_public
 def fixsymlinks(links, oldprefix, newprefix):
-    """Fix symlinks.
+    """Fixes symbolic links by replacing part of their target paths.
 
-    Recursively replace symlinks that match oldprefix with
-    newprefix.  links is as returned from findsymlinks().
+    This function replaces symbolic links whose target matches oldprefix
+    with new symbolic links whose targets have oldprefix replaced with
+    newprefix.  Hard link relationships are remade afterward.
+
+    links is as returned from findsymlinks().
 
     Args:
-        links: Symlinks to fix.
+        links: Symbolic links to fix.
         oldprefix: Old prefix to replace.
         newprefix: New prefix to use.
 
@@ -185,15 +219,15 @@ def fixsymlinks(links, oldprefix, newprefix):
 
 
 @_public
-def findsymlinks(dir):
-    """Find symlinks
+def findsymlinks(dirname):
+    """Find symlinks.
 
     Relies on find utility, for sheer simplicity and speed.  If it
     cannot be found, DependencyError is raised.
 
     Returns:
-        List of lists of absolute paths.  Symlinks that have
-        the same inode are grouped together.
+        A list of lists of absolute pathnames.  Symbolic links that
+        point to the same inode are grouped together.
 
     Raises:
         DependencyError: find was not found.
@@ -201,7 +235,7 @@ def findsymlinks(dir):
     """
     try:
         output = subprocess.check_output(
-            ['find', dir, '-type', 'l', '-print0'])
+            ['find', dirname, '-type', 'l', '-print0'])
     except FileNotFoundError:
         raise DependencyError("find could not be found; \
             probably findutils is not installed")
