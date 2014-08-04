@@ -48,7 +48,7 @@ def pathfromtag(tag, root):
     """
     if not istag(tag):
         raise ValueError('{} is not a tag'.format(tag))
-    return os.path.abspath(os.path.join(root, tag[2:]))
+    return os.path.join(root, tag.lstrip('/'))
 
 
 @_public
