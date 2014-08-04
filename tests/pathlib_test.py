@@ -4,7 +4,7 @@ import logging
 import tempfile
 import shutil
 
-from dantalian import path as dpath
+from dantalian import pathlib as dpath
 
 logger = logging.getLogger(__name__)
 
