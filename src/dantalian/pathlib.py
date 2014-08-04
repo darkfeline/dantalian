@@ -109,7 +109,7 @@ def resolve_name(directory, name):
     base, ext = os.path.splitext(name)
     i = count(1)
     while True:
-        x = '.'.join(x for x in (base, str(next(i)), ext[1:]) if x)
+        x = ''.join((base, '.', str(next(i)), ext))
         if x not in files:
             return x
 
@@ -146,9 +146,10 @@ def fuse_resolve(name, path):
         Filename.
 
     """
-    file, ext = os.path.splitext(name)
+    filename, ext = os.path.splitext(name)
     inode = os.lstat(path).st_ino
-    return '.'.join([file, inode, ext[1:]])
+    new_pathname = ''.join((filename, '.', inode, ext))
+    return new_pathname
 
 
 @_public
