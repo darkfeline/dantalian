@@ -100,11 +100,11 @@ class TestLibraryMethods(unittest.TestCase):
         l.convert('A')
         p = os.path.join(self.root, l.dirsdir(l.root), 'A')
         self.assertTrue(os.path.isdir(p))
-        self.assertEquals(os.readlink('A'), p)
+        self.assertEqual(os.readlink('A'), p)
         l.convert('C')
         p = os.path.join(self.root, l.dirsdir(l.root), 'C')
         self.assertTrue(os.path.isdir(p))
-        self.assertEquals(os.readlink('C'), p)
+        self.assertEqual(os.readlink('C'), p)
 
     def test_cleandirs(self):
         l = self.library
@@ -130,18 +130,18 @@ class TestLibraryMethods(unittest.TestCase):
         os.chdir('library')
         l.tag('a', '//A/D')
         results = l.find(['//A/D'])
-        self.assertEquals(set(results), set(
+        self.assertEqual(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
         results = l.find(['//A/D'])
-        self.assertEquals(set(results), set(
+        self.assertEqual(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
         l.tag('b', '//A/D')
         results = l.find(['//A/D'])
-        self.assertEquals(set(results), set(
+        self.assertEqual(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a', 'b',)))
         l.tag('a', '//B')
         results = l.find(['//A/D', '//B'])
-        self.assertEquals(set(results), set(
+        self.assertEqual(set(results), set(
             os.path.join(l.root, 'A', 'D', x) for x in ('a',)))
 
     def test_rm(self):
@@ -184,4 +184,4 @@ class TestLibraryMethods(unittest.TestCase):
         l.fix()
         p = os.path.join(self.root, l.dirsdir(l.root), 'A')
         self.assertTrue(os.path.isdir(p))
-        self.assertEquals(os.readlink('A'), p)
+        self.assertEqual(os.readlink('A'), p)
