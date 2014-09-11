@@ -1,3 +1,9 @@
+"""
+This module contains the Library class, which implements the methods for
+operating on libraries.
+
+"""
+
 import os
 import subprocess
 import logging
@@ -10,17 +16,18 @@ import threading
 import socket
 
 from . import fuse
-from . import tree
+from . import tree as treelib
 from . import pathlib as dpath
 from .errors import DependencyError
 
 __all__ = []
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def _public(f):
-    __all__.append(f.__name__)
-    return f
+def _public(func):
+    """Public decorator."""
+    __all__.append(func.__name__)
+    return func
 
 
 # init_library {{{1
@@ -54,7 +61,7 @@ def init_library(root):
     root_file = library.rootfile
     if not os.path.exists(root_file):
         logger.debug('writing %r', root_file)
-        with open(root_file, 'w') as f:
+        with open(root_file, 'w') as f:  # pylint: disable=invalid-name
             f.write(root)
 
     # make dirs directory
@@ -92,6 +99,7 @@ def open_library(root=None):
     # find library
     if root is None:
         logger.debug("Finding library...")
+        # pylint: disable=protected-access
         root = Library._find_root(os.getcwd())
         logger.debug("Found %r", root)
     # validate library
@@ -134,33 +142,39 @@ class Library:
     # paths {{{3
     @property
     def rootdir(self):
+        """Library data directory path."""
         return os.path.join(self.root, self.ROOT_DIR)
 
     @property
     def fuserootdir(self):
+        """Fuse library data virtual directory path."""
         return os.path.join(self.root, '.dantalian-fuse')
 
     @property
     def rootfile(self):
+        """Path of data file containing the path of the library root."""
         return os.path.join(self.rootdir, 'root')
 
     @property
     def dirsdir(self):
+        """Path of directory for converted directories."""
         return os.path.join(self.rootdir, 'dirs')
 
     @property
     def treefile(self):
+        """Path for mount tree file."""
         return os.path.join(self.rootdir, 'tree')
 
     @property
     def fusesock(self):
+        """Path of FUSE socket."""
         return os.path.join(self.rootdir, 'fuse.sock')
 
     # _realroot {{{3
     @property
     def _realroot(self):
         """Return the root path stored internally."""
-        with open(self.rootfile) as f:
+        with open(self.rootfile) as f:  # pylint:disable=invalid-name
             return f.read()
 
     # _moved {{{3
@@ -173,11 +187,11 @@ class Library:
     # class methods {{{2
     # _find_root {{{3
     @classmethod
-    def _find_root(cls, dir):
-        """Find the first library above dir.
+    def _find_root(cls, pathname):
+        """Find the first library above the given directory.
 
         Args:
-            dir: Path to directory.
+            pathname: Path to directory.
 
         Returns:
             A string containing the absolute path to the library.
@@ -186,18 +200,18 @@ class Library:
             LibraryError: No libraries were found.
 
         """
-        assert os.path.isdir(dir)
-        dir = os.path.abspath(dir)
+        assert os.path.isdir(pathname)
+        pathname = os.path.abspath(pathname)
         root_dir = cls.ROOT_DIR
-        logger.debug("finding root; starting with %r", dir)
-        while dir:
-            logger.debug("trying %r", dir)
-            if root_dir in os.listdir(dir):
-                return dir
-            elif dir == '/':
+        logger.debug("finding root; starting with %r", pathname)
+        while pathname:
+            logger.debug("trying %r", pathname)
+            if root_dir in os.listdir(pathname):
+                return pathname
+            elif pathname == '/':
                 raise LibraryError('No root found')
             else:
-                dir = os.path.dirname(dir)
+                pathname = os.path.dirname(pathname)
 
     # helper methods {{{2
     # _listpaths {{{3
@@ -296,7 +310,7 @@ class Library:
                 raise TagError('{} is not a valid directory/tag'.format(tag))
             dest_path = tag
         logger.info('Checking if %r is already tagged with %r', file, tag)
-        for f in dpath.listdir(dest_path):
+        for f in dpath.listdir(dest_path):  # pylint: disable=invalid-name
             if os.path.samefile(f, file):
                 return
         name = os.path.basename(file)
@@ -334,11 +348,11 @@ class Library:
                     '{} is not a directory/tag'.format(tag))
             dest_path = tag
         inode = os.lstat(file)
-        for f in dpath.listdir(dest_path):
-            st = os.lstat(f)
-            if os.path.samestat(inode, st):
-                logger.debug('unlinking %r', f)
-                os.unlink(f)
+        for candidate in dpath.listdir(dest_path):
+            candidate_inode = os.lstat(candidate)
+            if os.path.samestat(inode, candidate_inode):
+                logger.debug('unlinking %r', candidate)
+                os.unlink(candidate)
 
     # mktag {{{3
     def mktag(self, tag):
@@ -380,46 +394,46 @@ class Library:
                 for f in files]
 
     # convert {{{3
-    def convert(self, dir):
+    def convert(self, dirpath):
         """Convert a directory to a symlink.
 
         Args:
-            dir: Path to directory.
+            dirpath: Path to directory.
 
         Raises:
-            NotADirectoryError: dir is not a directory.
-            LibraryError: dir is in the directory for converted
+            NotADirectoryError: dirpath is not a directory.
+            LibraryError: dirpath is in the directory for converted
                 directories.
 
-        If dir is in .dantalian/dirs (smartassery), convert() raises
-        LibraryError.  If dir is a symlink (probably already converted),
-        convert() returns without doing anything.  If dir is not a
-        directory, NotADirectoryError will be raised.
+        If the directory is in .dantalian/dirs (smartassery), convert() raises
+        LibraryError.  If the directory is a symlink (probably already
+        converted), convert() returns without doing anything.  If the directory
+        is not a directory, NotADirectoryError will be raised.
 
         """
 
-        dir = os.path.abspath(dir)
+        dirpath = os.path.abspath(dirpath)
 
-        if not os.path.isdir(dir):
-            raise NotADirectoryError("{} is not a directory".format(dir))
-        if os.path.islink(dir):
+        if not os.path.isdir(dirpath):
+            raise NotADirectoryError("{} is not a directory".format(dirpath))
+        if os.path.islink(dirpath):
             return
-        dirname, basename = os.path.split(dir)
+        dirname, basename = os.path.split(dirpath)
         if os.path.samefile(dirname, self.dirsdir):
             raise LibraryError("{} is in special directory".format(dirname))
 
         while True:
             target = os.path.join(self.dirsdir,
-                                  dpath.resolve_name(dir, basename))
-            logger.debug("moving %r to %r", dir, target)
+                                  dpath.resolve_name(dirpath, basename))
+            logger.debug("moving %r to %r", dirpath, target)
             try:
-                os.rename(dir, target)
+                os.rename(dirpath, target)
             except FileExistsError:
                 continue
             else:
-                logger.debug("symlinking %r to %r", target, dir)
+                logger.debug("symlinking %r to %r", target, dirpath)
                 # TODO race condition between this and rename()
-                os.symlink(target, dir)
+                os.symlink(target, dirpath)
                 break
 
     # revert {{{3
@@ -434,7 +448,7 @@ class Library:
         if not os.path.islink(symlink):
             raise LibraryError('{} is not a symbolic link'.format(symlink))
         target = os.readlink(symlink)
-        target_dirname, target_basename = os.path.split(target)
+        target_dirname, _ = os.path.split(target)
         if not os.path.samefile(target_dirname, self.dirsdir):
             raise LibraryError(
                 '{} is not a converted directory'.format(target_dirname))
@@ -461,17 +475,18 @@ class Library:
         dirsdir = self.dirsdir
         prefix = re.compile(re.escape(dirsdir))
         symlinks = dpath.findsymlinks(self.root)
+        # pylint: disable=bad-builtin
         linkedto = filter(prefix.match, (os.readlink(x[0]) for x in symlinks))
         dirs = dpath.listdir(dirsdir)
-        for x in linkedto:
+        for dirpath in linkedto:
             try:
-                dirs.remove(x)
+                dirs.remove(dirpath)
             except ValueError:
-                logger.warning("Broken link %r", x)
+                logger.warning("Broken link %r", dirpath)
         logger.debug("Found unreferenced dirs %r", dirs)
-        for x in dirs:
-            logger.debug("Nuking %r", x)
-            shutil.rmtree(x)
+        for dirpath in dirs:
+            logger.debug("Nuking %r", dirpath)
+            shutil.rmtree(dirpath)
 
     # find {{{3
     def find(self, tags):
@@ -497,7 +512,7 @@ class Library:
                 if os.lstat(x) in inodes]
 
     # rm {{{3
-    def rm(self, file):
+    def rm(self, file):  # pylint: disable=invalid-name
         """Removes all tags from file.
 
         Args:
@@ -509,12 +524,12 @@ class Library:
         other hard links exist, the file is essentially deleted.
 
         """
-        for f in self._liststrictpaths(file):
-            logger.debug('unlinking %r', f)
+        for filepath in self._liststrictpaths(file):
+            logger.debug('unlinking %r', filepath)
             try:
-                os.unlink(f)
-            except OSError as e:
-                logger.warning('Encountered OSError: %s', e)
+                os.unlink(filepath)
+            except OSError as err:
+                logger.warning('Encountered OSError: %s', err)
                 raise
 
     # rename {{{3
@@ -525,20 +540,20 @@ class Library:
         file is not tagged, nothing happens.
 
         """
-        for f in self._liststrictpaths(file):
-            dirname = os.path.dirname(f)
+        for filepath in self._liststrictpaths(file):
+            dirname = os.path.dirname(filepath)
             while True:
                 dest = os.path.join(dirname, new)
                 if os.path.exists(dest):
-                    if not os.path.samefile(f, dest):
+                    if not os.path.samefile(filepath, dest):
                         dest = os.path.join(
                             dirname, dpath.resolve_name(dirname, new))
                     else:
-                        os.unlink(f)
+                        os.unlink(filepath)
                         break
-                logger.debug('Moving %r to %r', f, dest)
+                logger.debug('Moving %r to %r', filepath, dest)
                 try:
-                    os.rename(f, dest)
+                    os.rename(filepath, dest)
                 except FileExistsError:
                     continue
                 else:
@@ -546,6 +561,7 @@ class Library:
 
     # fix {{{3
     def fix(self):
+        """Fix symlinks of converted directories."""
         logger.info('Checking if moved')
         if not self._moved:
             logger.info('Not moved so doing nothing')
@@ -557,27 +573,29 @@ class Library:
         newdir = self.dirsdir
         dpath.fixsymlinks(files, olddir, newdir)
         logger.debug('Writing %r', self.rootfile)
-        with open(self.rootfile, 'w') as f:
+        with open(self.rootfile, 'w') as f:  # pylint: disable=invalid-name
             f.write(self.root)
         logger.info('Finished fixing')
 
     # maketree {{{3
     def maketree(self):
+        """Make node tree from library tree data file."""
         logger.info("making tree")
         if os.path.exists(self.treefile):
-            with open(self.treefile) as f:
+            with open(self.treefile) as inputfile:
                 try:
-                    data = json.load(f)
+                    data = json.load(inputfile)
                 except ValueError:
                     logger.warn('Problem loading tree config')
-                    return tree.RootNode(self)
+                    return treelib.RootNode(self)
                 else:
-                    return tree.load(self, data)
+                    return treelib.load(self, data)
         else:
-            return tree.RootNode(self)
+            return treelib.RootNode(self)
 
     # mount {{{3
     def mount(self, path, tree):
+        """Mount library using FUSE."""
         addr = self.fusesock
         try:
             os.unlink(addr)
@@ -620,12 +638,12 @@ class ProxyLibrary(Library):
         logger.warning("can't fix fuse library")
         return
 
-    def mount(self, root):
+    def mount(self, path, tree):
         logger.warning("can't mount fuse library")
         return
 
-    def convert(self, dir):
-        self._real_library.convert(dir)
+    def convert(self, dirpath):
+        self._real_library.convert(dirpath)
 
 
 # SocketOperations {{{1
@@ -664,23 +682,25 @@ class SocketOperations(threading.Thread):
         self.running = True
 
     def stop(self):
+        """Stop thread."""
         self.running = False
         self.sock.shutdown(socket.SHUT_RD)
 
     def run(self):
+        """Run thread."""
         while self.running:
             try:
-                sock, addr = self.sock.accept()
-            except OSError as e:
+                sock, _ = self.sock.accept()
+            except OSError as err:
                 logger.debug(
-                    'Got exception listening for socket connection %r', e)
+                    'Got exception listening for socket connection %r', err)
                 continue
             msg = ""
             while True:
-                m = sock.recv(1024)
-                if not m:
+                data = sock.recv(1024)
+                if not data:
                     break
-                msg += m.decode()
+                msg += data.decode()
             logger.debug('recieved from socket %r', msg)
             msg = shlex.split(msg)
             try:
@@ -689,15 +709,15 @@ class SocketOperations(threading.Thread):
                 logger.warning('Empty message received')
                 continue
             try:
-                x = getattr(self, 'do_' + cmd)
+                cmdfunc = getattr(self, 'do_' + cmd)
             except AttributeError:
                 logger.warning('Received unknown command %r', cmd)
                 continue
             else:
                 try:
-                    x(*msg)
-                except Exception as e:
-                    logger.warning('Exception in SocketOperations %r', e)
+                    cmdfunc(*msg)  # pylint: disable=star-args
+                except Exception as err:  # pylint: disable=broad-except
+                    logger.warning('Exception in SocketOperations %r', err)
 
     def do_mknode(self, path, *tags):
         """
@@ -710,12 +730,13 @@ class SocketOperations(threading.Thread):
         node, path, ret = self.tree.get(path)
         if not path or ret == 0:  # path exists or leads into real space
             return
-        for x in path[:-1]:
-            node[x] = tree.Node()
-            node = node[x]
-        node[path[-1]] = tree.TagNode(self.root, tags)
+        for item in path[:-1]:
+            node[item] = treelib.Node()
+            node = node[item]
+        node[path[-1]] = treelib.TagNode(self.root, tags)
 
     def do_rmnode(self, path):
+        """Remove nodes."""
         logger.debug('rmnode(%r)', path)
         path, name_node = os.path.split(path)
         node, path, ret = self.tree.get(path)
@@ -728,9 +749,9 @@ class SocketOperations(threading.Thread):
 # Exceptions {{{1
 @_public
 class LibraryError(Exception):
-    pass
+    """Library error."""
 
 
 @_public
 class TagError(LibraryError):
-    pass
+    """Tag error."""
