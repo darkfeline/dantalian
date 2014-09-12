@@ -30,7 +30,6 @@ def _public(func):
     return func
 
 
-# init_library {{{1
 @_public
 def init_library(root):
 
@@ -75,7 +74,6 @@ def init_library(root):
     return library
 
 
-# open_library {{{1
 @_public
 def open_library(root=None):
     """Open a library.
@@ -112,7 +110,6 @@ def open_library(root=None):
     return library
 
 
-# Library {{{1
 class Library:
 
     """
@@ -124,7 +121,6 @@ class Library:
     __slots__ = ['root']
     ROOT_DIR = '.dantalian'
 
-    # __init__ {{{2
     def __init__(self, root):
         """
         Should not be initialized directly; use open_library() instead.
@@ -138,8 +134,6 @@ class Library:
         """
         self.root = os.path.abspath(root)
 
-    # properties {{{2
-    # paths {{{3
     @property
     def rootdir(self):
         """Library data directory path."""
@@ -170,22 +164,18 @@ class Library:
         """Path of FUSE socket."""
         return os.path.join(self.rootdir, 'fuse.sock')
 
-    # _realroot {{{3
     @property
     def _realroot(self):
         """Return the root path stored internally."""
         with open(self.rootfile) as f:  # pylint:disable=invalid-name
             return f.read()
 
-    # _moved {{{3
     @property
     def _moved(self):
         """Has the library been moved?"""
         old_root = self._realroot
         return old_root != self.root
 
-    # class methods {{{2
-    # _find_root {{{3
     @classmethod
     def _find_root(cls, pathname):
         """Find the first library above the given directory.
@@ -213,8 +203,6 @@ class Library:
             else:
                 pathname = os.path.dirname(pathname)
 
-    # helper methods {{{2
-    # _listpaths {{{3
     def _listpaths(self, file):
         """Return a list of paths to all hard links to file.
 
@@ -246,7 +234,6 @@ class Library:
         output = [x.decode() for x in output.split(b'\0') if x]
         return output
 
-    # _liststrictpaths {{{3
     def _liststrictpaths(self, file):
         """Return a list of paths to all hard links to file.
 
@@ -281,8 +268,6 @@ class Library:
         output = [x.decode() for x in output.split(b'\0') if x]
         return output
 
-    # operations {{{2
-    # tag {{{3
     def tag(self, file, tag):
         """Tag file with tag.
 
@@ -324,7 +309,6 @@ class Library:
             else:
                 break
 
-    # untag {{{3
     def untag(self, file, tag):
         """Remove tag from file.
 
@@ -354,7 +338,6 @@ class Library:
                 logger.debug('unlinking %r', candidate)
                 os.unlink(candidate)
 
-    # mktag {{{3
     def mktag(self, tag):
         """Make tag.
 
@@ -370,7 +353,6 @@ class Library:
         else:
             raise TagError
 
-    # rmtag {{{3
     def rmtag(self, tag):
         """Remove tag.
 
@@ -386,14 +368,12 @@ class Library:
         else:
             raise TagError
 
-    # listtags {{{3
     def listtags(self, file):
         """Return a list of the tags of the file."""
         files = self._listpaths(file)
         return ['//' + os.path.dirname(os.path.relpath(f, self.root))
                 for f in files]
 
-    # convert {{{3
     def convert(self, dirpath):
         """Convert a directory to a symlink.
 
@@ -436,7 +416,6 @@ class Library:
                 os.symlink(target, dirpath)
                 break
 
-    # revert {{{3
     def revert(self, symlink):
         """Revert a converted directory back from a symlink.
 
@@ -461,7 +440,6 @@ class Library:
         os.unlink(symlink)
         os.rename(target, symlink)
 
-    # cleandirs {{{3
     def cleandirs(self):
         """Clean converted directories.
 
@@ -488,7 +466,6 @@ class Library:
             logger.debug("Nuking %r", dirpath)
             shutil.rmtree(dirpath)
 
-    # find {{{3
     def find(self, tags):
         """Return a list of files with all of the given tags.
 
@@ -511,7 +488,6 @@ class Library:
                 dpath.listdir(search_path)
                 if os.lstat(x) in inodes]
 
-    # rm {{{3
     def rm(self, file):  # pylint: disable=invalid-name
         """Removes all tags from file.
 
@@ -532,7 +508,6 @@ class Library:
                 logger.warning('Encountered OSError: %s', err)
                 raise
 
-    # rename {{{3
     def rename(self, file, new):
         """Rename tracked file.
 
@@ -559,7 +534,6 @@ class Library:
                 else:
                     break
 
-    # fix {{{3
     def fix(self):
         """Fix symlinks of converted directories."""
         logger.info('Checking if moved')
@@ -577,7 +551,6 @@ class Library:
             f.write(self.root)
         logger.info('Finished fixing')
 
-    # maketree {{{3
     def maketree(self):
         """Make node tree from library tree data file."""
         logger.info("making tree")
@@ -593,7 +566,6 @@ class Library:
         else:
             return treelib.RootNode(self)
 
-    # mount {{{3
     def mount(self, path, tree):
         """Mount library using FUSE."""
         addr = self.fusesock
@@ -616,7 +588,6 @@ class Library:
         return tree
 
 
-# ProxyLibrary {{{1
 class ProxyLibrary(Library):
 
     """
@@ -646,7 +617,6 @@ class ProxyLibrary(Library):
         self._real_library.convert(dirpath)
 
 
-# SocketOperations {{{1
 class SocketOperations(threading.Thread):
 
     """
@@ -746,7 +716,6 @@ class SocketOperations(threading.Thread):
         del node[name_node]
 
 
-# Exceptions {{{1
 @_public
 class LibraryError(Exception):
     """Library error."""
