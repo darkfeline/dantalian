@@ -195,7 +195,7 @@ def mount(args):
     lib = library.open_library(args.root)
     tree = lib.mount(args.path, lib.maketree())
     tree = tree.dump()
-    with open(lib.treefile(lib.root), 'w') as f:
+    with open(lib.treefile, 'w') as f:
         json.dump(tree, f)
 
 

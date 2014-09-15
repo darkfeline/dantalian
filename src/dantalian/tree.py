@@ -215,7 +215,7 @@ class RootNode(BorderNode):
         super().__init__()
         assert not isinstance(root, str)
         self.root = root
-        self[root.fuserootdir] = root.rootdir
+        self[os.path.basename(root.fuserootdir)] = root.rootdir
 
     def __iter__(self):
         return chain(super().__iter__(), self._files())
