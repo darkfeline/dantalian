@@ -104,7 +104,7 @@ it with Dantalian instead of using ``dantalian convert``.
 Because converted directories are all kept in one location, no two
 converted directories may have the same name.  However, the name of
 the directory Dantalian keeps track of and the name of the symbolic
-link that the user interacts with are independent of eac hoterh.
+link that the user interacts with are independent of each other.
 Thus, if there's a naming conflict, the actual directory can be
 renamed, and the symbolic links follow the naming rules as above.
 

@@ -53,7 +53,7 @@ The first obstacle that you will likely encounter when scaling Dantalian
 up is size constraints, since everything must reside on one file system.
 This obstacle is encountered once the amount of data you are trying to
 organize exceeds the amount of space of one storage device (say, a 1 TB
-hard disk drive).  This can be circumvented by using LLVM and creating a
+hard disk drive).  This can be circumvented by using LVM and creating a
 virtual file system that spans multiple physical storage devices.
 
 Any time constraints can be ameliorated with additional caching if
