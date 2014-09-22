@@ -1,6 +1,5 @@
 .*
 !.git*
-!.travis.yml
 __pycache__
 
 /build
