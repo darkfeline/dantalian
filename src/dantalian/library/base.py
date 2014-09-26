@@ -2,6 +2,9 @@
 This module contains basic library operations.
 """
 
+import abc
+import functools
+import itertools
 import os
 
 from dantalian import pathlib
@@ -50,8 +53,65 @@ def untag(target, tagpath):
             os.unlink(candidate)
 
 
-class _Struct:
-    """Simple struct-like implementation."""
-    # pylint: disable=too-few-public-methods
-    def __init__(self, **kwargs):
-        self.__dict__.update(**kwargs)
+def query(search_node):
+    """Return files by tag query.
+
+    Args:
+        search_node: Root Node of search query tree
+
+    Returns:
+        Files by path.
+    """
+    return list(search_node.get_results().values())
+
+
+class SearchNode(metaclass=abc.ABCMeta):
+
+    """Abstract class interface of search query node.
+
+    Methods:
+        get_results(): Get results of node query.
+    """
+
+    @abc.abstractmethod
+    def get_results(self):
+        """Return a dictionary mapping inode objects to paths."""
+
+
+class AndNode(SearchNode):
+
+    def __init__(self, children):
+        self.children = children
+
+    def get_results(self):
+        if not self.children:
+            return dict()
+        pathmap = self.children[0].get_results()
+        inodes = (set(node.get_results()) for node in self.children)
+        inodes = functools.reduce(set.intersection, inodes)
+        return dict((inode, pathmap[inode]) for inode in inodes)
+
+
+class OrNode(SearchNode):
+
+    def __init__(self, children):
+        self.children = children
+
+    def get_results(self):
+        results = {}
+        for node in self.children:
+            pathmap = node.get_results()
+            for inode in pathmap:
+                if inode not in results:
+                    results[inode] = pathmap[inode]
+        return results
+
+
+class TagNode(SearchNode):
+
+    def __init__(self, tagpath):
+        self.tagpath = tagpath
+
+    def get_results(self):
+        return dict((os.lstat(filepath), filepath)
+                    for filepath in pathlib.listdirpaths(self.tagpath))
