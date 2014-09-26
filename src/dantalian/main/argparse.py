@@ -4,7 +4,7 @@ Main script argument parser.
 
 import argparse
 
-from dantalian.main import commands
+from . import commands
 
 
 def make_parser():

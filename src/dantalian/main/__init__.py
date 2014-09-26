@@ -4,7 +4,7 @@ Main entry point.
 
 import logging
 
-from dantalian.main.argparse import make_parser
+from .argparse import make_parser
 
 
 def main():

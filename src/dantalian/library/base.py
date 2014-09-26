@@ -1,22 +1,12 @@
 """
-This module contains the Library class, which implements the methods for
-operating on libraries.
+This module contains basic library operations.
 """
 
 import os
 
 from dantalian import pathlib
 
-__all__ = []
 
-
-def _public(func):
-    """Public decorator."""
-    __all__.append(func.__name__)
-    return func
-
-
-@_public
 def tag(target, tagpath):
     """Tag target with given tag.
 
@@ -42,7 +32,6 @@ def tag(target, tagpath):
             break
 
 
-@_public
 def untag(target, tagpath):
     """Remove tag from target.
 
