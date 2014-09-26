@@ -5,7 +5,11 @@ setup(
     version='0.5',
     package_dir={'': 'src'},
     packages=find_packages('src'),
-    scripts=['src/bin/dantalian'],
+    entry_points={
+        'console_scripts': [
+            'dantalian = dantalian.main:main',
+        ],
+    },
     test_suite="tests",
 
     author='Allen Li',
