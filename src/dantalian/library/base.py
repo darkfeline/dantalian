@@ -3,11 +3,16 @@ This module contains basic library operations.
 """
 
 import abc
+from collections import deque
 import functools
-import itertools
+import logging
 import os
+import shlex
 
 from dantalian import pathlib
+from dantalian import errors
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def tag(target, tagpath):
@@ -53,7 +58,7 @@ def untag(target, tagpath):
             os.unlink(candidate)
 
 
-def query(search_node):
+def search(search_node):
     """Return files by tag query.
 
     Args:
@@ -65,6 +70,38 @@ def query(search_node):
     return list(search_node.get_results().values())
 
 
+def parse_query(query):
+    """Parse query string into query node tree."""
+    tokens = deque(shlex.split(query))
+    parse_stack = []
+    parse_list = []
+    while tokens:
+        token = tokens.popleft()
+        _LOGGER.debug("Parsing token %s", token)
+        if token[0] == '\\':
+            token = token[1:]
+            parse_list.append(TagNode(token))
+        elif token == 'AND':
+            parse_stack.append(parse_list)
+            parse_stack.append(AndNode)
+            parse_list = []
+        elif token == 'OR':
+            parse_stack.append(parse_list)
+            parse_stack.append(OrNode)
+            parse_list = []
+        elif token == ')':
+            node_type = parse_stack.pop()
+            node = node_type(parse_list)
+            parse_list = parse_stack.pop()
+            parse_list.append(node)
+        else:
+            parse_list.append(TagNode(token))
+    if len(parse_list) != 1:
+        raise errors.ParseError(parse_stack, parse_list,
+                                "Not exactly one node at top of parse")
+    return parse_list[0]
+
+
 class SearchNode(metaclass=abc.ABCMeta):
 
     """Abstract class interface of search query node.
@@ -73,12 +110,20 @@ class SearchNode(metaclass=abc.ABCMeta):
         get_results(): Get results of node query.
     """
 
+    # pylint: disable=no-init,too-few-public-methods
+
     @abc.abstractmethod
     def get_results(self):
         """Return a dictionary mapping inode objects to paths."""
 
 
 class AndNode(SearchNode):
+
+    """
+    AndNode merges the results of its children nodes by intersection.
+    """
+
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, children):
         self.children = children
@@ -94,6 +139,12 @@ class AndNode(SearchNode):
 
 class OrNode(SearchNode):
 
+    """
+    OrNode merges the results of its children nodes by union.
+    """
+
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, children):
         self.children = children
 
@@ -108,6 +159,12 @@ class OrNode(SearchNode):
 
 
 class TagNode(SearchNode):
+
+    """
+    TagNode gets the inodes and paths of the directory at its tagpath.
+    """
+
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, tagpath):
         self.tagpath = tagpath
