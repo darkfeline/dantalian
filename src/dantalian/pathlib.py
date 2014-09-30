@@ -15,6 +15,24 @@ def _public(func):
 
 
 @_public
+def is_special_target(pathname):
+    """Return whether the given path is a special tag symlink target."""
+    return pathname.startswith('//')
+
+
+@_public
+def special_target(pathname):
+    """Make the given path into a special tag symlink target.
+
+    Args:
+        pathname: Absolute pathname.
+    """
+    if not pathname.startswith('/'):
+        raise ValueError('{} is not an absolute pathname'.format(pathname))
+    return '/' + pathname
+
+
+@_public
 def listdirpaths(path):
     """Like os.listdir(), except return paths."""
     for entry in os.listdir(path):
@@ -22,7 +40,7 @@ def listdirpaths(path):
 
 
 @_public
-def resolve_name(directory, name):
+def resolve_name(dirpath, name):
     """Find a free filename in the given directory.
 
     Given a desired filename, this function attempts to find a filename
@@ -35,12 +53,12 @@ def resolve_name(directory, name):
 
     Args:
         name: Desired filename.
-        directory: Pathname of directory to look in.
+        dirpath: Pathname of directory to look in.
 
     Returns:
         Filename.
     """
-    files = os.listdir(directory)
+    files = os.listdir(dirpath)
     if name not in files:
         return name
     base, ext = os.path.splitext(name)
@@ -49,3 +67,16 @@ def resolve_name(directory, name):
         name = ''.join((base, '.', str(next(i)), ext))
         if name not in files:
             return name
+
+
+@_public
+def resolve_do(dirpath, name, callback):
+    """Repeatedly attempt to do something while resolving a name."""
+    while True:
+        dest = os.path.join(dirpath, resolve_name(dirpath, name))
+        try:
+            callback(dest)
+        except FileExistsError:
+            continue
+        else:
+            break

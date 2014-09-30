@@ -33,14 +33,7 @@ def tag(target, dirpath):
         if os.path.samefile(entry, target):
             return
     name = os.path.basename(target)
-    while True:
-        dest = os.path.join(dirpath, pathlib.resolve_name(dirpath, name))
-        try:
-            os.link(target, dest)
-        except FileExistsError:
-            continue
-        else:
-            break
+    pathlib.resolve_do(dirpath, name, lambda dest: os.link(target, dest))
 
 
 def untag(target, dirpath):
@@ -119,16 +112,29 @@ class SearchNode(metaclass=abc.ABCMeta):
         """Return a dictionary mapping inode objects to paths."""
 
 
-class AndNode(SearchNode):
+class GroupNode(SearchNode, metaclass=abc.ABCMeta):
+
+    """Abstract class for nodes that have a list of children."""
+
+    # pylint: disable=too-few-public-methods,abstract-method
+
+    def __init__(self, children):
+        self.children = children
+
+    def __eq__(self, other):
+        return (other.__class__ is self.__class__ and
+                len(self.children) == len(other.children) and
+                all(ours == theirs
+                    for (ours, theirs) in zip(self.children, other.children)))
+
+
+class AndNode(GroupNode):
 
     """
     AndNode merges the results of its children nodes by intersection.
     """
 
     # pylint: disable=too-few-public-methods
-
-    def __init__(self, children):
-        self.children = children
 
     def get_results(self):
         if not self.children:
@@ -139,16 +145,13 @@ class AndNode(SearchNode):
         return dict((inode, pathmap[inode]) for inode in inodes)
 
 
-class OrNode(SearchNode):
+class OrNode(GroupNode):
 
     """
     OrNode merges the results of its children nodes by union.
     """
 
     # pylint: disable=too-few-public-methods
-
-    def __init__(self, children):
-        self.children = children
 
     def get_results(self):
         results = {}
@@ -171,6 +174,11 @@ class DirNode(SearchNode):
     def __init__(self, dirpath):
         self.dirpath = dirpath
 
+    @staticmethod
+    def _get_inode(filepath):
+        """Return inode and path pair."""
+        return (os.lstat(filepath), filepath)
+
     def get_results(self):
-        return dict((os.lstat(filepath), filepath)
+        return dict(self._get_inode(filepath)
                     for filepath in pathlib.listdirpaths(self.dirpath))

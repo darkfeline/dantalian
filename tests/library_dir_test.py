@@ -1,17 +1,12 @@
-"""
-This module contains unit tests for dantalian.library.base
-"""
-
 import unittest
 import tempfile
 import shutil
 import os
 
-from . import testlib
-from dantalian.library import base as library
+from dantalian.library import dir as library
 
 
-class TestLibraryBase(testlib.ExtendedTestCase):
+class TestLibraryDirBase(unittest.TestCase):
 
     def setUp(self):
         self._olddir = os.getcwd()
@@ -27,6 +22,15 @@ class TestLibraryBase(testlib.ExtendedTestCase):
         shutil.rmtree(self.root)
         os.chdir(self._olddir)
 
+    def assertSameFile(self, a, b):
+        self.assertTrue(os.path.samefile(a, b))
+
+    def assertNotSameFile(self, a, b):
+        if os.path.exists(a) and os.path.exists(b):
+            self.assertFalse(os.path.samefile(a, b))
+        else:
+            self.assertFalse(not os.path.exists(a) and not os.path.exists(b))
+
     def test_tag(self):
         library.tag(os.path.join('A', 'a'), 'B')
         self.assertSameFile(os.path.join('A', 'a'), os.path.join('B', 'a'))
@@ -36,7 +40,8 @@ class TestLibraryBase(testlib.ExtendedTestCase):
         self.assertNotSameFile(os.path.join('A', 'b'), os.path.join('B', 'b'))
 
 
-class TestLibraryBaseQuery(testlib.ExtendedTestCase):
+@unittest.skip('Not done yet.')
+class TestLibraryDirQuery(unittest.TestCase):
 
     def setUp(self):
         self._olddir = os.getcwd()
@@ -87,7 +92,22 @@ class TestLibraryBaseQuery(testlib.ExtendedTestCase):
         )
 
 
-class TestLibraryBaseParsing(testlib.ExtendedTestCase):
+@unittest.skip('Not done yet.')
+class TestLibraryBaseParsing(unittest.TestCase):
+
+    def assertSameTree(self, a, b):
+        """Assert two query node trees are equal."""
+        if ((isinstance(a, library.AndNode) and
+             isinstance(b, library.AndNode)) or
+            (isinstance(a, library.OrNode) and isinstance(b, library.OrNode))):
+            self.assertEqual(len(a.children), len(b.children),
+                             msg="{} {}".format(a.children, b.children))
+            for i in range(len(a.children)):
+                self.assertSameTree(a.children[i], b.children[i])
+        else:
+            self.assertTrue(isinstance(a, library.DirNode) and
+                            isinstance(b, library.DirNode))
+            self.assertEqual(a.dirpath, b.dirpath)
 
     def test_parse_and(self):
         tree = library.parse_query("AND A B C )")
