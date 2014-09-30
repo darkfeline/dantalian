@@ -1,5 +1,7 @@
 """
 Main entry point.
+
+This is used by setuptools as an entry point for the command line script.
 """
 
 import logging
