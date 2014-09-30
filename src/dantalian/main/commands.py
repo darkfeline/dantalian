@@ -69,3 +69,11 @@ def untag(args):
             except OSError as err:
                 _LOGGER.error('OSError encountered tagging %s with %s: %s',
                               current_file, current_tag, err)
+
+
+def search(args):
+    """Search for files."""
+    query_tree = library.parse_query(args.query)
+    results = library.search(query_tree)
+    for entry in results:
+        print(entry)

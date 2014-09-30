@@ -53,4 +53,12 @@ def make_parser():
     tmp_parser.add_argument('args', nargs='*')
     tmp_parser.set_defaults(func=commands.untag)
 
+    # search
+    tmp_parser = subparsers.add_parser(
+        'search',
+        usage='''%(prog)s QUERY
+            %(prog)s --help''')
+    tmp_parser.add_argument('query', nargs='+')
+    tmp_parser.set_defaults(func=commands.search)
+
     return parser
