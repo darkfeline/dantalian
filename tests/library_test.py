@@ -64,9 +64,9 @@ class TestLibraryBaseQuery(unittest.TestCase):
     def test_and(self):
         results = library.search(
             library.AndNode(
-                [library.TagNode('A'),
-                 library.TagNode('B'),
-                 library.TagNode('C')]
+                [library.DirNode('A'),
+                 library.DirNode('B'),
+                 library.DirNode('C')]
             )
         )
         self.assertListEqual(
@@ -77,9 +77,9 @@ class TestLibraryBaseQuery(unittest.TestCase):
     def test_or(self):
         results = library.search(
             library.OrNode(
-                [library.TagNode('A'),
-                 library.TagNode('B'),
-                 library.TagNode('C')]
+                [library.DirNode('A'),
+                 library.DirNode('B'),
+                 library.DirNode('C')]
             )
         )
         self.assertListEqual(
@@ -103,38 +103,38 @@ class TestLibraryBaseParsing(unittest.TestCase):
             for i in range(len(a.children)):
                 self.assertSameTree(a.children[i], b.children[i])
         else:
-            self.assertTrue(isinstance(a, library.TagNode) and
-                            isinstance(b, library.TagNode))
-            self.assertEqual(a.tagpath, b.tagpath)
+            self.assertTrue(isinstance(a, library.DirNode) and
+                            isinstance(b, library.DirNode))
+            self.assertEqual(a.dirpath, b.dirpath)
 
     def test_parse_and(self):
         tree = library.parse_query("AND A B C )")
         self.assertSameTree(tree, library.AndNode(
-            [library.TagNode("A"),
-             library.TagNode("B"),
-             library.TagNode("C")]))
+            [library.DirNode("A"),
+             library.DirNode("B"),
+             library.DirNode("C")]))
 
     def test_parse_or(self):
         tree = library.parse_query("OR A B C )")
         self.assertSameTree(tree, library.OrNode(
-            [library.TagNode("A"),
-             library.TagNode("B"),
-             library.TagNode("C")]))
+            [library.DirNode("A"),
+             library.DirNode("B"),
+             library.DirNode("C")]))
 
     def test_parse_and_escape(self):
         tree = library.parse_query(r"AND '\AND' '\\AND' '\\\AND' )")
         self.assertSameTree(tree, library.AndNode(
-            [library.TagNode(r'AND'),
-             library.TagNode(r'\AND'),
-             library.TagNode(r'\\AND')]))
+            [library.DirNode(r'AND'),
+             library.DirNode(r'\AND'),
+             library.DirNode(r'\\AND')]))
 
     def test_parse_and_or(self):
         tree = library.parse_query("AND A B C OR spam eggs ) )")
         self.assertSameTree(tree, library.AndNode(
-            [library.TagNode("A"),
-             library.TagNode("B"),
-             library.TagNode("C"),
+            [library.DirNode("A"),
+             library.DirNode("B"),
+             library.DirNode("C"),
              library.OrNode(
-                 [library.TagNode('spam'),
-                  library.TagNode('eggs')])
+                 [library.DirNode('spam'),
+                  library.DirNode('eggs')])
             ]))

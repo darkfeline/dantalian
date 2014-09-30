@@ -15,23 +15,23 @@ from dantalian import errors
 _LOGGER = logging.getLogger(__name__)
 
 
-def tag(target, tagpath):
-    """Tag target with given tag.
+def tag(target, dirpath):
+    """Tag target with given directory.
 
     Args:
         target: Path of file to tag.
-        tagpath: Path of tag.
+        dirpath: Path of directory.
 
     If file is already tagged, nothing happens.  This includes if
-    the file is hardlinked in the respective directory under
+    the file is hardlinked in the directory under
     another name.
     """
-    for entry in pathlib.listdirpaths(tagpath):
+    for entry in pathlib.listdirpaths(dirpath):
         if os.path.samefile(entry, target):
             return
     name = os.path.basename(target)
     while True:
-        dest = os.path.join(tagpath, pathlib.resolve_name(tagpath, name))
+        dest = os.path.join(dirpath, pathlib.resolve_name(dirpath, name))
         try:
             os.link(target, dest)
         except FileExistsError:
@@ -40,19 +40,18 @@ def tag(target, tagpath):
             break
 
 
-def untag(target, tagpath):
+def untag(target, dirpath):
     """Remove tag from target.
 
     Args:
         target: Path to target file.
-        tagpath: Path to tag.
+        dirpath: Path to directory.
 
     If file is not tagged, nothing happens.  Remove *all* hard
-    links to the file in the directory corresponding to the given
-    tag.
+    links to the file in the directory.
     """
     inode = os.lstat(target)
-    for candidate in pathlib.listdirpaths(tagpath):
+    for candidate in pathlib.listdirpaths(dirpath):
         candidate_inode = os.lstat(candidate)
         if os.path.samestat(inode, candidate_inode):
             os.unlink(candidate)
@@ -80,7 +79,7 @@ def parse_query(query):
         _LOGGER.debug("Parsing token %s", token)
         if token[0] == '\\':
             token = token[1:]
-            parse_list.append(TagNode(token))
+            parse_list.append(DirNode(token))
         elif token == 'AND':
             parse_stack.append(parse_list)
             parse_stack.append(AndNode)
@@ -95,7 +94,7 @@ def parse_query(query):
             parse_list = parse_stack.pop()
             parse_list.append(node)
         else:
-            parse_list.append(TagNode(token))
+            parse_list.append(DirNode(token))
     if len(parse_list) != 1:
         raise errors.ParseError(parse_stack, parse_list,
                                 "Not exactly one node at top of parse")
@@ -158,17 +157,17 @@ class OrNode(SearchNode):
         return results
 
 
-class TagNode(SearchNode):
+class DirNode(SearchNode):
 
     """
-    TagNode gets the inodes and paths of the directory at its tagpath.
+    DirNode gets the inodes and paths of the directory at its dirpath.
     """
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, tagpath):
-        self.tagpath = tagpath
+    def __init__(self, dirpath):
+        self.dirpath = dirpath
 
     def get_results(self):
         return dict((os.lstat(filepath), filepath)
-                    for filepath in pathlib.listdirpaths(self.tagpath))
+                    for filepath in pathlib.listdirpaths(self.dirpath))

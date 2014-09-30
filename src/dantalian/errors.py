@@ -1,3 +1,7 @@
+"""
+This module contains all error classes for the dantalian package.
+"""
+
 class Error(Exception):
     """Dantalian base error class."""
 
@@ -7,6 +11,7 @@ class ParseError(Error):
     """Error parsing query."""
 
     def __init__(self, parse_stack, parse_list, msg=''):
+        super().__init__()
         self.parse_stack = parse_stack
         self.parse_list = parse_list
         self.msg = msg
