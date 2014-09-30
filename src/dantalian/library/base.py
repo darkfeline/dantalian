@@ -1,5 +1,8 @@
 """
 This module contains basic library operations.
+
+These operations are defined only for tagging files with directories, with
+the directories indicated only by pathnames.
 """
 
 import abc
@@ -16,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def tag(target, dirpath):
-    """Tag target with given directory.
+    """Tag target file with given directory.
 
     Args:
         target: Path of file to tag.
@@ -41,7 +44,7 @@ def tag(target, dirpath):
 
 
 def untag(target, dirpath):
-    """Remove tag from target.
+    """Remove tag from target file.
 
     Args:
         target: Path to target file.
