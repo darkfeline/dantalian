@@ -21,11 +21,8 @@ If the file was not tagged, nothing will happen.
 OPTIONS
 -------
 
-**-h**, **--help**
-    Print help information.
-
-**--root**\=\ *path*
-    Specify the root directory of the library to use.
+-h, --help   Print help information.
+--root=PATH  Specify the root directory of the library to use.
 
 EXAMPLES
 --------

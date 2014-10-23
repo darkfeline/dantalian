@@ -15,8 +15,7 @@ of file tagging using hard links.
 OPTIONS
 -------
 
-**-h**, **--help**
-    Print help information.
+-h, --help  Print help information.
 
 COMMANDS
 --------

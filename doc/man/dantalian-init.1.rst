@@ -16,5 +16,4 @@ This command is safe to call on an existing library.
 OPTIONS
 -------
 
-**-h**, **--help**
-    Print help information.
+-h, --help  Print help information.

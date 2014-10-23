@@ -16,8 +16,5 @@ and a symbolic link is created at its original path.
 OPTIONS
 -------
 
-**-h**, **--help**
-    Print help information.
-
-**--root**\=\ *path*
-    Specify the root directory of the library to use.
+-h, --help   Print help information.
+--root=PATH  Specify the root directory of the library to use.

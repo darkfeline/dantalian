@@ -29,17 +29,12 @@ will print */path/to/tag2/foo*.
 OPTIONS
 -------
 
-**-h**, **--help**
-    Print help information.
+-h, --help   Print help information.
+--root=PATH  Specify the root directory of the library to use.
 
-**--root**\=\ *path*
-    Specify the root directory of the library to use.
-
-**--print0**
-    Print the files separated with NULLs instead of newlines.
-
-**-t**\=\ *destination*
-    Instead of printing the files, hard link them in the given
-    destination directory, which may be provided as a path or a tag
-    qualifier.  It may be outside of the library as well, but must be on
-    the same file system.
+--print0        Print the files separated with NULLs instead of
+                newlines.
+-t DESTINATION  Instead of printing the files, hard link them in the
+                given destination directory, which may be provided as
+                a path or a tag qualifier.  It may be outside of the
+                library as well, but must be on the same file system.
