@@ -5,22 +5,12 @@ This module contains various shared path-related functions.
 import os
 from itertools import count
 
-__all__ = []
 
-
-def _public(func):
-    """Public decorator."""
-    __all__.append(func.__name__)
-    return func
-
-
-@_public
 def is_special_target(pathname):
     """Return whether the given path is a special tag symlink target."""
     return pathname.startswith('//')
 
 
-@_public
 def special_target(pathname):
     """Make the given path into a special tag symlink target.
 
@@ -32,15 +22,13 @@ def special_target(pathname):
     return '/' + pathname
 
 
-@_public
 def listdirpaths(path):
     """Like os.listdir(), except return paths."""
     for entry in os.listdir(path):
         yield os.path.join(path, entry)
 
 
-@_public
-def resolve_name(dirpath, name):
+def free_name(dirpath, name):
     """Find a free filename in the given directory.
 
     Given a desired filename, this function attempts to find a filename
@@ -69,11 +57,10 @@ def resolve_name(dirpath, name):
             return name
 
 
-@_public
-def resolve_do(dirpath, name, callback):
-    """Repeatedly attempt to do something while resolving a name."""
+def free_name_do(dirpath, name, callback):
+    """Repeatedly attempt to do something while finding a name."""
     while True:
-        dest = os.path.join(dirpath, resolve_name(dirpath, name))
+        dest = os.path.join(dirpath, free_name(dirpath, name))
         try:
             callback(dest)
         except FileExistsError:
