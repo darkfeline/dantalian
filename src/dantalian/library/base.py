@@ -2,7 +2,7 @@
 This module contains basic library operations.
 
 These operations are defined only for tagging files with directories, with
-the directories indicated only by pathnames.
+the directories indicated by pathnames.
 """
 
 import abc
@@ -33,7 +33,7 @@ def tag(target, dirpath):
         if os.path.samefile(entry, target):
             return
     name = os.path.basename(target)
-    pathlib.resolve_do(dirpath, name, lambda dest: os.link(target, dest))
+    pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))
 
 
 def untag(target, dirpath):
@@ -53,6 +53,41 @@ def untag(target, dirpath):
             os.unlink(candidate)
 
 
+def rename(basepath, target, newname):
+    """Rename all links to the target file.
+
+    Attempt to rename all links to the target file under the basepath to
+    newname, finding a name as necessary.
+    """
+    for filepath in list_tags(basepath, target):
+        # pylint: disable=cell-var-from-loop
+        dirpath, _ = os.path.split(filepath)
+        pathlib.free_name_do(dirpath, newname,
+                             lambda dest: os.rename(filepath, dest))
+
+
+def remove(basepath, target):
+    """Remove all links to the target file.
+
+    Remove all links to the target file under the basepath.
+    """
+    for filepath in list_tags(basepath, target):
+        try:
+            os.unlink(filepath)
+        except OSError as err:
+            _LOGGER.error("Could not remove {}: {}".format(filepath, err))
+
+
+def list_tags(basepath, target):
+    """List all links to the target file."""
+    inode = os.lstat(target)
+    for (dirpath, _, filenames) in os.walk(basepath):
+        for name in filenames:
+            filepath = os.path.join(dirpath, name)
+            if os.path.samestat(inode, os.lstat(filepath)):
+                yield filepath
+
+
 def search(search_node):
     """Return files by tag query.
 
@@ -66,7 +101,26 @@ def search(search_node):
 
 
 def parse_query(query):
-    """Parse query string into query node tree."""
+    r"""Parse query string into query node tree.
+
+    Query strings look like:
+
+        'AND foo bar OR spam eggs ) AND \AND \OR \) \\\) ) )'
+
+    which parses to:
+
+        AndNode(
+            DirNode('foo'),
+            DirNode('bar'),
+            OrNode(
+                DirNode('spam'),
+                DirNode('eggs')),
+            AndNode(
+                DirNode('AND'),
+                DirNode('OR')),
+                DirNode(')'),
+                DirNode('\\)'))
+    """
     tokens = deque(shlex.split(query))
     parse_stack = []
     parse_list = []
@@ -114,7 +168,7 @@ class SearchNode(metaclass=abc.ABCMeta):
 
 class GroupNode(SearchNode, metaclass=abc.ABCMeta):
 
-    """Abstract class for nodes that have a list of children."""
+    """Abstract class for nodes that have a list of child nodes."""
 
     # pylint: disable=too-few-public-methods,abstract-method
 
@@ -122,7 +176,7 @@ class GroupNode(SearchNode, metaclass=abc.ABCMeta):
         self.children = children
 
     def __eq__(self, other):
-        return (other.__class__ is self.__class__ and
+        return (self.__class__ is other.__class__ and
                 len(self.children) == len(other.children) and
                 all(ours == theirs
                     for (ours, theirs) in zip(self.children, other.children)))
@@ -173,6 +227,10 @@ class DirNode(SearchNode):
 
     def __init__(self, dirpath):
         self.dirpath = dirpath
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__ and
+                self.dirpath == other.dirpath)
 
     @staticmethod
     def _get_inode(filepath):
