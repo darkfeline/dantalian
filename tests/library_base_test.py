@@ -2,13 +2,14 @@
 This module contains unit tests for dantalian.library.base
 """
 
-import unittest
 import tempfile
 import shutil
 import os
 
 from . import testlib
-from dantalian.library import base as library
+from dantalian.library import base
+
+# pylint: disable=missing-docstring,too-many-public-methods
 
 
 class TestLibraryBase(testlib.ExtendedTestCase):
@@ -28,12 +29,27 @@ class TestLibraryBase(testlib.ExtendedTestCase):
         os.chdir(self._olddir)
 
     def test_tag(self):
-        library.tag(os.path.join('A', 'a'), 'B')
+        base.tag(os.path.join('A', 'a'), 'B')
         self.assertSameFile(os.path.join('A', 'a'), os.path.join('B', 'a'))
 
     def test_untag(self):
-        library.untag(os.path.join('A', 'b'), 'B')
+        base.untag(os.path.join('A', 'b'), 'B')
         self.assertNotSameFile(os.path.join('A', 'b'), os.path.join('B', 'b'))
+
+    def test_rename(self):
+        base.rename(self.root, os.path.join('A', 'b'), 'foo')
+        self.assertSameFile(os.path.join('A', 'foo'), os.path.join('B', 'foo'))
+
+    def test_remove(self):
+        base.remove(self.root, os.path.join('A', 'b'))
+        self.assertFalse(os.path.exists(os.path.join('A', 'b')))
+        self.assertFalse(os.path.exists(os.path.join('B', 'b')))
+
+    def test_list_tags(self):
+        tags = base.list_tags(self.root, os.path.join('A', 'b'))
+        self.assertSetEqual(set(tags),
+                            set(os.path.join(self.root, filename, 'b')
+                                for filename in ('A', 'B')))
 
 
 class TestLibraryBaseQuery(testlib.ExtendedTestCase):
@@ -58,11 +74,11 @@ class TestLibraryBaseQuery(testlib.ExtendedTestCase):
         os.chdir(self._olddir)
 
     def test_and(self):
-        results = library.search(
-            library.AndNode(
-                [library.DirNode('A'),
-                 library.DirNode('B'),
-                 library.DirNode('C')]
+        results = base.search(
+            base.AndNode(
+                [base.DirNode('A'),
+                 base.DirNode('B'),
+                 base.DirNode('C')]
             )
         )
         self.assertListEqual(
@@ -71,11 +87,11 @@ class TestLibraryBaseQuery(testlib.ExtendedTestCase):
         )
 
     def test_or(self):
-        results = library.search(
-            library.OrNode(
-                [library.DirNode('A'),
-                 library.DirNode('B'),
-                 library.DirNode('C')]
+        results = base.search(
+            base.OrNode(
+                [base.DirNode('A'),
+                 base.DirNode('B'),
+                 base.DirNode('C')]
             )
         )
         self.assertListEqual(
@@ -86,37 +102,13 @@ class TestLibraryBaseQuery(testlib.ExtendedTestCase):
                     os.path.join('C', 'd')]),
         )
 
-
-class TestLibraryBaseParsing(testlib.ExtendedTestCase):
-
-    def test_parse_and(self):
-        tree = library.parse_query("AND A B C )")
-        self.assertSameTree(tree, library.AndNode(
-            [library.DirNode("A"),
-             library.DirNode("B"),
-             library.DirNode("C")]))
-
-    def test_parse_or(self):
-        tree = library.parse_query("OR A B C )")
-        self.assertSameTree(tree, library.OrNode(
-            [library.DirNode("A"),
-             library.DirNode("B"),
-             library.DirNode("C")]))
-
-    def test_parse_and_escape(self):
-        tree = library.parse_query(r"AND '\AND' '\\AND' '\\\AND' )")
-        self.assertSameTree(tree, library.AndNode(
-            [library.DirNode(r'AND'),
-             library.DirNode(r'\AND'),
-             library.DirNode(r'\\AND')]))
-
-    def test_parse_and_or(self):
-        tree = library.parse_query("AND A B C OR spam eggs ) )")
-        self.assertSameTree(tree, library.AndNode(
-            [library.DirNode("A"),
-             library.DirNode("B"),
-             library.DirNode("C"),
-             library.OrNode(
-                 [library.DirNode('spam'),
-                  library.DirNode('eggs')])
-            ]))
+    def test_dir(self):
+        results = base.search(
+            base.DirNode('A')
+        )
+        self.assertListEqual(
+            sorted(results),
+            sorted([os.path.join('A', 'a'),
+                    os.path.join('A', 'b'),
+                    os.path.join('A', 'c')]),
+        )

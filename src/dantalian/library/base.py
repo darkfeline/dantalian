@@ -56,6 +56,11 @@ def untag(target, dirpath):
 def rename(basepath, target, newname):
     """Rename all links to the target file.
 
+    Args:
+        basepath: Base path for tag conversions.
+        target: Path of file to rename.
+        newname: New filename.
+
     Attempt to rename all links to the target file under the basepath to
     newname, finding a name as necessary.
     """
@@ -69,17 +74,29 @@ def rename(basepath, target, newname):
 def remove(basepath, target):
     """Remove all links to the target file.
 
+    Args:
+        basepath: Base path for tag conversions.
+        target: Path of file to remove.
+
     Remove all links to the target file under the basepath.
     """
     for filepath in list_tags(basepath, target):
         try:
             os.unlink(filepath)
         except OSError as err:
-            _LOGGER.error("Could not remove {}: {}".format(filepath, err))
+            _LOGGER.error("Could not remove %s: %s", filepath, err)
 
 
 def list_tags(basepath, target):
-    """List all links to the target file."""
+    """List all links to the target file.
+
+    Args:
+        basepath: Base path for tag conversions.
+        target: Path of file whose tags to list.
+
+    Returns:
+        Generator returning paths.
+    """
     inode = os.lstat(target)
     for (dirpath, _, filenames) in os.walk(basepath):
         for name in filenames:
@@ -95,60 +112,9 @@ def search(search_node):
         search_node: Root Node of search query tree
 
     Returns:
-        Files by path.
+        List of paths.
     """
     return list(search_node.get_results().values())
-
-
-def parse_query(query):
-    r"""Parse query string into query node tree.
-
-    Query strings look like:
-
-        'AND foo bar OR spam eggs ) AND \AND \OR \) \\\) ) )'
-
-    which parses to:
-
-        AndNode(
-            DirNode('foo'),
-            DirNode('bar'),
-            OrNode(
-                DirNode('spam'),
-                DirNode('eggs')),
-            AndNode(
-                DirNode('AND'),
-                DirNode('OR')),
-                DirNode(')'),
-                DirNode('\\)'))
-    """
-    tokens = deque(shlex.split(query))
-    parse_stack = []
-    parse_list = []
-    while tokens:
-        token = tokens.popleft()
-        _LOGGER.debug("Parsing token %s", token)
-        if token[0] == '\\':
-            token = token[1:]
-            parse_list.append(DirNode(token))
-        elif token == 'AND':
-            parse_stack.append(parse_list)
-            parse_stack.append(AndNode)
-            parse_list = []
-        elif token == 'OR':
-            parse_stack.append(parse_list)
-            parse_stack.append(OrNode)
-            parse_list = []
-        elif token == ')':
-            node_type = parse_stack.pop()
-            node = node_type(parse_list)
-            parse_list = parse_stack.pop()
-            parse_list.append(node)
-        else:
-            parse_list.append(DirNode(token))
-    if len(parse_list) != 1:
-        raise errors.ParseError(parse_stack, parse_list,
-                                "Not exactly one node at top of parse")
-    return parse_list[0]
 
 
 class SearchNode(metaclass=abc.ABCMeta):

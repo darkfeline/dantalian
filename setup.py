@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='dantalian',
-    version='0.5',
+    version='0.7',
     package_dir={'': 'src'},
     packages=find_packages('src'),
     entry_points={
@@ -10,11 +10,10 @@ setup(
             'dantalian = dantalian.main:main',
         ],
     },
-    test_suite="tests",
 
     author='Allen Li',
     author_email='darkfeline@abagofapples.com',
-    description='',
+    description='File tagging with hard links',
     license='MIT',
     url='http://darkfeline.github.io/dantalian/',
 )
