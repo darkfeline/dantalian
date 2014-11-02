@@ -8,9 +8,11 @@ import logging
 import os
 import shlex
 
+from dantalian import errors
+
 from . import base
+from .base import search
 from . import rooted
-from . import dir
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,14 +22,14 @@ def tag(basepath, target, name):
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path to target.
+        target: Tag or path to target.
         name: Tag or path.
 
     If target is already tagged, nothing happens.
     """
     if os.path.isfile(target):
-        if rooted.is_tag(name):
-            name = tag2path(basepath, name)
+        target = rooted.path(basepath, target)
+        name = rooted.path(basepath, name)
         base.tag(target, name)
     else:
         pass
@@ -38,14 +40,14 @@ def untag(basepath, target, name):
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path to target.
+        target: Tag or path to target.
         name: Tag or path.
 
     If file is not tagged, nothing happens.
     """
     if os.path.isfile(target):
-        if rooted.is_tag(name):
-            name = tag2path(basepath, name)
+        target = rooted.path(basepath, target)
+        name = rooted.path(basepath, name)
         base.untag(target, name)
     else:
         pass
@@ -56,40 +58,50 @@ def rename(basepath, target, newname):
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path to target.
+        target: Tag or path to target.
         newname: New filename.
 
-    Attempt to rename all links to the target file under the basepath to
+    Attempt to rename all links to the target under the basepath to
     newname, finding a name as necessary.
     """
     if os.path.isfile(target):
-        if rooted.is_tag(name):
-            name = tag2path(basepath, name)
-        base.rename(basepath, target, name)
+        target = rooted.path(basepath, target)
+        base.rename(basepath, target, newname)
     else:
         pass
 
 
 def remove(basepath, target):
-    """Remove all links to the target file.
+    """Remove all links to the target file-or-directory.
 
-    Remove all links to the target file under the basepath.
+    Args:
+        basepath: Base path for tag conversions.
+        target: Tag or path to target.
+
+    Remove all links to the target under the basepath.
     """
+    if os.path.isfile(target):
+        target = rooted.path(basepath, target)
+        base.remove(basepath, target)
+    else:
+        pass
 
 
 def list_tags(basepath, target):
-    """List all links to the target file."""
-
-
-def search(search_node):
-    """Return files by tag query.
+    """List all links to the target file-or-directory.
 
     Args:
-        search_node: Root Node of search query tree
+        basepath: Base path for tag conversions.
+        target: Tag or path to target.
 
     Returns:
-        Files by path.
+        Generator yielding paths.
     """
+    if os.path.isfile(target):
+        target = rooted.path(basepath, target)
+        base.list_tags(basepath, target)
+    else:
+        pass
 
 
 def parse_query(query):

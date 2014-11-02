@@ -2,7 +2,6 @@
 This module contains unit tests for dantalian.library.rooted
 """
 
-import os
 import unittest
 
 from dantalian.library import rooted

@@ -1,19 +1,17 @@
 """
 This module contains basic library operations.
 
-These operations are defined only for tagging files with directories, with
-the directories indicated by pathnames.
+The functions in this module define basic library operations for files "tagged"
+by links in directories.  Only tagging of files (not directories) are
+supported, and only pathnames (not tagnames) are supported.
 """
 
 import abc
-from collections import deque
 import functools
 import logging
 import os
-import shlex
 
 from dantalian import pathlib
-from dantalian import errors
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -95,7 +93,7 @@ def list_tags(basepath, target):
         target: Path of file whose tags to list.
 
     Returns:
-        Generator returning paths.
+        Generator yielding paths.
     """
     inode = os.lstat(target)
     for (dirpath, _, filenames) in os.walk(basepath):
