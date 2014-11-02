@@ -20,7 +20,7 @@ def tag(basepath, target, name):
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path to target file.
+        target: Path to target.
         name: Tag or path.
 
     If target is already tagged, nothing happens.
@@ -38,7 +38,7 @@ def untag(basepath, target, name):
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path to target file.
+        target: Path to target.
         name: Tag or path.
 
     If file is not tagged, nothing happens.
@@ -52,16 +52,22 @@ def untag(basepath, target, name):
 
 
 def rename(basepath, target, newname):
-    """Rename all links to the target file.
+    """Rename all links to the target file-or-directory.
 
     Args:
         basepath: Base path for tag conversions.
-        target: Path of file to rename.
+        target: Path to target.
         newname: New filename.
 
     Attempt to rename all links to the target file under the basepath to
     newname, finding a name as necessary.
     """
+    if os.path.isfile(target):
+        if rooted.is_tag(name):
+            name = tag2path(basepath, name)
+        base.rename(basepath, target, name)
+    else:
+        pass
 
 
 def remove(basepath, target):

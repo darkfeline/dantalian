@@ -24,3 +24,7 @@ class TestLibraryBase(unittest.TestCase):
     def test_tag2path(self):
         self.assertEqual(rooted.tag2path('/foo', '//bar'), '/foo/bar')
         self.assertEqual(rooted.tag2path('/foo', '///bar'), '/foo/bar')
+
+    def test_path(self):
+        self.assertEqual(rooted.path('/foo', '//bar'), '/foo/bar')
+        self.assertEqual(rooted.path('/foo', '/bar'), '/bar')
