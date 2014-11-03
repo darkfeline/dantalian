@@ -142,6 +142,10 @@ def parse_query(query):
             parse_stack.append(parse_list)
             parse_stack.append(base.OrNode)
             parse_list = []
+        elif token == 'MINUS':
+            parse_stack.append(parse_list)
+            parse_stack.append(base.MinusNode)
+            parse_list = []
         elif token == ')':
             node_type = parse_stack.pop()
             node = node_type(parse_list)

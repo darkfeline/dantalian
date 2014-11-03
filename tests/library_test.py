@@ -25,12 +25,26 @@ class TestLibraryBaseParsing(testlib.ExtendedTestCase):
              base.DirNode("B"),
              base.DirNode("C")]))
 
+    def test_parse_minus(self):
+        tree = library.parse_query("MINUS A B C )")
+        self.assertSameTree(tree, base.MinusNode(
+            [base.DirNode("A"),
+             base.DirNode("B"),
+             base.DirNode("C")]))
+
     def test_parse_and_escape(self):
         tree = library.parse_query(r"AND '\AND' '\\AND' '\\\AND' )")
         self.assertSameTree(tree, base.AndNode(
             [base.DirNode(r'AND'),
              base.DirNode(r'\AND'),
              base.DirNode(r'\\AND')]))
+
+    def test_parse_paren_escape(self):
+        tree = library.parse_query(r"AND A B \\) )")
+        self.assertSameTree(tree, base.AndNode(
+            [base.DirNode(r'A'),
+             base.DirNode(r'B'),
+             base.DirNode(r')')]))
 
     def test_parse_and_or(self):
         tree = library.parse_query("AND A B C OR spam eggs ) )")
