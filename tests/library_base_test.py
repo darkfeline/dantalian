@@ -102,6 +102,19 @@ class TestLibraryBaseQuery(testlib.ExtendedTestCase):
                     os.path.join('C', 'd')]),
         )
 
+    def test_minus(self):
+        results = base.search(
+            base.MinusNode(
+                [base.DirNode('A'),
+                 base.DirNode('B'),
+                 base.DirNode('C')]
+            )
+        )
+        self.assertListEqual(
+            results,
+            [os.path.join('A', 'a')]
+        )
+
     def test_dir(self):
         results = base.search(
             base.DirNode('A')

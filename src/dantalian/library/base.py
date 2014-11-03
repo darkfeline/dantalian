@@ -155,8 +155,6 @@ class AndNode(GroupNode):
     # pylint: disable=too-few-public-methods
 
     def get_results(self):
-        if not self.children:
-            return dict()
         pathmap = self.children[0].get_results()
         inodes = (set(node.get_results()) for node in self.children)
         inodes = functools.reduce(set.intersection, inodes)
@@ -178,6 +176,24 @@ class OrNode(GroupNode):
             for inode in pathmap:
                 if inode not in results:
                     results[inode] = pathmap[inode]
+        return results
+
+
+# TODO
+class MinusNode(GroupNode):
+
+    """
+    MinusNode returns the results of its first child minus the results of the
+    rest of its children.
+    """
+
+    def get_results(self):
+        results = self.children[0].get_results()
+        for node in self.children[1:]:
+            pathmap = node.get_results()
+            for inode in pathmap:
+                if inode in results:
+                    del results[inode]
         return results
 
 
