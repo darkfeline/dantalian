@@ -179,7 +179,6 @@ class OrNode(GroupNode):
         return results
 
 
-# TODO
 class MinusNode(GroupNode):
 
     """
