@@ -1,4 +1,4 @@
 #!/bin/bash
 
 pylint src/dantalian tests
-nosetests
+nosetests --with-coverage

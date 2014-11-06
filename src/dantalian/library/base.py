@@ -6,6 +6,8 @@ by links in directories.  Only tagging of files (not directories) are
 supported, and only pathnames (not tagnames) are supported.
 """
 
+# pylint: disable=too-few-public-methods
+
 import abc
 import functools
 import logging
@@ -123,7 +125,7 @@ class SearchNode(metaclass=abc.ABCMeta):
         get_results(): Get results of node query.
     """
 
-    # pylint: disable=no-init,too-few-public-methods
+    # pylint: disable=no-init
 
     @abc.abstractmethod
     def get_results(self):
@@ -134,7 +136,7 @@ class GroupNode(SearchNode, metaclass=abc.ABCMeta):
 
     """Abstract class for nodes that have a list of child nodes."""
 
-    # pylint: disable=too-few-public-methods,abstract-method
+    # pylint: disable=abstract-method
 
     def __init__(self, children):
         self.children = children
@@ -152,8 +154,6 @@ class AndNode(GroupNode):
     AndNode merges the results of its children nodes by intersection.
     """
 
-    # pylint: disable=too-few-public-methods
-
     def get_results(self):
         pathmap = self.children[0].get_results()
         inodes = (set(node.get_results()) for node in self.children)
@@ -166,8 +166,6 @@ class OrNode(GroupNode):
     """
     OrNode merges the results of its children nodes by union.
     """
-
-    # pylint: disable=too-few-public-methods
 
     def get_results(self):
         results = {}
@@ -201,8 +199,6 @@ class DirNode(SearchNode):
     """
     DirNode gets the inodes and paths of the directory at its dirpath.
     """
-
-    # pylint: disable=too-few-public-methods
 
     def __init__(self, dirpath):
         self.dirpath = dirpath
