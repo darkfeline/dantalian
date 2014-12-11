@@ -34,11 +34,13 @@ def is_root(dirpath):
     return os.path.isdir(os.path.join(dirpath, _ROOTDIR))
 
 
-def find_root(dirpath):
+def find_root(dirpath=''):
     """Find library root.
 
     Return the path of first library root found above the given path.  Return
     None if no library root found.
+
+    An empty string or no dirpath means to use the current directory.
     """
     dirpath = os.path.abspath(dirpath)
     _, dirpath = os.path.splitdrive(dirpath)

@@ -3,7 +3,6 @@ This module contains functions implementing commands for the main script.
 """
 
 import logging
-import os
 import sys
 
 from dantalian import library
@@ -48,18 +47,10 @@ def _unpack(args):
     return files, tags
 
 
-def _get_root(args):
-    """Get root from arguments, finding it if necessary."""
-    root = args.root
-    if not root:
-        root = library.find_root(os.getcwd())
-    return root
-
-
 def tag(args):
     """Tag files."""
     files, tags = _unpack(args)
-    root = _get_root(args)
+    root = library.find_root(args.root)
     for current_file in files:
         for current_tag in tags:
             try:
@@ -72,7 +63,7 @@ def tag(args):
 def untag(args):
     """Untag files."""
     files, tags = _unpack(args)
-    root = _get_root(args)
+    root = library.find_root(args.root)
     for current_file in files:
         for current_tag in tags:
             try:
@@ -84,7 +75,7 @@ def untag(args):
 
 def search(args):
     """Search for files."""
-    root = _get_root(args)
+    root = library.find_root(args.root)
     query_tree = library.parse_query(root, args.query)
     results = library.search(query_tree)
     for entry in results:
