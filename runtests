@@ -1,4 +1,0 @@
-#!/bin/bash
-
-pylint src/dantalian tests
-nosetests --with-coverage
