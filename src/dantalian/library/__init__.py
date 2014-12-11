@@ -12,7 +12,10 @@ from dantalian import errors
 from . import base
 from . import tags
 
-from .base import search  # exported as module API
+# exported as module API
+from .base import search
+from .tags import init_root
+from .tags import find_root
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -99,7 +102,7 @@ def list_tags(basepath, target):
     """
     if os.path.isfile(target):
         target = tags.path(basepath, target)
-        base.list_tags(basepath, target)
+        return base.list_tags(basepath, target)
     else:
         pass
 

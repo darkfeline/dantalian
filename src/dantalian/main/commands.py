@@ -3,6 +3,7 @@ This module contains functions implementing commands for the main script.
 """
 
 import logging
+import os
 import sys
 
 from dantalian import library
@@ -47,13 +48,22 @@ def _unpack(args):
     return files, tags
 
 
+def _get_root(args):
+    """Get root from arguments, finding it if necessary."""
+    root = args.root
+    if not root:
+        root = library.find_root(os.getcwd())
+    return root
+
+
 def tag(args):
     """Tag files."""
     files, tags = _unpack(args)
+    root = _get_root(args)
     for current_file in files:
         for current_tag in tags:
             try:
-                library.tag('', current_file, current_tag)
+                library.tag(root, current_file, current_tag)
             except OSError as err:
                 _LOGGER.error('OSError encountered tagging %s with %s: %s',
                               current_file, current_tag, err)
@@ -62,10 +72,11 @@ def tag(args):
 def untag(args):
     """Untag files."""
     files, tags = _unpack(args)
+    root = _get_root(args)
     for current_file in files:
         for current_tag in tags:
             try:
-                library.untag('', current_file, current_tag)
+                library.untag(root, current_file, current_tag)
             except OSError as err:
                 _LOGGER.error('OSError encountered tagging %s with %s: %s',
                               current_file, current_tag, err)

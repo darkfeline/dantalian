@@ -35,6 +35,7 @@ def make_parser():
             %(prog)s FILE -t TAG [TAG ...]
             %(prog)s -f FILE [FILE ...] -t TAG [TAG ...]
             %(prog)s --help''')
+    tmp_parser.add_argument('--root', metavar='ROOT')
     tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
     tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
     tmp_parser.add_argument('args', nargs='*')
@@ -48,6 +49,7 @@ def make_parser():
             %(prog)s FILE -t TAG [TAG ...]
             %(prog)s -f FILE [FILE ...] -t TAG [TAG ...]
             %(prog)s --help''')
+    tmp_parser.add_argument('--root', metavar='ROOT')
     tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
     tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
     tmp_parser.add_argument('args', nargs='*')
