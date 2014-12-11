@@ -9,8 +9,8 @@ import os
 import shlex
 
 from dantalian import errors
-from dantalian import library.base
-from dantalian import library.tags
+from . import base
+from . import tags
 
 from .base import search  # exported as module API
 
@@ -28,9 +28,9 @@ def tag(basepath, target, name):
     If target is already tagged, nothing happens.
     """
     if os.path.isfile(target):
-        target = library.tags.path(basepath, target)
-        name = library.tags.path(basepath, name)
-        library.base.tag(target, name)
+        target = tags.path(basepath, target)
+        name = tags.path(basepath, name)
+        base.tag(target, name)
     else:
         pass
 
@@ -46,9 +46,9 @@ def untag(basepath, target, name):
     If file is not tagged, nothing happens.
     """
     if os.path.isfile(target):
-        target = library.tags.path(basepath, target)
-        name = library.tags.path(basepath, name)
-        library.base.untag(target, name)
+        target = tags.path(basepath, target)
+        name = tags.path(basepath, name)
+        base.untag(target, name)
     else:
         pass
 
@@ -65,8 +65,8 @@ def rename(basepath, target, newname):
     newname, finding a name as necessary.
     """
     if os.path.isfile(target):
-        target = library.tags.path(basepath, target)
-        library.base.rename(basepath, target, newname)
+        target = tags.path(basepath, target)
+        base.rename(basepath, target, newname)
     else:
         pass
 
@@ -81,8 +81,8 @@ def remove(basepath, target):
     Remove all links to the target under the basepath.
     """
     if os.path.isfile(target):
-        target = library.tags.path(basepath, target)
-        library.base.remove(basepath, target)
+        target = tags.path(basepath, target)
+        base.remove(basepath, target)
     else:
         pass
 
@@ -98,8 +98,8 @@ def list_tags(basepath, target):
         Generator yielding paths.
     """
     if os.path.isfile(target):
-        target = library.tags.path(basepath, target)
-        library.base.list_tags(basepath, target)
+        target = tags.path(basepath, target)
+        base.list_tags(basepath, target)
     else:
         pass
 
@@ -133,18 +133,18 @@ def parse_query(query):
         _LOGGER.debug("Parsing token %s", token)
         if token[0] == '\\':
             token = token[1:]
-            parse_list.append(library.base.DirNode(token))
+            parse_list.append(base.DirNode(token))
         elif token == 'AND':
             parse_stack.append(parse_list)
-            parse_stack.append(library.base.AndNode)
+            parse_stack.append(base.AndNode)
             parse_list = []
         elif token == 'OR':
             parse_stack.append(parse_list)
-            parse_stack.append(library.base.OrNode)
+            parse_stack.append(base.OrNode)
             parse_list = []
         elif token == 'MINUS':
             parse_stack.append(parse_list)
-            parse_stack.append(library.base.MinusNode)
+            parse_stack.append(base.MinusNode)
             parse_list = []
         elif token == ')':
             node_type = parse_stack.pop()
@@ -152,10 +152,10 @@ def parse_query(query):
             parse_list = parse_stack.pop()
             parse_list.append(node)
         else:
-            parse_list.append(library.base.DirNode(token))
+            parse_list.append(base.DirNode(token))
     if len(parse_list) != 1:
         raise ParseError(parse_stack, parse_list,
-                                "Not exactly one node at top of parse")
+                         "Not exactly one node at top of parse")
     return parse_list[0]
 
 

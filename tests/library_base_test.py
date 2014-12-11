@@ -9,7 +9,7 @@ import os
 from . import testlib
 from dantalian.library import base
 
-# pylint: disable=missing-docstring,too-many-public-methods
+# pylint: disable=missing-docstring
 
 
 class TestLibraryBase(testlib.ExtendedTestCase):

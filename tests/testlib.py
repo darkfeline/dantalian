@@ -13,7 +13,7 @@ class ExtendedTestCase(unittest.TestCase):
 
     """TestCase class extended with helpful assert methods."""
 
-    # pylint: disable=invalid-name,too-many-public-methods
+    # pylint: disable=invalid-name
 
     def assertSameFile(self, file1, file2):
         """Assert both files are the same by inode."""

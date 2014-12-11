@@ -8,6 +8,8 @@ symlinks are absolute and start with two slashes.  External tags are not
 considered canonical.
 """
 
+# pylint: disable=all
+
 import os
 
 from dantalian import pathlib

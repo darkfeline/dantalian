@@ -25,3 +25,37 @@ def path(basepath, name):
     if is_tag(name):
         name = tag2path(basepath, name)
     return name
+
+
+_ROOTDIR = '.dantalian'
+
+def is_root(dirpath):
+    """Return if path is a library root."""
+    return os.path.isdir(os.path.join(dirpath, _ROOTDIR))
+
+
+def find_root(dirpath):
+    """Find library root.
+
+    Return the path of first library root found above the given path.  Return
+    None if no library root found.
+    """
+    dirpath = os.path.abspath(dirpath)
+    _, dirpath = os.path.splitdrive(dirpath)
+    while True:
+        if is_root(dirpath):
+            return dirpath
+        elif dirpath in ('/', ''):
+            return None
+        else:
+            dirpath, _ = os.path.split(dirpath)
+
+
+def init_root(dirpath):
+    """Initialize library root."""
+    os.mkdir(os.path.join(dirpath, _ROOTDIR))
+
+
+def get_resource(dirpath, resource_path):
+    """Get resource path from library root."""
+    return os.path.join(dirpath, _ROOTDIR, resource_path)

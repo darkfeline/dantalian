@@ -53,7 +53,7 @@ def tag(args):
     for current_file in files:
         for current_tag in tags:
             try:
-                library.tag(current_file, current_tag)
+                library.tag('', current_file, current_tag)
             except OSError as err:
                 _LOGGER.error('OSError encountered tagging %s with %s: %s',
                               current_file, current_tag, err)
@@ -65,7 +65,7 @@ def untag(args):
     for current_file in files:
         for current_tag in tags:
             try:
-                library.untag(current_file, current_tag)
+                library.untag('', current_file, current_tag)
             except OSError as err:
                 _LOGGER.error('OSError encountered tagging %s with %s: %s',
                               current_file, current_tag, err)
