@@ -60,6 +60,7 @@ def make_parser():
         'search',
         usage='''%(prog)s QUERY
             %(prog)s --help''')
+    tmp_parser.add_argument('--root', metavar='ROOT')
     tmp_parser.add_argument('query', nargs='+')
     tmp_parser.set_defaults(func=commands.search)
 

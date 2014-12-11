@@ -107,7 +107,7 @@ def list_tags(basepath, target):
         pass
 
 
-def parse_query(query):
+def parse_query(basepath, query):
     r"""Parse query string into query node tree.
 
     Query strings look like:
@@ -155,6 +155,7 @@ def parse_query(query):
             parse_list = parse_stack.pop()
             parse_list.append(node)
         else:
+            token = tags.path(basepath, token)
             parse_list.append(base.DirNode(token))
     if len(parse_list) != 1:
         raise ParseError(parse_stack, parse_list,

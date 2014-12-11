@@ -84,7 +84,8 @@ def untag(args):
 
 def search(args):
     """Search for files."""
-    query_tree = library.parse_query(args.query)
+    root = _get_root(args)
+    query_tree = library.parse_query(root, args.query)
     results = library.search(query_tree)
     for entry in results:
         print(entry)
