@@ -154,6 +154,25 @@ def parse_query(query):
         else:
             parse_list.append(library.base.DirNode(token))
     if len(parse_list) != 1:
-        raise errors.ParseError(parse_stack, parse_list,
+        raise ParseError(parse_stack, parse_list,
                                 "Not exactly one node at top of parse")
     return parse_list[0]
+
+
+class ParseError(errors.Error):
+
+    """Error parsing query."""
+
+    def __init__(self, parse_stack, parse_list, msg=''):
+        super().__init__()
+        self.parse_stack = parse_stack
+        self.parse_list = parse_list
+        self.msg = msg
+
+    def __str__(self):
+        return "{}\nstack={}\nlist={}".format(
+            self.msg, self.parse_stack, self.parse_list)
+
+    def __repr__(self):
+        return "ParseError({!r}, {!r}, {!r})".format(
+            self.parse_stack, self.parse_list, self.msg)
