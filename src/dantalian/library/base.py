@@ -64,11 +64,13 @@ def rename(basepath, target, newname):
     Attempt to rename all links to the target file under the basepath to
     newname, finding a name as necessary.
     """
+    def func(dst):
+        # pylint: disable=missing-docstring
+        # pylint: disable=undefined-loop-variable
+        pathlib.rename_safe(filepath, dst)
     for filepath in list_tags(basepath, target):
-        # pylint: disable=cell-var-from-loop
         dirpath, _ = os.path.split(filepath)
-        pathlib.free_name_do(dirpath, newname,
-                             lambda dest: os.rename(filepath, dest))
+        pathlib.free_name_do(dirpath, newname, func)
 
 
 def remove(basepath, target):

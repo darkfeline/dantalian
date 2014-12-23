@@ -11,6 +11,7 @@ import shlex
 from dantalian import errors
 from . import base
 from . import tags
+from . import dirlib
 
 # exported as module API
 from .base import search
@@ -136,7 +137,7 @@ def parse_query(basepath, query):
         _LOGGER.debug("Parsing token %s", token)
         if token[0] == '\\':
             token = token[1:]
-            parse_list.append(base.DirNode(token))
+            parse_list.append(dirlib.DirNode(token))
         elif token == 'AND':
             parse_stack.append(parse_list)
             parse_stack.append(base.AndNode)
@@ -156,7 +157,7 @@ def parse_query(basepath, query):
             parse_list.append(node)
         else:
             token = tags.path(basepath, token)
-            parse_list.append(base.DirNode(token))
+            parse_list.append(dirlib.DirNode(token))
     if len(parse_list) != 1:
         raise ParseError(parse_stack, parse_list,
                          "Not exactly one node at top of parse")

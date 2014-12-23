@@ -15,11 +15,9 @@ def special_target(pathname):
     """Make the given path into a special tag symlink target.
 
     Args:
-        pathname: Absolute pathname.
+        pathname: Pathname (can be relative).
     """
-    if not pathname.startswith('/'):
-        raise ValueError('{} is not an absolute pathname'.format(pathname))
-    return '/' + pathname
+    return '/' + os.path.abspath(pathname)
 
 
 def listdirpaths(path):
@@ -58,7 +56,11 @@ def free_name(dirpath, name):
 
 
 def free_name_do(dirpath, name, callback):
-    """Repeatedly attempt to do something while finding a name."""
+    """Repeatedly attempt to do something while finding a name.
+
+    Returns:
+        Path of successful new name.
+    """
     while True:
         dest = os.path.join(dirpath, free_name(dirpath, name))
         try:
@@ -66,4 +68,15 @@ def free_name_do(dirpath, name, callback):
         except FileExistsError:
             continue
         else:
-            break
+            return dest
+
+
+def rename_safe(src, dst):
+    """Semi-safe rename.
+
+    Raises FileExistsError if dst exists, but not safe from race conditions.
+    """
+    if os.path.isfile(dst):
+        raise FileExistsError(
+            'rename_safe() failed: {} -> {}'.format(src, dst))
+    os.rename(src, dst)
