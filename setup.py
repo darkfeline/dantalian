@@ -12,7 +12,7 @@ setup(
     },
 
     author='Allen Li',
-    author_email='darkfeline@abagofapples.com',
+    author_email='darkfeline@felesatra.moe',
     description='File tagging with hard links',
     license='MIT',
     url='http://darkfeline.github.io/dantalian/',
