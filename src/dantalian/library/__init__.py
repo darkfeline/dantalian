@@ -1,6 +1,9 @@
 """
 This package contains high-level functions for performing library operations,
 built from the simpler functions in submodules.
+
+Serves as a public interface to library functionality.
+
 """
 
 from collections import deque
@@ -8,15 +11,15 @@ import logging
 import os
 import shlex
 
-from dantalian import errors
-from . import base
-from . import tags
+from . import errors
+from . import baselib
+from . import taglib
 from . import dirlib
 
 # exported as module API
-from .base import search
-from .tags import init_root
-from .tags import find_root
+from .baselib import search
+from .taglib import init_root
+from .taglib import find_root
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,9 +35,9 @@ def tag(basepath, target, name):
     If target is already tagged, nothing happens.
     """
     if os.path.isfile(target):
-        target = tags.path(basepath, target)
-        name = tags.path(basepath, name)
-        base.tag(target, name)
+        target = taglib.path(basepath, target)
+        name = taglib.path(basepath, name)
+        baselib.tag(target, name)
     else:
         pass
 
@@ -50,9 +53,9 @@ def untag(basepath, target, name):
     If file is not tagged, nothing happens.
     """
     if os.path.isfile(target):
-        target = tags.path(basepath, target)
-        name = tags.path(basepath, name)
-        base.untag(target, name)
+        target = taglib.path(basepath, target)
+        name = taglib.path(basepath, name)
+        baselib.untag(target, name)
     else:
         pass
 
@@ -69,8 +72,8 @@ def rename(basepath, target, newname):
     newname, finding a name as necessary.
     """
     if os.path.isfile(target):
-        target = tags.path(basepath, target)
-        base.rename(basepath, target, newname)
+        target = taglib.path(basepath, target)
+        baselib.rename(basepath, target, newname)
     else:
         pass
 
@@ -85,13 +88,13 @@ def remove(basepath, target):
     Remove all links to the target under the basepath.
     """
     if os.path.isfile(target):
-        target = tags.path(basepath, target)
-        base.remove(basepath, target)
+        target = taglib.path(basepath, target)
+        baselib.remove(basepath, target)
     else:
         pass
 
 
-def list_tags(basepath, target):
+def list_links(basepath, target):
     """List all links to the target file-or-directory.
 
     Args:
@@ -102,8 +105,8 @@ def list_tags(basepath, target):
         Generator yielding paths.
     """
     if os.path.isfile(target):
-        target = tags.path(basepath, target)
-        return base.list_tags(basepath, target)
+        target = taglib.path(basepath, target)
+        return baselib.list_links(basepath, target)
     else:
         pass
 
@@ -140,15 +143,15 @@ def parse_query(basepath, query):
             parse_list.append(dirlib.DirNode(token))
         elif token == 'AND':
             parse_stack.append(parse_list)
-            parse_stack.append(base.AndNode)
+            parse_stack.append(baselib.AndNode)
             parse_list = []
         elif token == 'OR':
             parse_stack.append(parse_list)
-            parse_stack.append(base.OrNode)
+            parse_stack.append(baselib.OrNode)
             parse_list = []
         elif token == 'MINUS':
             parse_stack.append(parse_list)
-            parse_stack.append(base.MinusNode)
+            parse_stack.append(baselib.MinusNode)
             parse_list = []
         elif token == ')':
             node_type = parse_stack.pop()
@@ -156,7 +159,7 @@ def parse_query(basepath, query):
             parse_list = parse_stack.pop()
             parse_list.append(node)
         else:
-            token = tags.path(basepath, token)
+            token = taglib.path(basepath, token)
             parse_list.append(dirlib.DirNode(token))
     if len(parse_list) != 1:
         raise ParseError(parse_stack, parse_list,

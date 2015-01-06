@@ -6,22 +6,13 @@ import os
 from itertools import count
 
 
-def is_special_target(pathname):
-    """Return whether the given path is a special tag symlink target."""
-    return pathname.startswith('//')
-
-
-def special_target(pathname):
-    """Make the given path into a special tag symlink target.
-
-    Args:
-        pathname: Pathname (can be relative).
-    """
-    return '/' + os.path.abspath(pathname)
-
-
 def listdirpaths(path):
-    """Like os.listdir(), except return paths."""
+    """Like os.listdir(), except return pathnames instead of filenames.
+
+    Returns:
+      A generator yielding paths.
+
+    """
     for entry in os.listdir(path):
         yield os.path.join(path, entry)
 
@@ -33,9 +24,8 @@ def free_name(dirpath, name):
     that is not currently being used in the given directory, adding an
     incrementing index to the filename as necessary.
 
-    Note that the returned filename might not work, as a file with that
-    name might be created between being checked in the function and when
-    it is actually used.  Program accordingly.
+    Note that the returned filename might not work due to race
+    conditions. Program accordingly.
 
     Args:
         name: Desired filename.
@@ -43,6 +33,7 @@ def free_name(dirpath, name):
 
     Returns:
         Filename.
+
     """
     files = os.listdir(dirpath)
     if name not in files:
@@ -56,7 +47,7 @@ def free_name(dirpath, name):
 
 
 def free_name_do(dirpath, name, callback):
-    """Repeatedly attempt to do something while finding a name.
+    """Repeatedly attempt to do something while finding a free filename.
 
     Returns:
         Path of successful new name.
@@ -74,7 +65,9 @@ def free_name_do(dirpath, name, callback):
 def rename_safe(src, dst):
     """Semi-safe rename.
 
-    Raises FileExistsError if dst exists, but not safe from race conditions.
+    Raises FileExistsError if dst exists (instead of silently overwriting), but
+    not safe from race conditions.
+
     """
     if os.path.isfile(dst):
         raise FileExistsError(

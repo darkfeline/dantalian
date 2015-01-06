@@ -6,10 +6,10 @@ methods.
 import unittest
 import os
 
-from dantalian.library import base as library
+from dantalian.library import baselib
 
 
-class ExtendedTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     """TestCase class extended with helpful assert methods."""
 
@@ -28,9 +28,9 @@ class ExtendedTestCase(unittest.TestCase):
         if os.path.exists(file2):
             self.assertFalse(os.path.samefile(file1, file2))
 
-    def assertSameTree(self, node1, node2):
+    def assertSameQuery(self, node1, node2):
         """Assert two query node trees are equal."""
         self.assertEqual(node1, node2)
-        if isinstance(node1, library.GroupNode):
+        if isinstance(node1, baselib.GroupNode):
             for i in range(len(node1.children)):
-                self.assertSameTree(node1.children[i], node2.children[i])
+                self.assertSameQuery(node1.children[i], node2.children[i])

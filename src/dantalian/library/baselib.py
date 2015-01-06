@@ -1,9 +1,15 @@
-"""
-This module contains basic library operations.
+"""This module contains basic library operations.
 
-The functions in this module define basic library operations for files "tagged"
-by links in directories.  Only tagging of files (not directories) are
-supported, and only pathnames (not tagnames) are supported.
+The functions in this module define basic library operations for files.  Only
+tagging of files (not directories) are supported, and only pathnames (not
+tagnames) are supported.
+
+A file is tagged with a directory if and only if there exists at least one hard
+link to the file in that directory.
+
+A file A is tagged at a path B if and only if B refers to a link that
+points to A.
+
 """
 
 # pylint: disable=too-few-public-methods
@@ -13,9 +19,17 @@ import functools
 import logging
 import os
 
-from dantalian import pathlib
+from . import pathlib
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def is_tagged(target, dirpath):
+    """Return if target is tagged with dirpath."""
+    for entry in pathlib.listdirpaths(dirpath):
+        if os.path.samefile(entry, target):
+            return True
+    return False
 
 
 def tag(target, dirpath):
@@ -25,13 +39,12 @@ def tag(target, dirpath):
         target: Path of file to tag.
         dirpath: Path of directory.
 
-    If file is already tagged, nothing happens.  This includes if
-    the file is hardlinked in the directory under
-    another name.
+    If file is already tagged, nothing happens.  This includes if the file is
+    hardlinked in the directory under another name.
+
     """
-    for entry in pathlib.listdirpaths(dirpath):
-        if os.path.samefile(entry, target):
-            return
+    if is_tagged(target, dirpath):
+        return
     name = os.path.basename(target)
     pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))
 
@@ -43,8 +56,9 @@ def untag(target, dirpath):
         target: Path to target file.
         dirpath: Path to directory.
 
-    If file is not tagged, nothing happens.  Remove *all* hard
-    links to the file in the directory.
+    If file is not tagged, nothing happens.  Remove *all* hard links to the
+    file in the directory.
+
     """
     inode = os.lstat(target)
     for candidate in pathlib.listdirpaths(dirpath):
@@ -57,44 +71,48 @@ def rename(basepath, target, newname):
     """Rename all links to the target file.
 
     Args:
-        basepath: Base path for tag conversions.
+        basepath: Base path for finding links.
         target: Path of file to rename.
         newname: New filename.
 
     Attempt to rename all links to the target file under the basepath to
-    newname, finding a name as necessary.
+    newname, finding a name as necessary.  If there are multiple links to the
+    file in a given directory, the first will be renamed and the extras will be
+    removed.
+
     """
-    def func(dst):
-        # pylint: disable=missing-docstring
-        # pylint: disable=undefined-loop-variable
-        pathlib.rename_safe(filepath, dst)
-    for filepath in list_tags(basepath, target):
+    seen = set()
+    for filepath in list_links(basepath, target):
         dirpath, _ = os.path.split(filepath)
-        pathlib.free_name_do(dirpath, newname, func)
+        if dirpath in seen:
+            os.unlink(filepath)
+            continue
+        # pylint: disable=cell-var-from-loop
+        pathlib.free_name_do(dirpath, newname,
+                             lambda dst: pathlib.rename_safe(filepath, dst))
+        seen.add(dirpath)
 
 
 def remove(basepath, target):
     """Remove all links to the target file.
 
     Args:
-        basepath: Base path for tag conversions.
+        basepath: Base path for finding links.
         target: Path of file to remove.
 
     Remove all links to the target file under the basepath.
+
     """
-    for filepath in list_tags(basepath, target):
-        try:
-            os.unlink(filepath)
-        except OSError as err:
-            _LOGGER.error("Could not remove %s: %s", filepath, err)
+    for filepath in list_links(basepath, target):
+        os.unlink(filepath)
 
 
-def list_tags(basepath, target):
-    """List all links to the target file.
+def list_links(basepath, target):
+    """List paths for all links to the target file.
 
     Args:
-        basepath: Base path for tag conversions.
-        target: Path of file whose tags to list.
+        basepath: Base path for finding links.
+        target: Path of file whose links to list.
 
     Returns:
         Generator yielding paths.
@@ -108,7 +126,7 @@ def list_tags(basepath, target):
 
 
 def search(search_node):
-    """Return files by tag query.
+    """Return paths by tag query.
 
     Args:
         search_node: Root Node of search query tree
@@ -121,7 +139,7 @@ def search(search_node):
 
 class SearchNode(metaclass=abc.ABCMeta):
 
-    """Abstract class interface of search query node.
+    """Abstract class interface for search query node.
 
     Methods:
         get_results(): Get results of node query.
@@ -153,20 +171,20 @@ class GroupNode(SearchNode, metaclass=abc.ABCMeta):
 class AndNode(GroupNode):
 
     """
-    AndNode merges the results of its children nodes by intersection.
+    AndNode merges the results of its children nodes by set intersection.
     """
 
     def get_results(self):
-        pathmap = self.children[0].get_results()
-        inodes = (set(node.get_results()) for node in self.children)
+        results = self.children[0].get_results()
+        inodes = (set(node.get_results()) for node in self.children[1:])
         inodes = functools.reduce(set.intersection, inodes)
-        return dict((inode, pathmap[inode]) for inode in inodes)
+        return dict((inode, results[inode]) for inode in inodes)
 
 
 class OrNode(GroupNode):
 
     """
-    OrNode merges the results of its children nodes by union.
+    OrNode merges the results of its children nodes by set union.
     """
 
     def get_results(self):
@@ -199,7 +217,8 @@ class MinusNode(GroupNode):
 class DirNode(SearchNode):
 
     """
-    DirNode gets the inodes and paths of the directory at its dirpath.
+    DirNode returns the inodes and paths of the contents of the directory at
+    its dirpath.
     """
 
     def __init__(self, dirpath):

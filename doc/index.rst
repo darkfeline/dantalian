@@ -15,6 +15,8 @@ This is the documentation for Dantalian |release|, built on |today|.
 .. toctree::
    :maxdepth: 1
 
+   definitions
+   reference
    user
    dev
    man
