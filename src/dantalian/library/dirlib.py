@@ -127,7 +127,7 @@ def is_tagged(dirpath, tagname):
         dirpath: Path of directory.
         tagname: Tagname.
 
-      """
+    """
     return tagname in list_tags(dirpath)
 
 
