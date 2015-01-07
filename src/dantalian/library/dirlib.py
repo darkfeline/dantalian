@@ -127,15 +127,9 @@ def untag(root, target, tagname):
 
     """
     tagname = tagname.rstrip('/')  # can't tag into a directory
-    tags_file = dtags_file(target)
-    with open(tags_file, 'r+') as duplex:
-        current_tags = duplex.read().splitlines()
-        if tagname not in current_tags:
-            return
-        current_tags = [tag for tag in current_tags if tag != tagname]
-        duplex.seek()
-        duplex.writelines(tag + '\n' for tag in current_tags)
-        duplex.truncate()
+    discard = filter_tags(root, target, lambda tag: tag == tagname)
+    if not discard:
+        return
     target = spsymlink(target)
     path = taglib.tag2path(root, tagname)
     if os.path.islink(path) and os.readlink(path) == target:
