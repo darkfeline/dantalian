@@ -84,6 +84,36 @@ def tag(root, target, tagname):
     os.symlink(symlink_src, symlink_name)
 
 
+def filter_tags(root, target, func):
+    """Remove all tags from target directory that satisfies the filter.
+
+    Args:
+        root: Rootpath.
+        target: Path of directory to untag.
+        func: Filter function.
+    Return:
+        List of removed tagnames.
+
+    Doesn't touch external tags
+
+    """
+    tags_file = dtags_file(target)
+    keep = []
+    discard = []
+    with open(tags_file, 'r+') as duplex:
+        current_tags = duplex.read().splitlines()
+        for tag_ in current_tags:
+            if func(tag_):
+                discard.append(tag_)
+            else:
+                keep.append(tag_)
+        if discard:
+            duplex.seek()
+            duplex.writelines(tag + '\n' for tag in keep)
+            duplex.truncate()
+    return discard
+
+
 def untag(root, target, tagname):
     """Remove tag from target directory.
 
