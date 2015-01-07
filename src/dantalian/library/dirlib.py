@@ -84,7 +84,7 @@ def tag(root, target, tagname):
     os.symlink(symlink_src, symlink_name)
 
 
-def filter_tags(root, target, func):
+def filter_tags(target, func):
     """Remove all tags from target directory that satisfies the filter.
 
     Args:
@@ -127,7 +127,7 @@ def untag(root, target, tagname):
 
     """
     tagname = tagname.rstrip('/')  # can't tag into a directory
-    discard = filter_tags(root, target, lambda tag: tag == tagname)
+    discard = filter_tags(target, lambda tag: tag == tagname)
     if not discard:
         return
     target = spsymlink(target)
@@ -148,7 +148,7 @@ def untag_dirname(root, target, dirname):
 
     """
     dirname = dirname.rstrip('/')  # dirname doesn't have trailing slashes
-    filter_tags(root, target, lambda tag: os.path.dirname(tag) == dirname)
+    filter_tags(target, lambda tag: os.path.dirname(tag) == tagname)
     target = spsymlink(target)
     for path in pathlib.listdirpaths(dirname):
         if os.path.islink(path) and os.readlink(path) == target:
