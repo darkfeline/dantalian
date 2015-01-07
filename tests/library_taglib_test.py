@@ -47,16 +47,16 @@ class TestLibraryRoot(unittest.TestCase):
         shutil.rmtree(self.root)
         os.chdir(self._olddir)
 
-    def test_is_root(self):
-        self.assertTrue(taglib.is_root('A'))
-        self.assertFalse(taglib.is_root('B'))
+    def test_is_library(self):
+        self.assertTrue(taglib.is_library('A'))
+        self.assertFalse(taglib.is_library('B'))
 
-    def test_find_root(self):
-        self.assertEqual(taglib.find_root('A/foo/bar'), os.path.abspath('A'))
+    def test_find_library(self):
+        self.assertEqual(taglib.find_library('A/foo/bar'), os.path.abspath('A'))
 
-    def test_init_root(self):
-        taglib.init_root('B')
-        self.assertTrue(taglib.is_root('B'))
+    def test_init_library(self):
+        taglib.init_library('B')
+        self.assertTrue(taglib.is_library('B'))
 
     def test_get_resource(self):
         self.assertEqual(taglib.get_resource('A', 'foo'), 'A/.dantalian/foo')

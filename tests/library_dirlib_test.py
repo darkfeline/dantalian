@@ -12,6 +12,7 @@ from dantalian.library import dirlib
 # pylint: disable=missing-docstring
 
 
+# TODO
 class TestDirlib(unittest.TestCase):
 
     def setUp(self):
@@ -34,6 +35,7 @@ class TestDirlib(unittest.TestCase):
 
 
 # DELETE
+@unittest.skip('temp')
 class TestLibraryTags(unittest.TestCase):
 
     def test_is_tag(self):
@@ -54,6 +56,7 @@ class TestLibraryTags(unittest.TestCase):
         self.assertEqual(taglib.path('/foo', '/bar'), '/bar')
 
 
+@unittest.skip('temp')
 class TestLibraryRoot(unittest.TestCase):
 
     def setUp(self):
