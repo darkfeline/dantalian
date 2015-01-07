@@ -136,6 +136,25 @@ def untag(root, target, tagname):
         os.unlink(path)
 
 
+def untag_dirname(root, target, dirname):
+    """Remove all tags with the given dirname from target directory.
+
+    Args:
+        root: Rootpath.
+        target: Path of directory to untag.
+        dirname: Path of dirname to purge.
+
+    All special symlinks pointing to target in dirname will be removed.
+
+    """
+    dirname = dirname.rstrip('/')  # dirname doesn't have trailing slashes
+    filter_tags(root, target, lambda tag: os.path.dirname(tag) == dirname)
+    target = spsymlink(target)
+    for path in pathlib.listdirpaths(dirname):
+        if os.path.islink(path) and os.readlink(path) == target:
+            os.unlink(path)
+
+
 def list_tags(dirpath):
     """Return a list of tagnames of a directory."""
     tags_file = dtags_file(dirpath)
