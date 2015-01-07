@@ -80,7 +80,7 @@ def tag(root, target, tagname):
             return
         duplex.write(tagname + '\n')
     symlink_src = spsymlink(target)
-    symlink_name = taglib.path(root, tagname)
+    symlink_name = taglib.tag2path(root, tagname)
     os.symlink(symlink_src, symlink_name)
 
 
@@ -107,7 +107,7 @@ def untag(root, target, tagname):
         duplex.writelines(tag + '\n' for tag in current_tags)
         duplex.truncate()
     target = spsymlink(target)
-    path = taglib.path(root, tagname)
+    path = taglib.tag2path(root, tagname)
     if os.path.islink(path) and os.readlink(path) == target:
         os.unlink(path)
 
@@ -159,7 +159,7 @@ def load_dir(root, dirpath):
     tags = list_tags(dirpath)
     target = spsymlink(dirpath)
     for tag_ in tags:
-        tagpath = taglib.path(root, tag_)
+        tagpath = taglib.tag2path(root, tag_)
         dirname, basename = os.path.split(tagpath)
         pathlib.free_name_do(dirname, basename,
                              lambda dst: os.symlink(target, dst))
