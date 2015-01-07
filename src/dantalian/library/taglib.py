@@ -25,6 +25,13 @@ def path(rootpath, name):
     return name
 
 
+def tag(rootpath, name):
+    """Return tagname or pathname as a tagname."""
+    if not is_tag(name):
+        name = path2tag(rootpath, name)
+    return name
+
+
 _ROOTDIR = '.dantalian'
 
 def is_library(dirpath):
