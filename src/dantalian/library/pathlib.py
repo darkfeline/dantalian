@@ -5,6 +5,8 @@ This module contains various shared path-related functions.
 import os
 from itertools import count
 
+from dantalian import oserrors
+
 
 def listdirpaths(path):
     """Like os.listdir(), except return pathnames instead of filenames.
@@ -70,6 +72,5 @@ def rename_safe(src, dst):
 
     """
     if os.path.isfile(dst):
-        raise FileExistsError(
-            'rename_safe() failed: {} -> {}'.format(src, dst))
+        raise oserrors.file_exists(dst)
     os.rename(src, dst)
