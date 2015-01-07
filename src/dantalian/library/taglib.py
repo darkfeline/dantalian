@@ -52,7 +52,7 @@ def find_library(dirpath=''):
             dirpath, _ = os.path.split(dirpath)
 
 
-def init_root(dirpath):
+def init_library(dirpath):
     """Initialize library."""
     os.mkdir(os.path.join(dirpath, _ROOTDIR))
 
