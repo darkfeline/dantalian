@@ -22,7 +22,7 @@ import functools
 import logging
 import os
 
-from . import pathlib
+from dantalian import pathlib
 
 _LOGGER = logging.getLogger(__name__)
 
