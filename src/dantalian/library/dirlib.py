@@ -25,7 +25,6 @@ considered more stable and reliable than external tags.
 import os
 
 from . import pathlib
-from . import baselib
 from . import taglib
 
 DTAGS_FILE = '.dtags'
