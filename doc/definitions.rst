@@ -61,11 +61,6 @@ Dantalian-specific
    rootpath
       A pathname that is used to resolve a tagname.
 
-   special symbolic link
-   special symlink
-      A symbolic link whose string starts with at least two forward slashes.
-      Dantalian considers such a symbolic links to have special meaning.
-
    library
       A directory which contains a link to a directory with the filename
       `.dantalian`.
@@ -84,15 +79,14 @@ A directory is internally tagged with a tagname if and only if its `.dtags`
 file contains that tagname.
 
 A directory A is externally tagged with a directory B if and only if there
-exists at least one special symlink in B that refers to A.
+exists at least one symlink in B that refers to A.
 
 A directory A is externally tagged at pathname B if and only if B refers to a
-special symlink that refers to A.
+symlink that refers to A.
 
 Given a rootpath, a directory A being internally tagged with a tagname B is
 equivalent to A being externally tagged at the pathname which is equivalent
 to B.
 
-Dantalian only considers and manipulates internal tags.  Dantalian will attempt
-to keep a directory's external tags consistent with its internal tags where
-convenient.
+Dantalian uses both internal and external tags, but internal tags are
+considered more stable and reliable than external tags.

@@ -231,7 +231,7 @@ class DirNode(SearchNode):
     @staticmethod
     def _get_inode(filepath):
         """Return inode and path pair."""
-        return (os.lstat(filepath), filepath)
+        return (os.stat(filepath), filepath)
 
     def get_results(self):
         return dict(self._get_inode(filepath)

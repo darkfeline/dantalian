@@ -8,18 +8,17 @@ A directory is internally tagged with a tagname if and only if its `.dtags`
 file contains that tagname.
 
 A directory A is externally tagged with a directory B if and only if there
-exists at least one special symlink in B that refers to A.
+exists at least one symlink in B that refers to A.
 
 A directory A is externally tagged at pathname B if and only if B refers to a
-special symlink that refers to A.
+symlink that refers to A.
 
 Given a rootpath, a directory A being internally tagged with a tagname B is
 equivalent to A being externally tagged at the pathname which is equivalent
 to B.
 
-Dantalian only considers and manipulates internal tags.  Dantalian will attempt
-to keep a directory's external tags consistent with its internal tags where
-convenient.
+Dantalian uses both internal and external tags, but internal tags are
+considered more stable and reliable than external tags.
 
 """
 
@@ -37,23 +36,9 @@ def dtags_file(dirpath):
     return os.path.join(dirpath, DTAGS_FILE)
 
 
-def is_spsymlink(pathname):
-    """Return whether the given path is a special symlink target."""
-    return pathname.startswith('//')
-
-
-def spsymlink(pathname):
-    """Make the given path into a special symlink target.
-
-    Args:
-        pathname: Pathname.
-
-    This also normalizes an existing special symlink target:
-
-    ////foo//bar -> //foo/bar
-
-    """
-    return '/' + os.path.abspath(pathname)
+def targets(link, target):
+    """Check if symlink path is equal to target path."""
+    return os.path.abspath(os.readlink(link)) == os.path.abspath(target)
 
 
 def tag(root, target, tagname):
@@ -72,6 +57,7 @@ def tag(root, target, tagname):
     raised.
 
     """
+    target = os.path.abspath(target)
     tagname = tagname.rstrip('/')  # can't tag into a directory
     tags_file = dtags_file(target)
     with open(tags_file, 'r+') as duplex:
@@ -79,9 +65,8 @@ def tag(root, target, tagname):
         if tagname in current_tags:
             return
         duplex.write(tagname + '\n')
-    symlink_src = spsymlink(target)
     symlink_name = taglib.tag2path(root, tagname)
-    os.symlink(symlink_src, symlink_name)
+    os.symlink(target, symlink_name)
 
 
 def filter_tags(target, func):
@@ -130,9 +115,8 @@ def untag(root, target, tagname):
     discard = filter_tags(target, lambda tag: tag == tagname)
     if not discard:
         return
-    target = spsymlink(target)
     path = taglib.tag2path(root, tagname)
-    if os.path.islink(path) and os.readlink(path) == target:
+    if os.path.islink(path) and targets(path, target):
         os.unlink(path)
 
 
@@ -144,15 +128,14 @@ def untag_dirname(root, target, tagname):
         target: Path of directory to untag.
         tagname: Tagname, purge all tags whose dirname equals this.
 
-    All special symlinks pointing to target in dirname will be removed.
+    All symlinks pointing to target in dirname will be removed.
 
     """
     tagname = tagname.rstrip('/')  # dirname doesn't have trailing slashes
     filter_tags(target, lambda tag: os.path.dirname(tag) == tagname)
-    target = spsymlink(target)
     dirpath = taglib.tag2path(root, tagname)
     for path in pathlib.listdirpaths(dirpath):
-        if os.path.islink(path) and os.readlink(path) == target:
+        if os.path.islink(path) and targets(path, target):
             os.unlink(path)
 
 
@@ -199,9 +182,9 @@ def rename(target, newname):
 
 
 def load_dir(root, dirpath):
-    """Create special symlink external tags for a directory."""
+    """Create symlink external tags for a directory."""
     tags = list_tags(dirpath)
-    target = spsymlink(dirpath)
+    target = os.path.abspath(dirpath)
     for tag_ in tags:
         tagpath = taglib.tag2path(root, tag_)
         dirname, basename = os.path.split(tagpath)
@@ -210,30 +193,9 @@ def load_dir(root, dirpath):
 
 
 def clean(dirpath):
-    """Remove all special symlinks under the given directory."""
+    """Remove all broken symlinks under the given directory."""
     for dirpath, _, filenames in os.walk(dirpath):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
-            if os.path.islink(path) and is_spsymlink(os.readlink(path)):
+            if os.path.islink(path) and not os.path.exists(os.readlink(path)):
                 os.unlink(path)
-
-
-class DirNode(baselib.DirNode):
-
-    """DirNode extended with tagged directory support.
-
-    Special symlinks in the DirNode's directory will be replaced with the info
-    of the directories they refer to.
-
-    """
-
-    # pylint: disable=too-few-public-methods
-
-    @staticmethod
-    def _get_inode(filepath):
-        """Return inode and path pair."""
-        if os.path.islink(filepath):
-            target = os.readlink(filepath)
-            if is_spsymlink(target) and os.path.isdir(target):
-                return (os.lstat(target), filepath)
-            return super()._get_inode(filepath)
