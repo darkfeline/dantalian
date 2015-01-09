@@ -4,6 +4,9 @@ The functions in this module define basic library operations for files.  Only
 tagging of files (not directories) are supported, and only pathnames (not
 tagnames) are supported.
 
+Specification
+-------------
+
 A file is tagged with a directory if and only if there exists at least one hard
 link to the file in that directory.
 
