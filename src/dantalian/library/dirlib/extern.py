@@ -2,8 +2,6 @@
 
 import os
 
-from dantalian import pathlib
-
 from .. import taglib
 
 from . import intern
@@ -14,15 +12,21 @@ def _targets(link, target):
     return os.path.abspath(os.readlink(link)) == os.path.abspath(target)
 
 
+def make_symlink(src, dst):
+    """Try to symlink."""
+    try:
+        os.symlink(src, dst)
+    except OSError:
+        return
+
+
 def load(root, dirpath):
     """Create symlink external tags for a directory."""
     tags = intern.list_tags(dirpath)
     target = os.path.abspath(dirpath)
     for tagname in tags:
         tagpath = taglib.tag2path(root, tagname)
-        dirname, basename = os.path.split(tagpath)
-        pathlib.free_name_do(dirname, basename,
-                             lambda dst: os.symlink(target, dst))
+        make_symlink(target, tagpath)
 
 
 def unload(root, dirpath):

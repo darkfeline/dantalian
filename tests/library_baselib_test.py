@@ -34,24 +34,24 @@ class TestLibraryBase(testlib.TestCase):
         self.assertTrue(baselib.is_tagged(join('A', 'b'), 'B'))
         self.assertFalse(baselib.is_tagged(join('A', 'a'), 'B'))
 
-    def test_tag(self):
+    def test_tag_with(self):
         join = os.path.join
-        baselib.tag(join('A', 'a'), 'B')
+        baselib.tag_with(join('A', 'a'), 'B')
         self.assertSameFile(join('A', 'a'), join('B', 'a'))
 
-    def test_untag(self):
+    def test_untag_with(self):
         join = os.path.join
-        baselib.untag(join('A', 'b'), 'B')
+        baselib.untag_with(join('A', 'b'), 'B')
         self.assertNotSameFile(join('A', 'b'), join('B', 'b'))
 
-    def test_rename(self):
+    def test_rename_all(self):
         join = os.path.join
-        baselib.rename(self.root, join('A', 'b'), 'foo')
+        baselib.rename_all(self.root, join('A', 'b'), 'foo')
         self.assertSameFile(join('A', 'foo'), join('B', 'foo'))
 
-    def test_remove(self):
+    def test_remove_all(self):
         join = os.path.join
-        baselib.remove(self.root, join('A', 'b'))
+        baselib.remove_all(self.root, join('A', 'b'))
         self.assertFalse(os.path.exists(join('A', 'b')))
         self.assertFalse(os.path.exists(join('B', 'b')))
 

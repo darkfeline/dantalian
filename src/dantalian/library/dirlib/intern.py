@@ -12,10 +12,40 @@ def _dtags_file(dirpath):
     return os.path.join(dirpath, _DTAGS_FILE)
 
 
+class _DummyFile:
+
+    """Dummy empty file."""
+
+    # pylint: disable=missing-docstring
+    # pylint: disable=no-self-use
+    # pylint: disable=too-few-public-methods
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+    def read(self):
+        return ''
+
+
 def _open_dtags(dirpath, mode='r'):
-    """Open dtags file of directory with given mode."""
+    """Open dtags file of directory with given mode.
+
+    If mode is 'r+', make file if it doesn't exist.
+    If mode is 'r', return dummy file if it doesn't exist.
+
+    """
     tags_file = _dtags_file(dirpath)
-    return open(tags_file, mode)
+    while True:
+        try:
+            return open(tags_file, mode)
+        except FileNotFoundError:
+            if mode == 'r':
+                return _DummyFile()
+            else:  # mode == 'r+' (other modes will make file)
+                os.mknod(tags_file)
 
 
 def _write_tags(file, tags):
@@ -128,7 +158,7 @@ def is_tagged(dirpath, tagname):
     return tagname in list_tags(dirpath)
 
 
-def rename(target, newname):
+def rename_all(target, newname):
     """Rename a directory.
 
     Args:

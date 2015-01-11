@@ -35,7 +35,7 @@ def is_tagged(target, dirpath):
     return False
 
 
-def tag(target, dirpath):
+def tag_with(target, dirpath):
     """Tag target file with given directory.
 
     Args:
@@ -52,7 +52,7 @@ def tag(target, dirpath):
     pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))
 
 
-def untag(target, dirpath):
+def untag_with(target, dirpath):
     """Remove tag from target file.
 
     Args:
@@ -70,7 +70,7 @@ def untag(target, dirpath):
             os.unlink(candidate)
 
 
-def rename(basepath, target, newname):
+def rename_all(basepath, target, newname):
     """Rename all links to the target file.
 
     Args:
@@ -96,7 +96,7 @@ def rename(basepath, target, newname):
         seen.add(dirpath)
 
 
-def remove(basepath, target):
+def remove_all(basepath, target):
     """Remove all links to the target file.
 
     Args:
