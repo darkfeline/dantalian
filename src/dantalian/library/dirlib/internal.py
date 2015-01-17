@@ -117,11 +117,11 @@ def _filter_tags(target, func):
 def untag(target, tagname):
     """Remove tag from target directory.
 
+    If the directory is not tagged internally, nothing happens.
+
     Args:
         target: Path of directory to untag.
         tagname: Tagname.
-
-    If the directory is not tagged internally, nothing happens.
 
     """
     tagname = tagname.rstrip('/')  # can't tag into a directory
@@ -161,11 +161,11 @@ def is_tagged(dirpath, tagname):
 def rename_all(target, newname):
     """Rename a directory.
 
+    Rename the directory and the basenames of all of its tagnames.
+
     Args:
         target: Path of directory to rename.
         newname: New name.
-
-    Rename the directory and the basenames of all of its tagnames.
 
     """
     parent_dir = os.path.dirname(target.rstrip('/'))

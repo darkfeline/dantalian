@@ -38,12 +38,12 @@ def is_tagged(target, dirpath):
 def tag_with(target, dirpath):
     """Tag target file with given directory.
 
+    If file is already tagged, nothing happens.  This includes if the file is
+    hardlinked in the directory under another name.
+
     Args:
         target: Path of file to tag.
         dirpath: Path of directory.
-
-    If file is already tagged, nothing happens.  This includes if the file is
-    hardlinked in the directory under another name.
 
     """
     if is_tagged(target, dirpath):
@@ -55,12 +55,12 @@ def tag_with(target, dirpath):
 def untag_with(target, dirpath):
     """Remove tag from target file.
 
+    If file is not tagged, nothing happens.  Remove *all* hard links to the
+    file in the directory.
+
     Args:
         target: Path to target file.
         dirpath: Path to directory.
-
-    If file is not tagged, nothing happens.  Remove *all* hard links to the
-    file in the directory.
 
     """
     inode = os.lstat(target)
@@ -73,15 +73,15 @@ def untag_with(target, dirpath):
 def rename_all(basepath, target, newname):
     """Rename all links to the target file.
 
-    Args:
-        basepath: Base path for finding links.
-        target: Path of file to rename.
-        newname: New filename.
-
     Attempt to rename all links to the target file under the basepath to
     newname, finding a name as necessary.  If there are multiple links to the
     file in a given directory, the first will be renamed and the extras will be
     removed.
+
+    Args:
+        basepath: Base path for finding links.
+        target: Path of file to rename.
+        newname: New filename.
 
     """
     seen = set()
@@ -99,11 +99,11 @@ def rename_all(basepath, target, newname):
 def remove_all(basepath, target):
     """Remove all links to the target file.
 
+    Remove all links to the target file under the basepath.
+
     Args:
         basepath: Base path for finding links.
         target: Path of file to remove.
-
-    Remove all links to the target file under the basepath.
 
     """
     for filepath in list_links(basepath, target):
