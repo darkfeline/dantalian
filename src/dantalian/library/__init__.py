@@ -7,6 +7,7 @@ Serves as a public interface to library functionality.
 """
 
 from collections import deque
+from collections import defaultdict
 import logging
 import os
 import shlex
@@ -38,7 +39,6 @@ def _get_tag_path(rootpath, name):
     return (tagname, path)
 
 
-# TODO use only paths, not tagnames.
 def tag(rootpath, target, name):
     """Tag target file-or-directory with given name.
 
@@ -49,23 +49,33 @@ def tag(rootpath, target, name):
     """
     target = taglib.path(rootpath, target)
     if os.path.isfile(target):
-        path = taglib.path(rootpath, name)
-        if os.path.isdir(path):
-            baselib.tag_with(target, path)
-        elif not os.path.exists(path):
-            os.link(target, path)
-        else:
-            raise oserrors.file_exists(target, path)
+        _tag_file(rootpath, target, name)
     if os.path.isdir(target):
-        tagname, path = _get_tag_path(rootpath, name)
-        if os.path.isdir(path):
-            basename = os.path.basename(target)
-            tagname = os.path.join(tagname, basename)
-            path = os.path.join(path, basename)
-        dirlib.tag(target, tagname)
-        dirlib.make_symlink(target, path)
+        _tag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
+
+
+def _tag_file(rootpath, target, name):
+    """Subfunction for tagging files."""
+    path = taglib.path(rootpath, name)
+    if os.path.isdir(path):
+        baselib.tag_with(target, path)
+    elif not os.path.exists(path):
+        os.link(target, path)
+    else:
+        raise oserrors.file_exists(target, path)
+
+
+def _tag_dir(rootpath, target, name):
+    """Subfunction for tagging directories."""
+    tagname, path = _get_tag_path(rootpath, name)
+    if os.path.isdir(path):
+        basename = os.path.basename(target)
+        tagname = os.path.join(tagname, basename)
+        path = os.path.join(path, basename)
+    dirlib.tag(target, tagname)
+    dirlib.make_symlink(target, path)
 
 
 def untag(rootpath, target, name):
@@ -78,21 +88,31 @@ def untag(rootpath, target, name):
     """
     target = taglib.path(rootpath, target)
     if os.path.isfile(target):
-        path = taglib.path(rootpath, name)
-        if os.path.isdir(path):
-            baselib.untag_with(target, path)
-        elif os.path.exists(path) and os.path.samefile(target, path):
-            os.unlink(path)
-        else:
-            return
+        _untag_file(rootpath, target, name)
     if os.path.isdir(target):
-        tagname, path = _get_tag_path(rootpath, name)
-        if os.path.isdir(path):
-            dirlib.untag_dirname(target, path)
-        else:
-            dirlib.untag(target, tagname)
+        _untag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
+
+
+def _untag_file(rootpath, target, name):
+    """Subfunction for untagging files."""
+    path = taglib.path(rootpath, name)
+    if os.path.isdir(path):
+        baselib.untag_with(target, path)
+    elif os.path.exists(path) and os.path.samefile(target, path):
+        os.unlink(path)
+    else:
+        return
+
+
+def _untag_dir(rootpath, target, name):
+    """Subfunction for untagging directories."""
+    tagname, path = _get_tag_path(rootpath, name)
+    if os.path.isdir(path):
+        dirlib.untag_dirname(target, path)
+    else:
+        dirlib.untag(target, tagname)
 
 
 def list_links(rootpath, target):
@@ -163,11 +183,11 @@ def move(rootpath, src, dst):
 def remove(rootpath, target):
     """Remove target and fix tags for symlinked directories.
 
+    Raise an error if target is a directory (not a symlink).
+
     Args:
         rootpath: Rootpath for tag conversions.
         target: Target tagname or pathname.
-
-    Raise an error if target is a directory (not a symlink).
 
     """
     target = taglib.path(rootpath, target)
@@ -185,7 +205,7 @@ def remove(rootpath, target):
 
 
 def swap(rootpath, target):
-    """Swap a directory with its symlink tag.
+    """Swap a symlink with its target directory.
 
     Args:
         rootpath: Rootpath for tag conversions.
@@ -208,13 +228,13 @@ def swap(rootpath, target):
 def rename_all(rootpath, target, newname):
     """Rename all links to the target file-or-directory.
 
+    Attempt to rename all links to the target under the rootpath to newname,
+    finding a name as necessary.
+
     Args:
         rootpath: Base path for tag conversions and search.
         target: Tag or path to target.
         newname: New filename.
-
-    Attempt to rename all links to the target under the rootpath to newname,
-    finding a name as necessary.
 
     """
     target = taglib.path(rootpath, target)
@@ -229,11 +249,11 @@ def rename_all(rootpath, target, newname):
 def remove_all(rootpath, target):
     """Remove all links to the target file-or-directory.
 
+    Remove all links to the target under the rootpath.
+
     Args:
         rootpath: Base path for tag conversions and search.
         target: Tag or path to target.
-
-    Remove all links to the target under the rootpath.
 
     """
     target = taglib.path(rootpath, target)
@@ -285,7 +305,7 @@ def load_all(rootpath, top):
 
     """
     top = taglib.path(rootpath, top)
-    for dirpath, _, dirnames in os.walk(top):
+    for dirpath, dirnames, _ in os.walk(top):
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             dirlib.load(rootpath, path)
@@ -300,18 +320,128 @@ def unload_all(rootpath, top):
 
     """
     top = taglib.path(rootpath, top)
-    for dirpath, _, dirnames in os.walk(top):
+    for dirpath, dirnames, _ in os.walk(top):
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             dirlib.unload(rootpath, path)
 
 
-# TODO
-# load_all
-# unload_all
-# clean
-# import
-# export
+def clean(rootpath, top):
+    """Clean broken symlink.
+
+    Args:
+        rootpath: Base path for tag conversions.
+        top: Top of directory tree to search.
+
+    """
+    top = taglib.path(rootpath, top)
+    dirlib.clean(top)
+
+
+def import_tags(rootpath, path_tag_map):
+    """Import tags.
+
+    Essentially runs tag() for all paths for all tagnames.
+
+    Args:
+        rootpath: Base path for tag conversions.
+        path_tag_map: Mapping of paths to lists of tagnames.
+
+    """
+    for path in path_tag_map:
+        tags = path_tag_map[path]
+        for tagname in tags:
+            tag(rootpath, path, tagname)
+
+
+def export_tags(rootpath, top, internal=False, full=False):
+    """Export tags.
+
+    Each file is listed by path once.  If paths to all links of each file are
+    needed, pass full=True.
+
+    Args:
+        rootpath: Base path for tag conversions.
+        top: Top of directory tree to export.
+        internal: Whether to use internal tags for directories.  Defaults to
+            False.
+        full: Whether to include all paths to a file.  Defaults to False.
+    Returns:
+        Dictionary mapping pathnames to lists of tagnames.
+
+    """
+    inode_tag_map = _export_inode_map(rootpath, top, internal)
+    results = dict()
+    if full:
+        for tags in inode_tag_map.values():
+            tags = list(tags)
+            for tagname in tags:
+                path = taglib.tag2path(rootpath, tagname)
+                results[path] = tags
+    else:
+        for tags in inode_tag_map.values():
+            tags = list(tags)
+            path = taglib.tag2path(rootpath, tags[0])
+            results[path] = tags
+    return results
+
+
+def _export_inode_map(rootpath, top, internal=False):
+    """Export a map of inodes to sets of tags.
+
+    Args:
+        rootpath: Base path for tag conversions.
+        top: Top of directory tree to export.
+        internal: Whether to use internal tags for directories.  Defaults to
+            False.
+    Returns:
+        Dictionary mapping stat objects to sets of tagnames.
+
+    """
+    if internal:
+        dir_handler = _export_inode_dirtags
+    else:
+        dir_handler = _export_inode_link
+    top = taglib.path(rootpath, top)
+    inode_tag_map = defaultdict(set)
+    for dirpath, dirnames, filenames in os.walk(top):
+        for dirname in dirnames:
+            path = os.path.join(dirpath, dirname)
+            dir_handler(rootpath, inode_tag_map, path)
+        for filename in filenames:
+            path = os.path.join(dirpath, filename)
+            _export_inode_link(rootpath, inode_tag_map, path)
+    return inode_tag_map
+
+
+def _export_inode_dirtags(_, inode_tag_map, path):
+    """Helper for exporting inode by internal directory tags.
+
+    Args:
+        _: Parameter to satisfy function signature.
+        inode_tag_map: Inode-tag dictionary.
+        path: Path of directory.
+
+    """
+    inode = os.stat(path)
+    if inode in inode_tag_map:
+        return
+    tags = dirlib.list_tags(path)
+    inode_tag_map[inode].update(tags)
+
+
+def _export_inode_link(rootpath, inode_tag_map, path):
+    """Helper for exporting inode by link.
+
+    Args:
+        rootpath: Base path for tag conversions.
+        inode_tag_map: Inode-tag dictionary.
+        path: Path of file.
+
+    """
+    inode = os.stat(path)
+    tagname = taglib.tag(rootpath, path)
+    inode_tag_map[inode].add(tagname)
 
 
 def parse_query(basepath, query):

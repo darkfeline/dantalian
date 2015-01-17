@@ -4,7 +4,7 @@ import os
 
 from .. import taglib
 
-from . import intern
+from . import internal
 
 
 def _targets(link, target):
@@ -22,7 +22,7 @@ def make_symlink(src, dst):
 
 def load(root, dirpath):
     """Create symlink external tags for a directory."""
-    tags = intern.list_tags(dirpath)
+    tags = internal.list_tags(dirpath)
     target = os.path.abspath(dirpath)
     for tagname in tags:
         tagpath = taglib.tag2path(root, tagname)
@@ -31,7 +31,7 @@ def load(root, dirpath):
 
 def unload(root, dirpath):
     """Remove symlinks using a directory's internal tags."""
-    tags = intern.list_tags(dirpath)
+    tags = internal.list_tags(dirpath)
     for tagname in tags:
         tagpath = taglib.tag2path(root, tagname)
         if os.path.islink(tagpath) and _targets(tagpath, dirpath):

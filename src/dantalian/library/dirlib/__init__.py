@@ -30,5 +30,5 @@ considered more stable and reliable than external tags.
 
 # pylint: disable=wildcard-import
 
-from .intern import *
-from .extern import *
+from .internal import *
+from .external import *

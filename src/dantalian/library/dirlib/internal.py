@@ -178,7 +178,12 @@ def rename_all(target, newname):
 
 
 def replace_tag(dirpath, oldtag, newtag):
-    """Remove oldtag and add newtag to directory."""
+    """Remove oldtag and add newtag to directory.
+
+    If oldtag does not exist, this function won't raise an error and will
+    continue to add the supplied newtag, as removal is done as a filter.
+
+    """
     with _open_dtags(dirpath, 'r+') as duplex:
         tags = _read_tags(duplex)
         tags = [tag for tag in tags if tag != oldtag]
