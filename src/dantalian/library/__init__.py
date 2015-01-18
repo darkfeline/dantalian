@@ -446,7 +446,7 @@ def _export_inode_link(rootpath, inode_tag_map, path):
     inode_tag_map[inode].add(tagname)
 
 
-def parse_query(basepath, query):
+def parse_query(rootpath, query):
     r"""Parse query string into query node tree.
 
     Query strings look like:
@@ -466,6 +466,11 @@ def parse_query(basepath, query):
                 DirNode('OR')),
                 DirNode(')'),
                 DirNode('\\)'))
+
+    Args:
+        rootpath: Rootpath for tag conversions.
+        query: Search query string.
+
     """
     tokens = deque(shlex.split(query))
     parse_stack = []
@@ -494,7 +499,7 @@ def parse_query(basepath, query):
             parse_list = parse_stack.pop()
             parse_list.append(node)
         else:
-            token = taglib.path(basepath, token)
+            token = taglib.path(rootpath, token)
             parse_list.append(baselib.DirNode(token))
     if len(parse_list) != 1:
         raise ParseError(parse_stack, parse_list,
