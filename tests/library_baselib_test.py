@@ -6,28 +6,23 @@ import tempfile
 import shutil
 import os
 
-from . import testlib
 from dantalian.library import baselib
+
+from . import testlib
 
 # pylint: disable=missing-docstring
 
 
-class TestLibraryBase(testlib.TestCase):
+class TestLibraryBase(testlib.FSMixin, testlib.SamefileMixin):
 
     def setUp(self):
-        self._olddir = os.getcwd()
-        self.root = tempfile.mkdtemp()
-        os.chdir(self.root)
+        super().setUp()
         os.makedirs('A')
         os.makedirs('B')
         join = os.path.join
         os.mknod(join('A', 'a'))
         os.mknod(join('A', 'b'))
         os.link(join('A', 'b'), join('B', 'b'))
-
-    def tearDown(self):
-        shutil.rmtree(self.root)
-        os.chdir(self._olddir)
 
     def test_is_tagged(self):
         join = os.path.join
@@ -62,12 +57,10 @@ class TestLibraryBase(testlib.TestCase):
                                 for filename in ('A', 'B')))
 
 
-class TestLibraryBaseQuery(testlib.TestCase):
+class TestLibraryBaseSearch(testlib.FSMixin):
 
     def setUp(self):
-        self._olddir = os.getcwd()
-        self.root = tempfile.mkdtemp()
-        os.chdir(self.root)
+        super().setUp()
         os.makedirs('A')
         os.makedirs('B')
         os.makedirs('C')
@@ -79,10 +72,6 @@ class TestLibraryBaseQuery(testlib.TestCase):
         os.link(join('A', 'b'), join('B', 'b'))
         os.link(join('A', 'c'), join('B', 'c'))
         os.link(join('A', 'c'), join('C', 'c'))
-
-    def tearDown(self):
-        shutil.rmtree(self.root)
-        os.chdir(self._olddir)
 
     def test_and(self):
         results = baselib.search(

@@ -5,14 +5,16 @@ This module contains unit tests for dantalian.library.taglib
 import os
 import shutil
 import tempfile
-import unittest
+from unittest import TestCase
 
 from dantalian.library import taglib
+
+from . import testlib
 
 # pylint: disable=missing-docstring
 
 
-class TestLibraryTags(unittest.TestCase):
+class TestLibraryTags(TestCase):
 
     def test_is_tag(self):
         self.assertTrue(taglib.is_tag('//foo/tag'))
@@ -32,20 +34,14 @@ class TestLibraryTags(unittest.TestCase):
         self.assertEqual(taglib.path('/foo', '/bar'), '/bar')
 
 
-class TestLibraryRoot(unittest.TestCase):
+class TestLibraryRoot(testlib.FSMixin):
 
     def setUp(self):
-        self._olddir = os.getcwd()
-        self.root = tempfile.mkdtemp()
-        os.chdir(self.root)
+        super().setUp()
         os.makedirs('A/.dantalian')
         os.mknod('A/.dantalian/foo')
         os.makedirs('A/foo/bar')
         os.makedirs('B/foo/bar')
-
-    def tearDown(self):
-        shutil.rmtree(self.root)
-        os.chdir(self._olddir)
 
     def test_is_library(self):
         self.assertTrue(taglib.is_library('A'))

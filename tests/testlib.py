@@ -1,17 +1,18 @@
 """
-This module contains a TestCase class that has been extended with assertion
-methods.
+This module contains TestCase mixin classes that implement functionality
+shared between other test modules.
+
 """
 
-import unittest
 import os
+import shutil
+import tempfile
+from unittest import TestCase
 
-from dantalian.library import baselib
 
+class SamefileMixin(TestCase):
 
-class TestCase(unittest.TestCase):
-
-    """TestCase class extended with helpful assert methods."""
+    """TestCase mixin with convenient assertions."""
 
     # pylint: disable=invalid-name
 
@@ -28,9 +29,36 @@ class TestCase(unittest.TestCase):
         if os.path.exists(file2):
             self.assertFalse(os.path.samefile(file1, file2))
 
-    def assertSameQuery(self, node1, node2):
-        """Assert two query node trees are equal."""
-        self.assertEqual(node1, node2)
-        if isinstance(node1, baselib.GroupNode):
-            for i in range(len(node1.children)):
-                self.assertSameQuery(node1.children[i], node2.children[i])
+
+class FSMixin(TestCase):
+
+    """TestCase mixin with convenient assertions.
+
+    File system setup mixin.
+
+    Example:
+
+        class Foo(FSMixin):
+            def setUp(self):
+                super().setUp()
+                # Do any file system initialization here
+                os.makedir('foo')
+                os.mknod('foo/bar')
+
+    """
+
+    # pylint: disable=invalid-name
+
+    def setUp(self):
+        self.__olddir = os.getcwd()
+        self.__tmproot = tempfile.mkdtemp()
+        os.chdir(self.__tmproot)
+
+    @property
+    def root(self):
+        return self.__tmproot
+
+    def tearDown(self):
+        os.chdir(self.__olddir)
+        shutil.rmtree(self.__tmproot)
+
