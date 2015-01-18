@@ -4,8 +4,10 @@ This module contains functions implementing commands for the main script.
 
 import abc
 import logging
+import os
 
 from dantalian import library
+from dantalian import oserrors
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -152,3 +154,32 @@ class InitLibrary(CommandBuilder):
     @staticmethod
     def command_func(args):
         library.init_library(args.path)
+
+
+@_add_command
+class List(CommandBuilder):
+
+    # pylint: disable=missing-docstring
+
+    parser_args = Args(
+        'list',
+        usage='%(prog)s PATH')
+
+    params_args = [
+        Args('--root', metavar='ROOT', default=''),
+        Args('path', nargs='+'),
+    ]
+
+    @staticmethod
+    def command_func(args):
+        path = args.path
+        root = args.root
+        if os.path.isfile(path):
+            results = library.list_links(root, path)
+        elif os.path.isdir(path):
+            # TODO internal vs external
+            results = library.list_tags(root, path)
+        else:
+            raise oserrors.file_not_found(path)
+        for item in results:
+            print(item)
