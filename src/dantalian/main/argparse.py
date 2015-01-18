@@ -23,7 +23,6 @@ def make_parser():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--log', metavar='LOGFILE')
-    parser.set_defaults(func=lambda x: parser.print_help())
 
     subparsers = parser.add_subparsers(title='Commands')
 
