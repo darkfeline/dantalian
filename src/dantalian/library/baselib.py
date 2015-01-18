@@ -27,7 +27,7 @@ from dantalian import pathlib
 _LOGGER = logging.getLogger(__name__)
 
 
-def is_tagged(target, dirpath):
+def is_tagged_with(target, dirpath):
     """Return if target is tagged with dirpath."""
     for entry in pathlib.listdirpaths(dirpath):
         if os.path.samefile(entry, target):
@@ -46,8 +46,8 @@ def tag_with(target, dirpath):
         dirpath: Path of directory.
 
     """
-    if is_tagged(target, dirpath):
     _LOGGER.debug('tag_with(%r, %r)', target, dirpath)
+    if is_tagged_with(target, dirpath):
         return
     name = os.path.basename(target)
     pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))

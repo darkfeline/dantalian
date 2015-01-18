@@ -24,10 +24,10 @@ class TestLibraryBase(testlib.FSMixin, testlib.SameFileMixin):
         os.mknod(join('A', 'b'))
         os.link(join('A', 'b'), join('B', 'b'))
 
-    def test_is_tagged(self):
+    def test_is_tagged_with(self):
         join = os.path.join
-        self.assertTrue(baselib.is_tagged(join('A', 'b'), 'B'))
-        self.assertFalse(baselib.is_tagged(join('A', 'a'), 'B'))
+        self.assertTrue(baselib.is_tagged_with(join('A', 'b'), 'B'))
+        self.assertFalse(baselib.is_tagged_with(join('A', 'a'), 'B'))
 
     def test_tag_with(self):
         join = os.path.join
