@@ -100,3 +100,16 @@ class TestTag(testlib.FSMixin, testlib.SameFileMixin):
     def test_tag(self):
         library.tag(self.root, 'flan', '2hu')
         self.assertSameFile('2hu/flan', 'flan')
+
+
+class TestSearch(testlib.FSMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('2hu')
+        os.mknod('flan')
+        os.link('flan', '2hu/flan')
+
+    def test_search(self):
+        query_tree = library.parse_query(self.root, 'AND 2hu . END')
+        result = library.search(query_tree)
