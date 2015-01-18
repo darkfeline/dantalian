@@ -132,7 +132,8 @@ class Search(CommandBuilder):
     @staticmethod
     def command_func(args):
         root = library.find_library(args.root)
-        query_tree = library.parse_query(root, args.query)
+        query = ' '.join(args.query)
+        query_tree = library.parse_query(root, query)
         results = library.search(query_tree)
         for entry in results:
             print(entry)
