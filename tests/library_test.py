@@ -90,6 +90,8 @@ class TestLibraryParsing(QueryMixin):
 
 class TestTag(testlib.FSMixin, testlib.SameFileMixin):
 
+    """Basic tagging test."""
+
     def setUp(self):
         super().setUp()
         os.mkdir('2hu')
