@@ -51,7 +51,7 @@ def tag(rootpath, target, name):
     target = taglib.path(rootpath, target)
     if os.path.isfile(target):
         _tag_file(rootpath, target, name)
-    if os.path.isdir(target):
+    elif os.path.isdir(target):
         _tag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
@@ -91,7 +91,7 @@ def untag(rootpath, target, name):
     target = taglib.path(rootpath, target)
     if os.path.isfile(target):
         _untag_file(rootpath, target, name)
-    if os.path.isdir(target):
+    elif os.path.isdir(target):
         _untag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
