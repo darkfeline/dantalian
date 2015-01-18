@@ -50,7 +50,7 @@ def tag_with(target, dirpath):
     if is_tagged_with(target, dirpath):
         return
     name = os.path.basename(target)
-    pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))
+    pathlib.free_name_do(dirpath, name, lambda dst: os.link(target, dst))
 
 
 def untag_with(target, dirpath):

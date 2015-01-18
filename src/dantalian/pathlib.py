@@ -55,13 +55,13 @@ def free_name_do(dirpath, name, callback):
         Path of successful new name.
     """
     while True:
-        dest = os.path.join(dirpath, free_name(dirpath, name))
+        dst = os.path.join(dirpath, free_name(dirpath, name))
         try:
-            callback(dest)
+            callback(dst)
         except FileExistsError:
             continue
         else:
-            return dest
+            return dst
 
 
 def rename_safe(src, dst):
