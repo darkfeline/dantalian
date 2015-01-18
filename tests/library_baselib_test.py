@@ -13,7 +13,7 @@ from . import testlib
 # pylint: disable=missing-docstring
 
 
-class TestLibraryBase(testlib.FSMixin, testlib.SamefileMixin):
+class TestLibraryBase(testlib.FSMixin, testlib.SameFileMixin):
 
     def setUp(self):
         super().setUp()

@@ -10,7 +10,7 @@ import tempfile
 from unittest import TestCase
 
 
-class SamefileMixin(TestCase):
+class SameFileMixin(TestCase):
 
     """TestCase mixin with convenient assertions."""
 
