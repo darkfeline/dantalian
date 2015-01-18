@@ -134,3 +134,21 @@ class Search(CommandBuilder):
         results = library.search(query_tree)
         for entry in results:
             print(entry)
+
+
+@_add_command
+class InitLibrary(CommandBuilder):
+
+    # pylint: disable=missing-docstring
+
+    parser_args = Args(
+        'init_library',
+        usage='%(prog)s [PATH]')
+
+    params_args = [
+        Args('path', nargs='?', default=''),
+    ]
+
+    @staticmethod
+    def command_func(args):
+        library.init_library(args.path)
