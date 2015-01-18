@@ -67,7 +67,7 @@ class Tag(CommandBuilder):
 
     parser_args = Args(
         'tag',
-        usage='''%(prog)s -f FILE [FILE ...] TAG [TAG ...]
+        usage='''%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]
             %(prog)s --help''')
 
     params_args = [
@@ -94,7 +94,7 @@ class Untag(CommandBuilder):
 
     parser_args = Args(
         'untag',
-        usage='''%(prog)s -f FILE [FILE ...] TAG [TAG ...]
+        usage='''%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]
             %(prog)s --help''')
 
     params_args = [
