@@ -449,9 +449,13 @@ def _export_inode_link(rootpath, inode_tag_map, path):
 def parse_query(rootpath, query):
     r"""Parse query string into query node tree.
 
+    Parent node syntax: NODE foo [bar...] END
+
+    Escape by prepending a backslash.  Everything else parses to a DirNode.
+
     Query strings look like:
 
-        'AND foo bar OR spam eggs ) AND \AND \OR \) \\\) ) )'
+        'AND foo bar OR spam eggs END AND \AND \OR \END \\\END ) )'
 
     which parses to:
 
@@ -464,8 +468,8 @@ def parse_query(rootpath, query):
             AndNode(
                 DirNode('AND'),
                 DirNode('OR')),
-                DirNode(')'),
-                DirNode('\\)'))
+                DirNode('END'),
+                DirNode('\\END'))
 
     Args:
         rootpath: Rootpath for tag conversions.
@@ -493,7 +497,7 @@ def parse_query(rootpath, query):
             parse_stack.append(parse_list)
             parse_stack.append(baselib.MinusNode)
             parse_list = []
-        elif token == ')':
+        elif token == 'END':
             node_type = parse_stack.pop()
             node = node_type(parse_list)
             parse_list = parse_stack.pop()

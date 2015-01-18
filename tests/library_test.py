@@ -32,21 +32,21 @@ class TestLibraryParsing(QueryMixin):
     root = 'foobar'
 
     def test_parse_and(self):
-        tree = library.parse_query(self.root, "AND A B C )")
+        tree = library.parse_query(self.root, "AND A B C END")
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode("A"),
              baselib.DirNode("B"),
              baselib.DirNode("C")]))
 
     def test_parse_or(self):
-        tree = library.parse_query(self.root, "OR A B C )")
+        tree = library.parse_query(self.root, "OR A B C END")
         self.assertSameQuery(tree, baselib.OrNode(
             [baselib.DirNode("A"),
              baselib.DirNode("B"),
              baselib.DirNode("C")]))
 
     def test_parse_minus(self):
-        tree = library.parse_query(self.root, "MINUS A B C )")
+        tree = library.parse_query(self.root, "MINUS A B C END")
         self.assertSameQuery(tree, baselib.MinusNode(
             [baselib.DirNode("A"),
              baselib.DirNode("B"),
@@ -54,21 +54,21 @@ class TestLibraryParsing(QueryMixin):
 
     def test_parse_and_escape(self):
         tree = library.parse_query(self.root,
-                                   r"AND '\AND' '\\AND' '\\\AND' )")
+                                   r"AND '\AND' '\\AND' '\\\AND' END")
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode(r'AND'),
              baselib.DirNode(r'\AND'),
              baselib.DirNode(r'\\AND')]))
 
-    def test_parse_paren_escape(self):
-        tree = library.parse_query(self.root, r"AND A B \\) )")
+    def test_parse_end_escape(self):
+        tree = library.parse_query(self.root, r"AND A B \\END END")
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode(r'A'),
              baselib.DirNode(r'B'),
-             baselib.DirNode(r')')]))
+             baselib.DirNode(r'END')]))
 
     def test_parse_and_or(self):
-        tree = library.parse_query(self.root, "AND A B C OR spam eggs ) )")
+        tree = library.parse_query(self.root, "AND A B C OR spam eggs END END")
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode("A"),
              baselib.DirNode("B"),
@@ -79,7 +79,7 @@ class TestLibraryParsing(QueryMixin):
             ]))
 
     def test_parse_tags(self):
-        tree = library.parse_query(self.root, "AND A /B //C //D/E )")
+        tree = library.parse_query(self.root, "AND A /B //C //D/E END")
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode("A"),
              baselib.DirNode("/B"),
