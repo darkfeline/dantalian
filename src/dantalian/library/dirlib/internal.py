@@ -1,6 +1,7 @@
 """This module contains library operations for directory internal tagging."""
 
 import os
+import posixpath
 
 from dantalian import pathlib
 
@@ -9,7 +10,7 @@ _DTAGS_FILE = '.dtags'
 
 def _dtags_file(dirpath):
     """Get the path of a directory's dtags file."""
-    return os.path.join(dirpath, _DTAGS_FILE)
+    return posixpath.join(dirpath, _DTAGS_FILE)
 
 
 class _DummyFile:
@@ -80,7 +81,7 @@ def tag(target, tagname):
     If the directory is already tagged internally, nothing happens.
 
     """
-    target = os.path.abspath(target)
+    target = posixpath.abspath(target)
     tagname = tagname.rstrip('/')  # can't tag into a directory
     with _open_dtags(target, 'r+') as duplex:
         tags = _read_tags(duplex)
@@ -137,7 +138,7 @@ def untag_dirname(target, tagname):
 
     """
     tagname = tagname.rstrip('/')  # dirname doesn't have trailing slashes
-    _filter_tags(target, lambda tag: os.path.dirname(tag) == tagname)
+    _filter_tags(target, lambda tag: posixpath.dirname(tag) == tagname)
 
 
 def list_tags(dirpath):
@@ -168,12 +169,12 @@ def rename_all(target, newname):
         newname: New name.
 
     """
-    parent_dir = os.path.dirname(target.rstrip('/'))
+    parent_dir = posixpath.dirname(target.rstrip('/'))
     target = pathlib.free_name_do(
         parent_dir, newname, lambda dst: pathlib.rename_safe(target, dst))
     with _open_dtags(target, 'r+') as duplex:
         tags = _read_tags(duplex)
-        tags = [os.path.join(os.path.dirname(tag), newname) for tag in tags]
+        tags = [posixpath.join(posixpath.dirname(tag), newname) for tag in tags]
         _write_tags(duplex, tags)
 
 

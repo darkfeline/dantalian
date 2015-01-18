@@ -4,7 +4,7 @@ This module contains functions implementing commands for the main script.
 
 import abc
 import logging
-import os
+import posixpath
 
 from dantalian import library
 from dantalian import oserrors
@@ -174,9 +174,9 @@ class List(CommandBuilder):
     def command_func(args):
         path = args.path
         root = args.root
-        if os.path.isfile(path):
+        if posixpath.isfile(path):
             results = library.list_links(root, path)
-        elif os.path.isdir(path):
+        elif posixpath.isdir(path):
             # TODO internal vs external
             results = library.list_tags(root, path)
         else:

@@ -1,6 +1,7 @@
 """This module contains functions for working with tagnames and libraries."""
 
 import os
+import posixpath
 
 
 def is_tag(name):
@@ -10,12 +11,12 @@ def is_tag(name):
 
 def path2tag(rootpath, pathname):
     """Convert a pathname to a tagname."""
-    return '//' + os.path.relpath(pathname, rootpath)
+    return '//' + posixpath.relpath(pathname, rootpath)
 
 
 def tag2path(rootpath, tagname):
     """Convert a tagname to a pathname."""
-    return os.path.join(rootpath, tagname.lstrip('/'))
+    return posixpath.join(rootpath, tagname.lstrip('/'))
 
 
 def path(rootpath, name):
@@ -36,7 +37,7 @@ _ROOTDIR = '.dantalian'
 
 def is_library(dirpath):
     """Return whether dirpath refers to a library."""
-    return os.path.isdir(os.path.join(dirpath, _ROOTDIR))
+    return posixpath.isdir(posixpath.join(dirpath, _ROOTDIR))
 
 
 def find_library(dirpath=''):
@@ -48,22 +49,22 @@ def find_library(dirpath=''):
     An empty string means to use the current directory.
 
     """
-    dirpath = os.path.abspath(dirpath)
-    _, dirpath = os.path.splitdrive(dirpath)
+    dirpath = posixpath.abspath(dirpath)
+    _, dirpath = posixpath.splitdrive(dirpath)
     while True:
         if is_library(dirpath):
             return dirpath
         elif dirpath in ('/', ''):
             return None
         else:
-            dirpath, _ = os.path.split(dirpath)
+            dirpath, _ = posixpath.split(dirpath)
 
 
 def init_library(dirpath):
     """Initialize library."""
-    os.mkdir(os.path.join(dirpath, _ROOTDIR))
+    os.mkdir(posixpath.join(dirpath, _ROOTDIR))
 
 
 def get_resource(dirpath, resource_path):
     """Get the path of a resource for a library."""
-    return os.path.join(dirpath, _ROOTDIR, resource_path)
+    return posixpath.join(dirpath, _ROOTDIR, resource_path)

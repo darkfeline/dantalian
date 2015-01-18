@@ -2,8 +2,9 @@
 This module contains various shared path-related functions.
 """
 
-import os
 from itertools import count
+import os
+import posixpath
 
 from dantalian import oserrors
 
@@ -16,7 +17,7 @@ def listdirpaths(path):
 
     """
     for entry in os.listdir(path):
-        yield os.path.join(path, entry)
+        yield posixpath.join(path, entry)
 
 
 def free_name(dirpath, name):
@@ -40,7 +41,7 @@ def free_name(dirpath, name):
     files = os.listdir(dirpath)
     if name not in files:
         return name
-    base, ext = os.path.splitext(name)
+    base, ext = posixpath.splitext(name)
     i = count(1)
     while True:
         name = ''.join((base, '.', str(next(i)), ext))
@@ -55,7 +56,7 @@ def free_name_do(dirpath, name, callback):
         Path of successful new name.
     """
     while True:
-        dst = os.path.join(dirpath, free_name(dirpath, name))
+        dst = posixpath.join(dirpath, free_name(dirpath, name))
         try:
             callback(dst)
         except FileExistsError:
@@ -71,6 +72,6 @@ def rename_safe(src, dst):
     not safe from race conditions.
 
     """
-    if os.path.isfile(dst):
+    if posixpath.isfile(dst):
         raise oserrors.file_exists(dst)
     os.rename(src, dst)

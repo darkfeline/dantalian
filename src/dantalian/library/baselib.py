@@ -21,6 +21,7 @@ import abc
 import functools
 import logging
 import os
+import posixpath
 
 from dantalian import pathlib
 
@@ -30,7 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 def is_tagged_with(target, dirpath):
     """Return if target is tagged with dirpath."""
     for entry in pathlib.listdirpaths(dirpath):
-        if os.path.samefile(entry, target):
+        if posixpath.samefile(entry, target):
             return True
     return False
 
@@ -49,7 +50,7 @@ def tag_with(target, dirpath):
     _LOGGER.debug('tag_with(%r, %r)', target, dirpath)
     if is_tagged_with(target, dirpath):
         return
-    name = os.path.basename(target)
+    name = posixpath.basename(target)
     pathlib.free_name_do(dirpath, name, lambda dst: os.link(target, dst))
 
 
@@ -67,7 +68,7 @@ def untag_with(target, dirpath):
     inode = os.lstat(target)
     for candidate in pathlib.listdirpaths(dirpath):
         candidate_inode = os.lstat(candidate)
-        if os.path.samestat(inode, candidate_inode):
+        if posixpath.samestat(inode, candidate_inode):
             os.unlink(candidate)
 
 
@@ -87,7 +88,7 @@ def rename_all(basepath, target, newname):
     """
     seen = set()
     for filepath in list_links(basepath, target):
-        dirpath, _ = os.path.split(filepath)
+        dirpath, _ = posixpath.split(filepath)
         if dirpath in seen:
             os.unlink(filepath)
             continue
@@ -124,8 +125,8 @@ def list_links(basepath, target):
     inode = os.lstat(target)
     for (dirpath, _, filenames) in os.walk(basepath):
         for name in filenames:
-            filepath = os.path.join(dirpath, name)
-            if os.path.samestat(inode, os.lstat(filepath)):
+            filepath = posixpath.join(dirpath, name)
+            if posixpath.samestat(inode, os.lstat(filepath)):
                 yield filepath
 
 

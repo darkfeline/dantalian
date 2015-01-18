@@ -10,6 +10,7 @@ from collections import deque
 from collections import defaultdict
 import logging
 import os
+import posixpath
 import shlex
 import shutil
 
@@ -49,9 +50,9 @@ def tag(rootpath, target, name):
     """
     _LOGGER.debug('tag(%r, %r, %r)', rootpath, target, name)
     target = taglib.path(rootpath, target)
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         _tag_file(rootpath, target, name)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         _tag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
@@ -61,9 +62,9 @@ def _tag_file(rootpath, target, name):
     """Subfunction for tagging files."""
     _LOGGER.debug('_tag_file(%r, %r, %r)', rootpath, target, name)
     path = taglib.path(rootpath, name)
-    if os.path.isdir(path):
+    if posixpath.isdir(path):
         baselib.tag_with(target, path)
-    elif not os.path.exists(path):
+    elif not posixpath.exists(path):
         os.link(target, path)
     else:
         raise oserrors.file_exists(target, path)
@@ -72,10 +73,10 @@ def _tag_file(rootpath, target, name):
 def _tag_dir(rootpath, target, name):
     """Subfunction for tagging directories."""
     tagname, path = _get_tag_path(rootpath, name)
-    if os.path.isdir(path):
-        basename = os.path.basename(target)
-        tagname = os.path.join(tagname, basename)
-        path = os.path.join(path, basename)
+    if posixpath.isdir(path):
+        basename = posixpath.basename(target)
+        tagname = posixpath.join(tagname, basename)
+        path = posixpath.join(path, basename)
     dirlib.tag(target, tagname)
     dirlib.make_symlink(target, path)
 
@@ -89,9 +90,9 @@ def untag(rootpath, target, name):
         name: Tagname or path.
     """
     target = taglib.path(rootpath, target)
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         _untag_file(rootpath, target, name)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         _untag_dir(rootpath, target, name)
     else:
         raise oserrors.file_not_found(target)
@@ -100,9 +101,9 @@ def untag(rootpath, target, name):
 def _untag_file(rootpath, target, name):
     """Subfunction for untagging files."""
     path = taglib.path(rootpath, name)
-    if os.path.isdir(path):
+    if posixpath.isdir(path):
         baselib.untag_with(target, path)
-    elif os.path.exists(path) and os.path.samefile(target, path):
+    elif posixpath.exists(path) and posixpath.samefile(target, path):
         os.unlink(path)
     else:
         return
@@ -111,7 +112,7 @@ def _untag_file(rootpath, target, name):
 def _untag_dir(rootpath, target, name):
     """Subfunction for untagging directories."""
     tagname, path = _get_tag_path(rootpath, name)
-    if os.path.isdir(path):
+    if posixpath.isdir(path):
         dirlib.untag_dirname(target, path)
     else:
         dirlib.untag(target, tagname)
@@ -127,10 +128,10 @@ def list_links(rootpath, target):
     Returns:
         Generator yielding paths.
     """
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         target = taglib.path(rootpath, target)
         return baselib.list_links(rootpath, target)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         raise oserrors.is_a_directory(target)
     else:
         raise oserrors.file_not_found(target)
@@ -146,10 +147,10 @@ def list_tags(rootpath, target):
     Returns:
         Generator yielding tagnames.
     """
-    if os.path.isdir(target):
+    if posixpath.isdir(target):
         target = taglib.path(rootpath, target)
         return dirlib.list_tags(target)
-    elif os.path.isfile(target):
+    elif posixpath.isfile(target):
         raise oserrors.not_a_directory(target)
     else:
         raise oserrors.file_not_found(target)
@@ -165,16 +166,16 @@ def move(rootpath, src, dst):
     """
     src = taglib.path(rootpath, src)
     dst = taglib.path(rootpath, dst)
-    if os.path.isfile(src):
+    if posixpath.isfile(src):
         os.rename(src, dst)
-    elif os.path.islink(src):
+    elif posixpath.islink(src):
         os.rename(src, dst)
-        if os.path.isdir(dst):
+        if posixpath.isdir(dst):
             src_tag = taglib.path2tag(rootpath, src)
             if dirlib.is_tagged(dst, src_tag):
                 dst_tag = taglib.path2tag(rootpath, dst)
                 dirlib.replace_tag(dst, src_tag, dst_tag)
-    elif os.path.isdir(src):
+    elif posixpath.isdir(src):
         dirlib.unload(rootpath, src)
         dirlib.rename_all(src, dst)
         dirlib.load(rootpath, dst)
@@ -193,14 +194,14 @@ def remove(rootpath, target):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         os.unlink(target)
-    elif os.path.islink(target):
-        if os.path.isdir(target):
+    elif posixpath.islink(target):
+        if posixpath.isdir(target):
             tagname = taglib.path2tag(rootpath, target)
             dirlib.untag(target, tagname)
         os.unlink(target)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         raise oserrors.is_a_directory(target)
     else:
         raise oserrors.file_not_found(target)
@@ -215,7 +216,7 @@ def swap(rootpath, target):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.islink(target) and os.path.isdir(target):
+    if posixpath.islink(target) and posixpath.isdir(target):
         here = target
         there = os.readlink(target)
         os.rename(here, there)
@@ -240,9 +241,9 @@ def rename_all(rootpath, target, newname):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         baselib.rename_all(rootpath, target, newname)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         dirlib.rename_all(target, newname)
     else:
         raise oserrors.file_not_found(target)
@@ -259,9 +260,9 @@ def remove_all(rootpath, target):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.isfile(target):
+    if posixpath.isfile(target):
         baselib.remove_all(rootpath, target)
-    elif os.path.isdir(target):
+    elif posixpath.isdir(target):
         dirlib.unload(rootpath, target)
         shutil.rmtree(target)
     else:
@@ -277,7 +278,7 @@ def load(rootpath, target):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.isdir(target):
+    if posixpath.isdir(target):
         dirlib.load(rootpath, target)
     else:
         raise oserrors.not_a_directory(target)
@@ -292,7 +293,7 @@ def unload(rootpath, target):
 
     """
     target = taglib.path(rootpath, target)
-    if os.path.isdir(target):
+    if posixpath.isdir(target):
         dirlib.unload(rootpath, target)
     else:
         raise oserrors.not_a_directory(target)
@@ -309,7 +310,7 @@ def load_all(rootpath, top):
     top = taglib.path(rootpath, top)
     for dirpath, dirnames, _ in os.walk(top):
         for dirname in dirnames:
-            path = os.path.join(dirpath, dirname)
+            path = posixpath.join(dirpath, dirname)
             dirlib.load(rootpath, path)
 
 
@@ -324,7 +325,7 @@ def unload_all(rootpath, top):
     top = taglib.path(rootpath, top)
     for dirpath, dirnames, _ in os.walk(top):
         for dirname in dirnames:
-            path = os.path.join(dirpath, dirname)
+            path = posixpath.join(dirpath, dirname)
             dirlib.unload(rootpath, path)
 
 
@@ -408,10 +409,10 @@ def _export_inode_map(rootpath, top, internal=False):
     inode_tag_map = defaultdict(set)
     for dirpath, dirnames, filenames in os.walk(top):
         for dirname in dirnames:
-            path = os.path.join(dirpath, dirname)
+            path = posixpath.join(dirpath, dirname)
             dir_handler(rootpath, inode_tag_map, path)
         for filename in filenames:
-            path = os.path.join(dirpath, filename)
+            path = posixpath.join(dirpath, filename)
             _export_inode_link(rootpath, inode_tag_map, path)
     return inode_tag_map
 
