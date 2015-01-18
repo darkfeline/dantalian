@@ -88,9 +88,7 @@ class TestLibraryParsing(QueryMixin):
             ]))
 
 
-class TestTag(testlib.FSMixin, testlib.SameFileMixin):
-
-    """Basic tagging test."""
+class TestLibraryBasic(testlib.FSMixin, testlib.SameFileMixin):
 
     def setUp(self):
         super().setUp()
@@ -101,27 +99,9 @@ class TestTag(testlib.FSMixin, testlib.SameFileMixin):
         library.tag(self.root, 'flan', '2hu')
         self.assertSameFile('2hu/flan', 'flan')
 
-
-class TestSearch(testlib.FSMixin):
-
-    def setUp(self):
-        super().setUp()
-        os.mkdir('2hu')
-        os.mknod('flan')
-        os.link('flan', '2hu/flan')
-
     def test_search(self):
         query_tree = library.parse_query(self.root, 'AND 2hu . END')
         result = library.search(query_tree)
-
-
-class TestList(testlib.FSMixin):
-
-    def setUp(self):
-        super().setUp()
-        os.mkdir('2hu')
-        os.mknod('flan')
-        os.link('flan', '2hu/flan')
 
     def test_list_links(self):
         query_tree = library.parse_query(self.root, 'AND 2hu . END')
