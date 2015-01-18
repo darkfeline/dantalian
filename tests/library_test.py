@@ -97,4 +97,4 @@ class TestTag(testlib.FSMixin, testlib.SameFileMixin):
 
     def test_tag(self):
         library.tag(self.root, 'flan', '2hu')
-        self.assertSameFile('flan/2hu', '2hu')
+        self.assertSameFile('2hu/flan', 'flan')
