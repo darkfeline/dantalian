@@ -180,7 +180,7 @@ class AndNode(GroupNode):
 
     def get_results(self):
         results = self.children[0].get_results()
-        inodes = (set(node.get_results()) for node in self.children[1:])
+        inodes = (set(node.get_results()) for node in self.children)
         inodes = functools.reduce(set.intersection, inodes)
         return dict((inode, results[inode]) for inode in inodes)
 
