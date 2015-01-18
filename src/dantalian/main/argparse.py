@@ -27,41 +27,7 @@ def make_parser():
 
     subparsers = parser.add_subparsers(title='Commands')
 
-    # tag
-    tmp_parser = subparsers.add_parser(
-        'tag',
-        usage='''%(prog)s FILE TAG
-            %(prog)s TAG -f FILE [FILE ...]
-            %(prog)s FILE -t TAG [TAG ...]
-            %(prog)s -f FILE [FILE ...] -t TAG [TAG ...]
-            %(prog)s --help''')
-    tmp_parser.add_argument('--root', metavar='ROOT', default='')
-    tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
-    tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
-    tmp_parser.add_argument('args', nargs='*')
-    tmp_parser.set_defaults(func=commands.tag)
-
-    # untag
-    tmp_parser = subparsers.add_parser(
-        'untag',
-        usage='''%(prog)s FILE TAG
-            %(prog)s TAG -f FILE [FILE ...]
-            %(prog)s FILE -t TAG [TAG ...]
-            %(prog)s -f FILE [FILE ...] -t TAG [TAG ...]
-            %(prog)s --help''')
-    tmp_parser.add_argument('--root', metavar='ROOT', default='')
-    tmp_parser.add_argument('-f', nargs='+', metavar='FILE')
-    tmp_parser.add_argument('-t', nargs='+', metavar='TAG')
-    tmp_parser.add_argument('args', nargs='*')
-    tmp_parser.set_defaults(func=commands.untag)
-
-    # search
-    tmp_parser = subparsers.add_parser(
-        'search',
-        usage='''%(prog)s QUERY
-            %(prog)s --help''')
-    tmp_parser.add_argument('--root', metavar='ROOT', default='')
-    tmp_parser.add_argument('query', nargs='+')
-    tmp_parser.set_defaults(func=commands.search)
+    for cmd in commands.COMMANDS:
+        getattr(commands, cmd).add_parser(subparsers)
 
     return parser

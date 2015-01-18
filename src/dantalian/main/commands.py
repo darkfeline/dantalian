@@ -2,81 +2,137 @@
 This module contains functions implementing commands for the main script.
 """
 
+import abc
 import logging
-import sys
 
 from dantalian import library
 
 _LOGGER = logging.getLogger(__name__)
 
+# pylint: disable=too-few-public-methods
 
-def _unpack(args):
-    """Unpack tags and files arguments.
+COMMANDS = []
 
-    Args:
-        args: An object with attributes f and/or t.
 
-    Returns:
-        (files, tags), a tuple of lists of strings.
+def _add_command(cls):
+    """Add command to COMMANDS list."""
+    COMMANDS.append(cls.__name__)
+    return cls
+
+
+class Args:
+
+    """Used for packing arguments."""
+
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+
+class CommandBuilder(metaclass=abc.ABCMeta):
+
+    """CommandBuilder for building command parsers for a subparser.
+
+    Subclass and implement command_func(), and set the class attributes, then
+    call add_parser() on the subparsers object.
+
+    Class Attributes:
+        parser_args: Args for constructing the parser.
+        params_args: List of Args for adding arguments to parser.
+
     """
-    files = args.f
-    if not files:
-        tags = args.t
-        if not tags:
-            if len(args.args) != 2:
-                _LOGGER.error('Invalid number of arguments.')
-                sys.exit(1)
-            files = [args.args[0]]
-            tags = [args.args[1]]
-        else:
-            if len(args.args) != 1:
-                _LOGGER.error('Invalid number of arguments.')
-                sys.exit(1)
-            files = [args.args[0]]
-    else:
-        tags = args.t
-        if not tags:
-            if len(args.args) != 1:
-                _LOGGER.error('Invalid number of arguments.')
-                sys.exit(1)
-            tags = [args.args[0]]
-        else:
-            if len(args.args) != 0:
-                _LOGGER.error('Invalid number of arguments.')
-                sys.exit(1)
-    return files, tags
+
+    parser_args = Args()
+    params_args = []
+
+    @classmethod
+    def add_parser(cls, subparsers):
+        """Add a subparser for this command."""
+        args = cls.parser_args
+        tmp_parser = subparsers.add_parser(*args.args, **args.kwargs)
+        for args in cls.params_args:
+            tmp_parser.add_argument(*args.args, **args.kwargs)
+        tmp_parser.set_defaults(func=cls.command_func)
+
+    @staticmethod
+    @abc.abstractmethod
+    def command_func(args):
+        """Function which this command should call."""
 
 
-def tag(args):
-    """Tag files."""
-    files, tags = _unpack(args)
-    root = library.find_root(args.root)
-    for current_file in files:
-        for current_tag in tags:
-            try:
-                library.tag(root, current_file, current_tag)
-            except OSError as err:
-                _LOGGER.error('OSError encountered tagging %s with %s: %s',
-                              current_file, current_tag, err)
+@_add_command
+class Tag(CommandBuilder):
+
+    # pylint: disable=missing-docstring
+
+    parser_args = Args(
+        'tag',
+        usage='''%(prog)s -f FILE [FILE ...] TAG [TAG ...]
+            %(prog)s --help''')
+
+    params_args = [
+        Args('--root', metavar='ROOT', default=''),
+        Args('-f', nargs='+', dest='files', required=True, metavar='FILE'),
+        Args('tags', nargs='+'),
+    ]
+
+    @staticmethod
+    def command_func(args):
+        root = library.find_library(args.root)
+        for current_file in args.files:
+            for current_tag in args.tags:
+                try:
+                    library.tag(root, current_file, current_tag)
+                except OSError as err:
+                    _LOGGER.error(err)
 
 
-def untag(args):
-    """Untag files."""
-    files, tags = _unpack(args)
-    root = library.find_root(args.root)
-    for current_file in files:
-        for current_tag in tags:
-            try:
-                library.untag(root, current_file, current_tag)
-            except OSError as err:
-                _LOGGER.error('OSError encountered tagging %s with %s: %s',
-                              current_file, current_tag, err)
+@_add_command
+class Untag(CommandBuilder):
+
+    # pylint: disable=missing-docstring
+
+    parser_args = Args(
+        'untag',
+        usage='''%(prog)s -f FILE [FILE ...] TAG [TAG ...]
+            %(prog)s --help''')
+
+    params_args = [
+        Args('--root', metavar='ROOT', default=''),
+        Args('-f', nargs='+', dest='files', required=True, metavar='FILE'),
+        Args('tags', nargs='+'),
+    ]
+
+    @staticmethod
+    def command_func(args):
+        root = library.find_library(args.root)
+        for current_file in args.files:
+            for current_tag in args.tags:
+                try:
+                    library.untag(root, current_file, current_tag)
+                except OSError as err:
+                    _LOGGER.error(err)
 
 
-def search(args):
-    """Search for files."""
-    root = library.find_root(args.root)
-    query_tree = library.parse_query(root, args.query)
-    results = library.search(query_tree)
-    for entry in results:
-        print(entry)
+@_add_command
+class Search(CommandBuilder):
+
+    # pylint: disable=missing-docstring
+
+    parser_args = Args(
+        'search',
+        usage='''%(prog)s QUERY
+            %(prog)s --help''')
+
+    params_args = [
+        Args('--root', metavar='ROOT', default=''),
+        Args('query', nargs='+'),
+    ]
+
+    @staticmethod
+    def command_func(args):
+        root = library.find_library(args.root)
+        query_tree = library.parse_query(root, args.query)
+        results = library.search(query_tree)
+        for entry in results:
+            print(entry)
