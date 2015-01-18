@@ -3,6 +3,7 @@ This module contains unit tests for dantalian.library
 """
 
 import os
+import posixpath
 from unittest import TestCase
 
 from dantalian import library
@@ -18,6 +19,7 @@ class QueryMixin(TestCase):
     """TestCase mixin with convenient assertions."""
 
     # pylint: disable=invalid-name
+    # pylint: disable=too-few-public-methods
 
     def assertSameQuery(self, node1, node2):
         """Assert two query node trees are equal."""
@@ -83,8 +85,8 @@ class TestLibraryParsing(QueryMixin):
         self.assertSameQuery(tree, baselib.AndNode(
             [baselib.DirNode("A"),
              baselib.DirNode("/B"),
-             baselib.DirNode(os.path.join(self.root, 'C')),
-             baselib.DirNode(os.path.join(self.root, 'D/E')),
+             baselib.DirNode(posixpath.join(self.root, 'C')),
+             baselib.DirNode(posixpath.join(self.root, 'D/E')),
             ]))
 
 

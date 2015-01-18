@@ -3,8 +3,7 @@ This module contains unit tests for dantalian.library.taglib
 """
 
 import os
-import shutil
-import tempfile
+import posixpath
 from unittest import TestCase
 
 from dantalian.library import taglib
@@ -48,7 +47,7 @@ class TestLibraryRoot(testlib.FSMixin):
         self.assertFalse(taglib.is_library('B'))
 
     def test_find_library(self):
-        self.assertEqual(taglib.find_library('A/foo/bar'), os.path.abspath('A'))
+        self.assertEqual(taglib.find_library('A/foo/bar'), posixpath.abspath('A'))
 
     def test_init_library(self):
         taglib.init_library('B')
