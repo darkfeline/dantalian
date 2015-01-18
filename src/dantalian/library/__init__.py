@@ -47,6 +47,7 @@ def tag(rootpath, target, name):
         target: Tagname or path to target.
         name: Tagname or path.
     """
+    _LOGGER.debug('tag(%r, %r, %r)', rootpath, target, name)
     target = taglib.path(rootpath, target)
     if os.path.isfile(target):
         _tag_file(rootpath, target, name)
@@ -58,6 +59,7 @@ def tag(rootpath, target, name):
 
 def _tag_file(rootpath, target, name):
     """Subfunction for tagging files."""
+    _LOGGER.debug('_tag_file(%r, %r, %r)', rootpath, target, name)
     path = taglib.path(rootpath, name)
     if os.path.isdir(path):
         baselib.tag_with(target, path)

@@ -47,6 +47,7 @@ def tag_with(target, dirpath):
 
     """
     if is_tagged(target, dirpath):
+    _LOGGER.debug('tag_with(%r, %r)', target, dirpath)
         return
     name = os.path.basename(target)
     pathlib.free_name_do(dirpath, name, lambda dest: os.link(target, dest))
