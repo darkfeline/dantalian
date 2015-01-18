@@ -67,8 +67,7 @@ class Tag(CommandBuilder):
 
     parser_args = Args(
         'tag',
-        usage='''%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]
-            %(prog)s --help''')
+        usage='%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]')
 
     params_args = [
         Args('--root', metavar='ROOT', default=''),
@@ -94,8 +93,7 @@ class Untag(CommandBuilder):
 
     parser_args = Args(
         'untag',
-        usage='''%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]
-            %(prog)s --help''')
+        usage='%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]')
 
     params_args = [
         Args('--root', metavar='ROOT', default=''),
@@ -121,8 +119,7 @@ class Search(CommandBuilder):
 
     parser_args = Args(
         'search',
-        usage='''%(prog)s QUERY
-            %(prog)s --help''')
+        usage='%(prog)s QUERY')
 
     params_args = [
         Args('--root', metavar='ROOT', default=''),
