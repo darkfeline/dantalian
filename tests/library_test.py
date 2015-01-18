@@ -8,6 +8,8 @@ from unittest import TestCase
 from dantalian import library
 from dantalian.library import baselib
 
+from . import testlib
+
 # pylint: disable=missing-docstring
 
 
@@ -84,3 +86,15 @@ class TestLibraryParsing(QueryMixin):
              baselib.DirNode(os.path.join(self.root, 'C')),
              baselib.DirNode(os.path.join(self.root, 'D/E')),
             ]))
+
+
+class TestTag(testlib.FSMixin, testlib.SameFileMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('2hu')
+        os.mknod('flan')
+
+    def test_tag(self):
+        library.tag(self.root, 'flan', '2hu')
+        self.assertSameFile('flan/2hu', '2hu')
