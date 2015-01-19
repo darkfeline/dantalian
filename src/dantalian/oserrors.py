@@ -1,3 +1,17 @@
+# Copyright 2015 Allen Li
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 oserrors.py
 ===========
@@ -31,7 +45,7 @@ characters_written; see Python docs on BlockingIOError for details.
 
 Argument can be passed by parameter name:
 
-    >>> raise blocking_io_eagain(filename='foo', filename='bar', written=5)
+    >>> raise blocking_io_eagain(filename='foo', filename2='bar', written=5)
     Traceback (most recent call last):
         ...
     BlockingIOError: [Errno 11] Resource temporarily unavailable: 'foo' -> 'bar'
@@ -78,9 +92,13 @@ _ERRORS = (
 
 
 def oserror(err):
-    """Return OSError builder."""
+    """Return an OSError builder function.
+
+    Args:
+        err: An error number, e.g., errno.ENOENT
+
+    """
     def build_oserror(filename=None, filename2=None, written=None):
-        """Build an OSError exception."""
         error = OSError(err, os.strerror(err))
         if filename is not None:
             error.filename = filename
@@ -92,10 +110,9 @@ def oserror(err):
     return build_oserror
 
 
-def _init_module():
-    """Initialize module."""
-    _globals = globals()
+def _init():
+    globals_ = globals()
     for name, err in _ERRORS:
-        _globals[name] = oserror(err)
+        globals_[name] = oserror(err)
 
-_init_module()
+_init()
