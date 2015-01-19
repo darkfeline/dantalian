@@ -18,39 +18,33 @@ class TestLibraryBase(testlib.FSMixin, testlib.SameFileMixin):
         super().setUp()
         os.makedirs('A')
         os.makedirs('B')
-        join = posixpath.join
-        os.mknod(join('A', 'a'))
-        os.mknod(join('A', 'b'))
-        os.link(join('A', 'b'), join('B', 'b'))
+        os.mknod('A/a')
+        os.mknod('A/b')
+        os.link('A/b', 'B/b')
 
     def test_is_tagged_with(self):
-        join = posixpath.join
-        self.assertTrue(baselib.is_tagged_with(join('A', 'b'), 'B'))
-        self.assertFalse(baselib.is_tagged_with(join('A', 'a'), 'B'))
+        self.assertTrue(baselib.is_tagged_with('A/b', 'B'))
+        self.assertFalse(baselib.is_tagged_with('A/a', 'B'))
 
     def test_tag_with(self):
-        join = posixpath.join
-        baselib.tag_with(join('A', 'a'), 'B')
-        self.assertSameFile(join('A', 'a'), join('B', 'a'))
+        baselib.tag_with('A/a', 'B')
+        self.assertSameFile('A/a', 'B/a')
 
     def test_untag_with(self):
-        join = posixpath.join
-        baselib.untag_with(join('A', 'b'), 'B')
-        self.assertNotSameFile(join('A', 'b'), join('B', 'b'))
+        baselib.untag_with('A/b', 'B')
+        self.assertNotSameFile('A/b', 'B/b')
 
     def test_rename_all(self):
-        join = posixpath.join
-        baselib.rename_all(self.root, join('A', 'b'), 'foo')
-        self.assertSameFile(join('A', 'foo'), join('B', 'foo'))
+        baselib.rename_all(self.root, 'A/b', 'foo')
+        self.assertSameFile('A/foo', 'B/foo')
 
     def test_remove_all(self):
-        join = posixpath.join
-        baselib.remove_all(self.root, join('A', 'b'))
-        self.assertFalse(posixpath.exists(join('A', 'b')))
-        self.assertFalse(posixpath.exists(join('B', 'b')))
+        baselib.remove_all(self.root, 'A/b')
+        self.assertFalse(posixpath.exists('A/b'))
+        self.assertFalse(posixpath.exists('B/b'))
 
     def test_list_links(self):
-        tags = baselib.list_links(self.root, posixpath.join('A', 'b'))
+        tags = baselib.list_links(self.root, 'A/b')
         self.assertSetEqual(set(tags),
                             set(posixpath.join(self.root, filename, 'b')
                                 for filename in ('A', 'B')))
@@ -63,14 +57,13 @@ class TestLibraryBaseSearch(testlib.FSMixin):
         os.makedirs('A')
         os.makedirs('B')
         os.makedirs('C')
-        join = posixpath.join
-        os.mknod(join('A', 'a'))
-        os.mknod(join('A', 'b'))
-        os.mknod(join('A', 'c'))
-        os.mknod(join('C', 'd'))
-        os.link(join('A', 'b'), join('B', 'b'))
-        os.link(join('A', 'c'), join('B', 'c'))
-        os.link(join('A', 'c'), join('C', 'c'))
+        os.mknod('A/a')
+        os.mknod('A/b')
+        os.mknod('A/c')
+        os.mknod('C/d')
+        os.link('A/b', 'B/b')
+        os.link('A/c', 'B/c')
+        os.link('A/c', 'C/c')
 
     def test_and(self):
         results = baselib.search(
@@ -82,7 +75,7 @@ class TestLibraryBaseSearch(testlib.FSMixin):
         )
         self.assertListEqual(
             results,
-            [posixpath.join('A', 'c')],
+            ['A/c'],
         )
 
     def test_or(self):
@@ -95,10 +88,7 @@ class TestLibraryBaseSearch(testlib.FSMixin):
         )
         self.assertListEqual(
             sorted(results),
-            sorted([posixpath.join('A', 'a'),
-                    posixpath.join('A', 'b'),
-                    posixpath.join('A', 'c'),
-                    posixpath.join('C', 'd')]),
+            sorted(['A/a', 'A/b', 'A/c', 'C/d']),
         )
 
     def test_minus(self):
@@ -111,7 +101,7 @@ class TestLibraryBaseSearch(testlib.FSMixin):
         )
         self.assertListEqual(
             results,
-            [posixpath.join('A', 'a')]
+            ['A/a']
         )
 
     def test_dir(self):
@@ -120,7 +110,5 @@ class TestLibraryBaseSearch(testlib.FSMixin):
         )
         self.assertListEqual(
             sorted(results),
-            sorted([posixpath.join('A', 'a'),
-                    posixpath.join('A', 'b'),
-                    posixpath.join('A', 'c')]),
+            sorted(['A/a', 'A/b', 'A/c']),
         )
