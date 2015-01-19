@@ -63,4 +63,3 @@ class FSMixin(TestCase):
     def tearDown(self):
         os.chdir(self.__olddir)
         shutil.rmtree(self.__tmproot)
-
