@@ -72,7 +72,7 @@ class Tag(CommandBuilder):
         usage='%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]')
 
     params_args = [
-        Args('--root', metavar='ROOT', default=''),
+        Args('--root', metavar='ROOT', default='.'),
         Args('-f', nargs='+', dest='files', required=True, metavar='FILE'),
         Args('tags', nargs='+'),
     ]
@@ -98,7 +98,7 @@ class Untag(CommandBuilder):
         usage='%(prog)s -f FILE [FILE ...] -- TAG [TAG ...]')
 
     params_args = [
-        Args('--root', metavar='ROOT', default=''),
+        Args('--root', metavar='ROOT', default='.'),
         Args('-f', nargs='+', dest='files', required=True, metavar='FILE'),
         Args('tags', nargs='+'),
     ]
@@ -124,7 +124,7 @@ class Search(CommandBuilder):
         usage='%(prog)s QUERY')
 
     params_args = [
-        Args('--root', metavar='ROOT', default=''),
+        Args('--root', metavar='ROOT', default='.'),
         Args('query', nargs='+'),
     ]
 
@@ -166,8 +166,9 @@ class List(CommandBuilder):
         usage='%(prog)s PATH')
 
     params_args = [
-        Args('--root', metavar='ROOT', default=''),
-        Args('path', nargs='+'),
+        Args('--root', metavar='ROOT', default='.'),
+        Args('--external', action='store_true'),
+        Args('path'),
     ]
 
     @staticmethod
