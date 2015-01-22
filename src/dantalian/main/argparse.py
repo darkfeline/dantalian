@@ -22,7 +22,7 @@ def make_parser():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--log', metavar='LOGFILE')
+    parser.add_argument('--debug', action='store_true')
 
     subparsers = parser.add_subparsers(title='Commands')
 

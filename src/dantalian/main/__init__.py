@@ -15,17 +15,17 @@ def main():
     root_logger = logging.getLogger()
     handler = logging.StreamHandler()
     root_logger.addHandler(handler)
-    handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-    handler.setLevel('WARNING')
     # Parse arguments.
     args = make_parser().parse_args()
-    if args.log:
-        file_handler = logging.FileHandler(args.log)
-        root_logger.addHandler(file_handler)
-        file_handler.setFormatter(logging.Formatter(
+    if args.debug:
+        handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s @%(name)s %(message)s'))
-        file_handler.setLevel('DEBUG')
+        # handler default is pass all
         root_logger.setLevel('DEBUG')
+    else:
+        handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+        handler.setLevel('WARNING')
+        # root logger default is WARNING
     # Run command.
     args.func(args)
 
