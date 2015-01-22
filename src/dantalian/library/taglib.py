@@ -57,13 +57,11 @@ def is_library(dirpath):
     return posixpath.isdir(posixpath.join(dirpath, _ROOTDIR))
 
 
-def find_library(dirpath=''):
+def find_library(dirpath='.'):
     """Find library.
 
     Return the path of the first library found above the given path.  Return
     None if no library is found.
-
-    An empty string means to use the current directory.
 
     """
     dirpath = posixpath.abspath(dirpath)
