@@ -139,6 +139,7 @@ def list_links(basepath, target):
     Returns:
         Generator yielding paths.
     """
+    _LOGGER.debug('list_links(%r, %r)', basepath, target)
     inode = os.lstat(target)
     for (dirpath, _, filenames) in os.walk(basepath):
         for name in filenames:
