@@ -133,5 +133,8 @@ class TestLibrarySearch(testlib.FSMixin, testlib.SameFileMixin):
         self.assertEqual(result, ['2hu/flan'])
 
     def test_list_links(self):
-        query_tree = library.parse_query(self.root, 'AND 2hu . END')
-        result = library.search(query_tree)
+        result = library.list_links(self.root, 'flan')
+        self.assertSetEqual(
+            set([posixpath.join(self.root, 'flan'),
+                 posixpath.join(self.root, '2hu', 'flan')]),
+            set(result))
