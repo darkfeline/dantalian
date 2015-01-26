@@ -90,6 +90,8 @@ _ERRORS = (
     ('timeout', errno.ETIMEDOUT),
 )
 
+# pylint: disable=missing-docstring
+
 
 def oserror(err):
     """Return an OSError builder function.
