@@ -21,8 +21,11 @@ import logging
 import posixpath
 
 from dantalian import library
+from dantalian import oserrors
 
 _LOGGER = logging.getLogger(__name__)
+
+# pylint: disable=missing-docstring
 
 
 def tag(args):
@@ -57,14 +60,17 @@ def init_library(args):
     library.init_library(args.path)
 
 
-def list(args):
+def list_tags(args):
     path = args.path
     root = args.root
     if posixpath.isfile(path):
         results = library.list_links(root, path)
     elif posixpath.isdir(path):
         # TODO internal vs external
-        results = library.list_tags(root, path)
+        if args.external:
+            results = library.list_links(root, path)
+        else:
+            results = library.list_tags(root, path)
     else:
         raise oserrors.file_not_found(path)
     for item in results:

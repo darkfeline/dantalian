@@ -73,6 +73,6 @@ def make_parser():
     parser.add_argument('--root', metavar='ROOT', default='.')
     parser.add_argument('--external', action='store_true')
     parser.add_argument('path')
-    parser.set_defaults(func=commands.list)
+    parser.set_defaults(func=commands.list_tags)
 
     return top_parser
