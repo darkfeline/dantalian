@@ -145,11 +145,9 @@ def list_links(rootpath, target):
     Returns:
         Generator yielding paths.
     """
-    if posixpath.isfile(target):
+    if posixpath.exists(target):
         target = taglib.path(rootpath, target)
         return baselib.list_links(rootpath, target)
-    elif posixpath.isdir(target):
-        raise oserrors.is_a_directory(target)
     else:
         raise oserrors.file_not_found(target)
 

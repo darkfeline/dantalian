@@ -17,9 +17,9 @@
 
 """This module contains basic library operations.
 
-The functions in this module define basic library operations for files.  Only
-tagging of files (not directories) are supported, and only pathnames (not
-tagnames) are supported.
+The functions in this module define basic library operations for generic files.
+Symlinks are followed normally.  These also work on directories insofar as they
+are considered files.
 
 Specification
 -------------
@@ -36,6 +36,7 @@ points to A.
 
 import abc
 import functools
+from itertools import chain
 import logging
 import os
 import posixpath
@@ -82,9 +83,9 @@ def untag_with(target, dirpath):
         dirpath: Path to directory.
 
     """
-    inode = os.lstat(target)
+    inode = os.stat(target)
     for candidate in pathlib.listdirpaths(dirpath):
-        candidate_inode = os.lstat(candidate)
+        candidate_inode = os.stat(candidate)
         if posixpath.samestat(inode, candidate_inode):
             os.unlink(candidate)
 
@@ -140,11 +141,11 @@ def list_links(basepath, target):
         Generator yielding paths.
     """
     _LOGGER.debug('list_links(%r, %r)', basepath, target)
-    inode = os.lstat(target)
-    for (dirpath, _, filenames) in os.walk(basepath):
-        for name in filenames:
+    inode = os.stat(target)
+    for (dirpath, dirnames, filenames) in os.walk(basepath):
+        for name in chain(dirnames, filenames):
             filepath = posixpath.join(dirpath, name)
-            if posixpath.samestat(inode, os.lstat(filepath)):
+            if posixpath.samestat(inode, os.stat(filepath)):
                 yield filepath
 
 

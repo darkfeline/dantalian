@@ -129,3 +129,19 @@ class TestLibraryBaseSearch(testlib.FSMixin):
             sorted(results),
             sorted(['A/a', 'A/b', 'A/c']),
         )
+
+
+class TestListSymlink(testlib.FSMixin, testlib.SameFileMixin):
+
+    """Test list_links() on symlinks."""
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('A')
+        os.symlink('A', 'B')
+
+    def test_symlinks(self):
+        links = baselib.list_links(self.root, 'A')
+        self.assertSetEqual(set(links),
+                            set(posixpath.join(self.root, filename)
+                                for filename in ('A', 'B')))
