@@ -15,9 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module contains functions for working with tagnames and libraries."""
+"""This module defines interaction with tagnames."""
 
-import os
 import posixpath
 
 
@@ -48,38 +47,3 @@ def tag(rootpath, name):
     if not is_tag(name):
         name = path2tag(rootpath, name)
     return name
-
-
-_ROOTDIR = '.dantalian'
-
-def is_library(dirpath):
-    """Return whether dirpath refers to a library."""
-    return posixpath.isdir(posixpath.join(dirpath, _ROOTDIR))
-
-
-def find_library(dirpath='.'):
-    """Find library.
-
-    Return the path of the first library found above the given path.  Return
-    None if no library is found.
-
-    """
-    dirpath = posixpath.abspath(dirpath)
-    _, dirpath = posixpath.splitdrive(dirpath)
-    while True:
-        if is_library(dirpath):
-            return dirpath
-        elif dirpath in ('/', ''):
-            return None
-        else:
-            dirpath, _ = posixpath.split(dirpath)
-
-
-def init_library(dirpath):
-    """Initialize library."""
-    os.mkdir(posixpath.join(dirpath, _ROOTDIR))
-
-
-def get_resource(dirpath, resource_path):
-    """Get the path of a resource for a library."""
-    return posixpath.join(dirpath, _ROOTDIR, resource_path)

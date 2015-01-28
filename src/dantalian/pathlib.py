@@ -16,14 +16,19 @@
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module contains various shared path-related functions.
+This module contains shared path-related functionality.
 """
 
 from itertools import count
 import os
 import posixpath
 
-from dantalian import oserrors
+
+def readlink(path):
+    """Follow all symlinks and return the target of the last link."""
+    while posixpath.islink(path):
+        path = os.readlink(path)
+    return path
 
 
 def listdirpaths(path):
@@ -45,11 +50,11 @@ def free_name(dirpath, name):
     incrementing index to the filename as necessary.
 
     Note that the returned filename might not work due to race
-    conditions. Program accordingly.
+    conditions.  Program accordingly.
 
     Args:
-        name: Desired filename.
         dirpath: Pathname of directory to look in.
+        name: Desired filename.
 
     Returns:
         Filename.
@@ -80,15 +85,3 @@ def free_name_do(dirpath, name, callback):
             continue
         else:
             return dst
-
-
-def rename_safe(src, dst):
-    """Semi-safe rename.
-
-    Raises FileExistsError if dst exists (instead of silently overwriting), but
-    not safe from race conditions.
-
-    """
-    if posixpath.isfile(dst):
-        raise oserrors.file_exists(dst)
-    os.rename(src, dst)

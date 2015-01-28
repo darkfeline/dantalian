@@ -20,6 +20,7 @@
 import logging
 import posixpath
 
+import dantalian
 from dantalian import library
 from dantalian import oserrors
 
@@ -29,48 +30,58 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def tag(args):
-    root = library.find_library(args.root)
+    rootpath = library.find_library(args.root)
     for current_file in args.files:
         for current_tag in args.tags:
             try:
-                library.tag(root, current_file, current_tag)
+                dantalian.tag(rootpath, current_file, current_tag)
             except OSError as err:
                 _LOGGER.error(err)
+
 
 def untag(args):
-    root = library.find_library(args.root)
+    rootpath = library.find_library(args.root)
     for current_file in args.files:
         for current_tag in args.tags:
             try:
-                library.untag(root, current_file, current_tag)
+                dantalian.untag(rootpath, current_file, current_tag)
             except OSError as err:
                 _LOGGER.error(err)
 
 
+def unlink(args):
+    rootpath = library.find_library(args.root)
+    for file in args.files:
+        try:
+            dantalian.unlink(rootpath, file)
+        except OSError as err:
+            _LOGGER.error(err)
+
+
+# TODO
 def search(args):
-    root = library.find_library(args.root)
+    rootpath = library.find_library(args.root)
     query = ' '.join(args.query)
-    query_tree = library.parse_query(root, query)
-    results = library.search(query_tree)
+    query_tree = dantalian.parse_query(rootpath, query)
+    results = dantalian.search(query_tree)
     for entry in results:
         print(entry)
 
 
 def init_library(args):
-    library.init_library(args.path)
+    dantalian.init_library(args.path)
 
 
 def list_tags(args):
     path = args.path
-    root = args.root
+    rootpath = args.root
     if posixpath.isfile(path):
-        results = library.list_links(root, path)
+        results = dantalian.list_links(rootpath, path)
     elif posixpath.isdir(path):
-        # TODO internal vs external
         if args.external:
-            results = library.list_links(root, path)
+            results = dantalian.list_links(rootpath, path)
         else:
-            results = library.list_tags(root, path)
+            results = dantalian.list_tags(rootpath, path)
     else:
         raise oserrors.file_not_found(path)
     for item in results:

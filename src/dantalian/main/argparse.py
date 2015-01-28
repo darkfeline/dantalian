@@ -60,6 +60,13 @@ def make_parser():
     parser.add_argument('tags', nargs='+')
     parser.set_defaults(func=commands.untag)
 
+    parser = subparsers.add_parser(
+        'unlink',
+        usage='%(prog)s FILE [FILE ...]')
+    parser.add_argument('--root', metavar='ROOT', default='.')
+    parser.add_argument('files', nargs='+')
+    parser.set_defaults(func=commands.untag)
+
     parser = subparsers.add_parser('search', usage='%(prog)s QUERY')
     parser.add_argument('--root', metavar='ROOT', default='.')
     parser.add_argument('query', nargs='+')
@@ -74,5 +81,16 @@ def make_parser():
     parser.add_argument('--external', action='store_true')
     parser.add_argument('path')
     parser.set_defaults(func=commands.list_tags)
+
+    # TODO rename
+    # TODO swap
+    # TODO rename_all
+    # TODO unlink_all
+    # TODO save
+    # TODO load
+    # TODO unload
+    # TODO clean
+    # TODO import
+    # TODO export
 
     return top_parser
