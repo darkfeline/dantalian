@@ -36,120 +36,52 @@ from dantalian import pathlib
 from dantalian import tagnames
 
 # exported as module API
-from dantalian.search import search
-from dantalian.search import parse_query
+from dantalian.base import link
+from dantalian.base import unlink
+from dantalian.base import rename
+from dantalian.base import list_links
+from dantalian.dtags import list_tags
+from dantalian.base import swap_dir
+from dantalian.base import save_dtags
+from dantalian.base import load_dtags
+from dantalian.base import unload_dtags
+from dantalian.base import clean_symlinks
+from dantalian.searching import search
+from dantalian.searching import parse_query
 from dantalian.library import init_library
 from dantalian.library import find_library
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def tag(rootpath, target, name):
-    """Tag target file-or-directory with given name.
+def tag(rootpath, path, directory):
+    """Tag file with a directory.
 
     Args:
         rootpath: Rootpath to resolve tagnames.
-        target: Tagname or path to target.
-        name: Tagname or path.
+        path: Path of file or directory to tag.
+        directory: Directory path.
     """
-    _LOGGER.debug('tag(%r, %r, %r)', rootpath, target, name)
-    target = tagnames.path(rootpath, target)
-    dstpath = tagnames.path(rootpath, name)
-    if posixpath.isdir(dstpath):
-        pathlib.free_name_do(dstpath, posixpath.basename(target),
-                             lambda dst: base.link(rootpath, target, dst))
-    else:
-        base.link(rootpath, target, dstpath)
+    pathlib.free_name_do(directory, posixpath.basename(path),
+                         lambda dst: base.link(rootpath, path, dst))
 
 
-def unlink(rootpath, target):
-    """Unlink target file-or-directory.
+def untag(rootpath, path, directory):
+    """Untag file from a directory.
 
     Args:
         rootpath: Rootpath to resolve tagnames.
-        target: Tagname or path to target.
-        name: Tagname or path.
+        path: Path of file or directory to tag.
+        directory: Directory path.
     """
-    target = tagnames.path(rootpath, target)
-    base.unlink(rootpath, target)
+    target = path
+    for filepath in pathlib.listdirpaths(directory):
+        if posixpath.samefile(target, filepath):
+            base.unlink(rootpath, filepath)
 
 
-def untag(rootpath, target, name):
-    """Remove tag with given name from target file-or-directory.
-
-    Args:
-        rootpath: Rootpath to resolve tagnames.
-        target: Tagname or path to target.
-        name: Tagname or path.
-    """
-    target = tagnames.path(rootpath, target)
-    dstpath = tagnames.path(rootpath, name)
-    if posixpath.samefile(target, dstpath):
-        base.unlink(rootpath, dstpath)
-    elif posixpath.isdir(dstpath):
-        for filepath in pathlib.listdirpaths(dstpath):
-            if posixpath.samefile(target, filepath):
-                base.unlink(rootpath, filepath)
-    else:
-        raise ValueError("Invalid arguments {} and {}".format(target, dstpath))
-
-
-def list_links(rootpath, target):
-    """List all links to the target file.
-
-    Args:
-        rootpath: Rootpath for tag conversions and finding links.
-        target: Tagname or path to target.
-
-    Returns:
-        Generator yielding paths.
-    """
-    target = tagnames.path(rootpath, target)
-    return base.list_links(rootpath, target)
-
-
-def list_tags(rootpath, target):
-    """List all tags of the target directory.
-
-    Args:
-        rootpath: Rootpath for tag conversions and finding links.
-        target: Tagname or path to target.
-
-    Returns:
-        Generator yielding tagnames.
-    """
-    target = tagnames.path(rootpath, target)
-    return dtags.list_tags(target)
-
-
-def rename(rootpath, src, dst):
-    """Rename src to dst and fix tags for directories.
-
-    Args:
-        rootpath: Rootpath for tag conversions.
-        src: Source tagname or pathname.
-        dst: Destination tagname or pathname.
-    """
-    src = tagnames.path(rootpath, src)
-    dst = tagnames.path(rootpath, dst)
-    base.link(rootpath, src, dst)
-    base.unlink(rootpath, src)
-
-
-def swap(rootpath, target):
-    """Swap a symlink with its target directory.
-
-    Args:
-        rootpath: Rootpath for tag conversions.
-        target: Target symlink tagname or pathname.
-
-    """
-    target = tagnames.path(rootpath, target)
-    base.swap_dir(rootpath, target)
-
-
-def rename_all(rootpath, target, name):
-    """Rename all links to the target file-or-directory.
+def rename_all(rootpath, path, name):
+    """Rename all links to the file or directory.
 
     Attempt to rename all links to the target under the rootpath to the given
     name, finding a name as necessary.  If there are multiple links in a
@@ -157,17 +89,17 @@ def rename_all(rootpath, target, name):
 
     Args:
         rootpath: Base path for tag conversions and search.
-        target: Tag or path to target.
+        path: Path to target.
         name: New filename.
 
     """
-    target = tagnames.path(rootpath, target)
+    target = path
     newname = name
     seen = set()
     for filepath in base.list_links(rootpath, target):
         dirname = posixpath.dirname(filepath)
         if dirname in seen:
-            unlink(rootpath, filepath)
+            base.unlink(rootpath, filepath)
             continue
         # pylint: disable=cell-var-from-loop
         pathlib.free_name_do(dirname, newname,
@@ -178,7 +110,11 @@ def rename_all(rootpath, target, name):
 def _rename_safe(rootpath, src, dst):
     """Safe version of rename.
 
-    Raises FileExistsError if dst exists, but subject to race conditions.
+    Raises FileExistsError if dst exists instead of overwriting, but subject to
+    race conditions.
+
+    base.rename() implementation does not overwrite, but this function is kept
+    in case base.rename() implementation is changed.
 
     Args:
         rootpath: Rootpath for tag conversions.
@@ -188,20 +124,20 @@ def _rename_safe(rootpath, src, dst):
     """
     if posixpath.exists(dst):
         raise oserrors.file_exists(src, dst)
-    rename(rootpath, src, dst)
+    base.rename(rootpath, src, dst)
 
 
-def unlink_all(rootpath, target):
+def unlink_all(rootpath, path):
     """Unlink all links to the target file-or-directory.
 
     Unlink all links to the target under the rootpath.
 
     Args:
         rootpath: Base path for tag conversions and search.
-        target: Tag or path to target.
+        path: Path to target.
 
     """
-    target = tagnames.path(rootpath, target)
+    target = path
     if posixpath.isdir(target):
         target = pathlib.readlink(target)
         base.unload_dtags(rootpath, target)
@@ -209,42 +145,6 @@ def unlink_all(rootpath, target):
     else:
         for path in base.list_links(rootpath, target):
             base.unlink(rootpath, path)
-
-
-def save(rootpath, target):
-    """Load symlinks from a directory's internal tags.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        target: Tag or path to target.
-
-    """
-    target = tagnames.path(rootpath, target)
-    base.save_dtags(rootpath, target)
-
-
-def load(rootpath, target):
-    """Load symlinks from a directory's internal tags.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        target: Tag or path to target.
-
-    """
-    target = tagnames.path(rootpath, target)
-    base.load_dtags(rootpath, target)
-
-
-def unload(rootpath, target):
-    """Unload symlinks from a directory's internal tags.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        target: Tag or path to target.
-
-    """
-    target = tagnames.path(rootpath, target)
-    base.unload_dtags(rootpath, target)
 
 
 def load_all(rootpath, top):
@@ -255,7 +155,6 @@ def load_all(rootpath, top):
         top: Top of directory tree to search.
 
     """
-    top = tagnames.path(rootpath, top)
     for (dirpath, dirnames, _) in os.walk(top):
         for dirname in dirnames:
             path = posixpath.join(dirpath, dirname)
@@ -270,23 +169,10 @@ def unload_all(rootpath, top):
         top: Top of directory tree to search.
 
     """
-    top = tagnames.path(rootpath, top)
     for (dirpath, dirnames, _) in os.walk(top):
         for dirname in dirnames:
             path = posixpath.join(dirpath, dirname)
             base.unload_dtags(rootpath, path)
-
-
-def clean(rootpath, top):
-    """Clean broken symlink.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        top: Top of directory tree to search.
-
-    """
-    top = tagnames.path(rootpath, top)
-    base.clean_symlinks(top)
 
 
 def import_tags(rootpath, path_tag_map):
@@ -347,7 +233,6 @@ def _export_stat_map(rootpath, top):
         Dictionary mapping stat objects to sets of tagnames.
 
     """
-    top = tagnames.path(rootpath, top)
     stat_tag_map = defaultdict(set)
     for dirpath, dirnames, filenames in os.walk(top):
         for filename in chain(dirnames, filenames):

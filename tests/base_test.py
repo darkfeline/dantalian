@@ -16,39 +16,42 @@
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module contains unit tests for dantalian.library
+This module contains unit tests for dantalian.base
 """
 
 import os
-import posixpath
+from unittest.mock import patch
 
-from dantalian import library
+from dantalian import base
 
 from . import testlib
 
 # pylint: disable=missing-docstring
 
 
-class TestLibraryRoot(testlib.FSMixin):
+class TestLink(testlib.FSMixin, testlib.SameFileMixin):
 
     def setUp(self):
         super().setUp()
-        os.makedirs('A/.dantalian')
-        os.mknod('A/.dantalian/foo')
-        os.makedirs('A/foo/bar')
-        os.makedirs('B/foo/bar')
+        os.mkdir('bag')
+        os.mknod('apple')
 
-    def test_is_library(self):
-        self.assertTrue(library.is_library('A'))
-        self.assertFalse(library.is_library('B'))
+    def test_link(self):
+        base.link(self.root, 'apple', 'bag/apple')
+        self.assertSameFile('apple', 'bag/apple')
 
-    def test_find_library(self):
-        self.assertEqual(library.find_library('A/foo/bar'),
-                         posixpath.abspath('A'))
 
-    def test_init_library(self):
-        library.init_library('B')
-        self.assertTrue(library.is_library('B'))
+class TestLinkDir(testlib.FSMixin, testlib.SameFileMixin):
 
-    def test_get_resource(self):
-        self.assertEqual(library.get_resource('A', 'foo'), 'A/.dantalian/foo')
+    def setUp(self):
+        super().setUp()
+        os.mkdir('bag')
+        os.mkdir('apple')
+
+    def test_link_dir(self):
+        with patch('dantalian.dtags.add_tag') as mock_func:
+            base.link(self.root, 'apple', 'bag/apple')
+            self.assertSameFile('apple', 'bag/apple')
+            mock_func.assert_called_with('apple', '//bag/apple')
+
+# XXX Finish unit tests

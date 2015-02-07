@@ -81,7 +81,7 @@ def list_tags(args):
         if args.external:
             results = dantalian.list_links(rootpath, path)
         else:
-            results = dantalian.list_tags(rootpath, path)
+            results = dantalian.list_tags(path)
     else:
         raise oserrors.file_not_found(path)
     for item in results:

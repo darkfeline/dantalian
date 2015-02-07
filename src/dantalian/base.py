@@ -15,13 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module defines basic interaction with a semantic filesystem."""
+"""This module defines basic interaction with a semantic filesystem.
+
+This module primarily extends link(), unlink(), and rename() to work as though
+they support directory linking.  The rest of the functions exist as
+implementation details to manage directory linking with symlinks and dtags.
+
+"""
 
 from itertools import chain
 import os
 import posixpath
 
 from dantalian import dtags
+from dantalian import oserrors
 from dantalian import pathlib
 from dantalian import tagnames
 
@@ -36,6 +43,7 @@ def link(rootpath, src, dst):
 
     """
     if posixpath.isdir(src):
+        src = pathlib.readlink(src)
         os.symlink(posixpath.abspath(src), dst)
         dtags.add_tag(src, tagnames.path2tag(rootpath, dst))
     else:
@@ -43,15 +51,39 @@ def link(rootpath, src, dst):
 
 
 def unlink(rootpath, path):
-    """Unlink given path."""
+    """Unlink given path.
+
+    If the target is a directory without any other links, raise OSError.
+
+    """
     target = path
+    # We unlink the target.  However, if it is a directory, we want to swap it
+    # out for one of its symlinks, then unlink the symlink.  If the directory
+    # doesn't have any tags, then we fail.
     if posixpath.isdir(target):
         if not posixpath.islink(target):
             tags = dtags.list_tags(target)
+            if not tags:
+                raise oserrors.is_a_directory(target)
             swap_candidate = tagnames.tag2path(rootpath, tags[0])
             swap_dir(rootpath, swap_candidate)
+            assert posixpath.islink(target)
         dtags.remove_tag(target, tagnames.path2tag(rootpath, target))
     os.unlink(target)
+
+
+def rename(rootpath, src, dst):
+    """Rename src to dst and fix tags for directories.
+
+    Doesn't overwrite an existing file at dst.
+
+    Args:
+        rootpath: Rootpath for tag conversions.
+        src: Source path.
+        dst: Destination path.
+    """
+    link(rootpath, src, dst)
+    unlink(rootpath, src)
 
 
 def swap_dir(rootpath, path):
@@ -107,9 +139,12 @@ def save_dtags(rootpath, dirpath):
 
     """
     dirpath = pathlib.readlink(dirpath)
+    dir_tagname = tagnames.path2tag(rootpath, dirpath)
     tags = [tagnames.path2tag(rootpath, path)
-            for path in list_links(rootpath, dirpath)
-            if path != dirpath]
+            for path in list_links(rootpath, dirpath)]
+    tags = [tagname
+            for tagname in tags
+            if tagname != dir_tagname]
     dtags.set_tags(dirpath, tags)
 
 

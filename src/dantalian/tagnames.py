@@ -26,12 +26,20 @@ def is_tag(name):
 
 
 def path2tag(rootpath, pathname):
-    """Convert a pathname to a tagname."""
+    """Convert a pathname to a tagname.
+
+    Normalizes the path before converting to a tagname.
+
+    """
     return '//' + posixpath.relpath(pathname, rootpath)
 
 
 def tag2path(rootpath, tagname):
-    """Convert a tagname to a pathname."""
+    """Convert a tagname to a pathname.
+
+    Doesn't normalize the resulting path.
+
+    """
     return posixpath.join(rootpath, tagname.lstrip('/'))
 
 
