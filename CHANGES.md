@@ -1,5 +1,9 @@
 # CHANGES
 
+## version 1.0
+
+This version changes more things than not, so just re-read the documentation.
+
 ## version 0.6
 
 * Commands can now take multiple arguments where applicable (e.g.,
