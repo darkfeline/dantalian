@@ -15,4 +15,31 @@
 # You should have received a copy of the GNU General Public License
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This is the dantalian package."""
+"""
+This module contains unit tests for dantalian.dtags
+"""
+
+import os
+import posixpath
+import unittest
+from unittest.mock import patch
+
+from dantalian import base
+
+from . import testlib
+
+# pylint: disable=missing-docstring
+
+
+# XXX Finish unit tests
+@unittest.skip
+class TestLink(testlib.FSMixin, testlib.SameFileMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('bag')
+        os.mknod('apple')
+
+    def test_link(self):
+        base.link(self.root, 'apple', 'bag/apple')
+        self.assertSameFile('apple', 'bag/apple')

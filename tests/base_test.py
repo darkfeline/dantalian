@@ -20,6 +20,7 @@ This module contains unit tests for dantalian.base
 """
 
 import os
+import posixpath
 from unittest.mock import patch
 
 from dantalian import base
@@ -53,5 +54,19 @@ class TestLinkDir(testlib.FSMixin, testlib.SameFileMixin):
             base.link(self.root, 'apple', 'bag/apple')
             self.assertSameFile('apple', 'bag/apple')
             mock_func.assert_called_with('apple', '//bag/apple')
+
+
+class TestUnlink(testlib.FSMixin, testlib.SameFileMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('bag')
+        os.mknod('apple')
+        os.link('apple', 'bag/apple')
+
+    def test_unlink(self):
+        base.unlink(self.root, 'bag/apple')
+        self.assertFalse(posixpath.exists('bag/apple'))
+
 
 # XXX Finish unit tests

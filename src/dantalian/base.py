@@ -166,13 +166,3 @@ def unload_dtags(rootpath, dirpath):
         tagpath = tagnames.tag2path(rootpath, tagname)
         if posixpath.samefile(dirpath, tagpath):
             os.unlink(tagpath)
-
-
-def clean_symlinks(dirpath):
-    """Remove all broken symlinks under the given directory."""
-    # Broken symlinks appear as files, so we skip directories.
-    for dirpath, _, filenames in os.walk(dirpath):
-        for filename in filenames:
-            path = posixpath.join(dirpath, filename)
-            if posixpath.islink(path) and not posixpath.exists(path):
-                os.unlink(path)
