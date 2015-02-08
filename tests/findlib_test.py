@@ -72,7 +72,7 @@ class TestLibraryParsing(QueryMixin):
 
     def test_parse_and_escape(self):
         tree = findlib.parse_query(self.root,
-                                     r"AND '\AND' '\\AND' '\\\AND' END")
+                                   r"AND '\AND' '\\AND' '\\\AND' END")
         self.assertSameQuery(tree, findlib.AndNode(
             [findlib.DirNode(r'AND'),
              findlib.DirNode(r'\AND'),

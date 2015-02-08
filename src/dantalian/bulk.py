@@ -113,34 +113,6 @@ def unlink_all(rootpath, path):
             base.unlink(rootpath, path)
 
 
-def load_all(rootpath, top):
-    """Load all directories.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        top: Top of directory tree to search.
-
-    """
-    for (dirpath, dirnames, _) in os.walk(top):
-        for dirname in dirnames:
-            path = posixpath.join(dirpath, dirname)
-            base.load_dtags(rootpath, path)
-
-
-def unload_all(rootpath, top):
-    """Unload all directories.
-
-    Args:
-        rootpath: Base path for tag conversions.
-        top: Top of directory tree to search.
-
-    """
-    for (dirpath, dirnames, _) in os.walk(top):
-        for dirname in dirnames:
-            path = posixpath.join(dirpath, dirname)
-            base.unload_dtags(rootpath, path)
-
-
 def import_tags(rootpath, path_tag_map):
     """Import tags.
 

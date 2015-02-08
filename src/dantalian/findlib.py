@@ -28,7 +28,6 @@ import shlex
 
 from dantalian import pathlib
 from dantalian import tagnames
-from dantalian import errors
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -210,7 +209,7 @@ def parse_query(rootpath, query):
     return parse_list[0]
 
 
-class ParseError(errors.Error):
+class ParseError(Exception):
 
     """Error parsing query."""
 

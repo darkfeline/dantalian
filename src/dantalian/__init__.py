@@ -16,3 +16,8 @@
 # along with Dantalian.  If not, see <http://www.gnu.org/licenses/>.
 
 """This is the dantalian package."""
+
+from . import base
+from . import bulk
+from . import tagging
+from . import library

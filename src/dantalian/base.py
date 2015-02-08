@@ -104,6 +104,9 @@ def swap_dir(rootpath, path):
         there_tag = tagnames.path2tag(rootpath, there)
         dtags.remove_tag(here, here_tag)
         dtags.add_tag(here, there_tag)
+        os.unlink(here)
+        # here is now nothing
+        # there is now the dir
         os.rename(there, here)
         # here is now the dir
         # there is now nothing

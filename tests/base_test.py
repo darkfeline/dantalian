@@ -50,7 +50,7 @@ class TestLinkDir(testlib.FSMixin, testlib.SameFileMixin):
         os.mkdir('apple')
 
     def test_link_dir(self):
-        with patch('dantalian.dtags.add_tag') as mock_func:
+        with patch('dantalian.dtags.add_tag', autospec=True) as mock_func:
             base.link(self.root, 'apple', 'bag/apple')
             self.assertSameFile('apple', 'bag/apple')
             mock_func.assert_called_with('apple', '//bag/apple')
@@ -69,4 +69,34 @@ class TestUnlink(testlib.FSMixin, testlib.SameFileMixin):
         self.assertFalse(posixpath.exists('bag/apple'))
 
 
-# XXX Finish unit tests
+class TestUnlinkDir(testlib.FSMixin, testlib.SameFileMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('bag')
+        os.mkdir('apple')
+        os.symlink(posixpath.abspath('apple'), 'bag/apple')
+
+    def test_unlink_dir(self):
+        with patch('dantalian.dtags.remove_tag', autospec=True) as mock_func:
+            base.unlink(self.root, 'bag/apple')
+            self.assertFalse(posixpath.exists('bag/apple'))
+            mock_func.assert_called_with('bag/apple', '//bag/apple')
+
+
+class TestSwapDir(testlib.FSMixin, testlib.SameFileMixin):
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir('bag')
+        os.mkdir('apple')
+        os.symlink(posixpath.abspath('apple'), 'bag/apple')
+
+    def test_swap_dir(self):
+        with patch('dantalian.dtags.add_tag', autospec=True) as mock_add, \
+             patch('dantalian.dtags.remove_tag', autospec=True) as mock_rm:
+            base.swap_dir(self.root, 'bag/apple')
+            self.assertTrue(posixpath.islink('apple'))
+            self.assertTrue(posixpath.isdir('bag/apple'))
+            mock_rm.assert_called_with('bag/apple', '//bag/apple')
+            mock_add.assert_called_with('bag/apple', '//apple')
