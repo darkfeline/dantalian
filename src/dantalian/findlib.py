@@ -147,9 +147,14 @@ class DirNode(SearchNode):
 def parse_query(rootpath, query):
     r"""Parse query string into query node tree.
 
-    Parent node syntax: NODE foo [bar...] END
+    Parent node syntax:
 
-    Escape by prepending a backslash.  Everything else parses to a DirNode.
+        NODE foo [bar...] END
+
+    where NODE is AND, OR, or MINUS
+
+    Tokens beginning with a backslash are used directly in DirNodes.
+    Everything else parses to a DirNode, but with tagname conversion.
 
     Query strings look like:
 

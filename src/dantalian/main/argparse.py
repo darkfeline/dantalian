@@ -157,9 +157,10 @@ def make_parser():
     parser.set_defaults(func=commands.rename_all)
 
     # unlink_all
-    parser = subparsers.add_parser('unlink_all', usage='%(prog)s PATH')
+    parser = subparsers.add_parser('unlink_all',
+                                   usage='%(prog)s PATH [PATH ...]')
     _add_root(parser)
-    parser.add_argument('path')
+    parser.add_argument('paths', nargs='+')
     parser.set_defaults(func=commands.unlink_all)
 
     # import

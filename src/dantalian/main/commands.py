@@ -19,6 +19,7 @@
 
 import json
 import logging
+import os
 import posixpath
 import sys
 
@@ -28,6 +29,7 @@ from dantalian import dtags
 from dantalian import findlib
 from dantalian import library
 from dantalian import tagging
+from dantalian import tagnames
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,18 +43,34 @@ def _get_rootpath(args):
     else:
         return library.find_library('.')
 
-# XXX tagname conversions for arguments
+
+def _tag_convert(args, *keys):
+    """Convert argument values from tagnames to paths.
+
+    Also convert values from lists of tagnames to lists of paths.  Also do
+    _get_rootpath because it's convenient.
+
+    """
+    rootpath = _get_rootpath(args)
+    for key in keys:
+        value = getattr(args, key)
+        if isinstance(value, list):
+            value = [tagnames.path(rootpath, name) for name in value]
+        else:
+            value = tagnames.path(rootpath, value)
+        setattr(args, key, value)
+    return rootpath
 
 
 ##############################################################################
 # base
 def link(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'src', 'dst')
     base.link(rootpath, args.src, args.dst)
 
 
 def unlink(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'files')
     for file in args.files:
         try:
             base.unlink(rootpath, file)
@@ -61,12 +79,12 @@ def unlink(args):
 
 
 def rename(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'src', 'dst')
     base.rename(rootpath, args.src, args.dst)
 
 
 def swap(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'dir')
     base.swap_dir(rootpath, args.dir)
 
 
@@ -79,32 +97,32 @@ def _do_all_dirs(top, callback):
 
 
 def save(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'dir')
     if args.all:
-        _do_all_dirs(top, lambda path: base.save_dtags(rootpath, args.dir))
+        _do_all_dirs(args.dir, lambda path: base.save_dtags(rootpath, path))
     else:
         base.save_dtags(rootpath, args.dir)
 
 
 def load(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'dir')
     if args.all:
-        _do_all_dirs(top, lambda path: base.load_dtags(rootpath, args.dir))
+        _do_all_dirs(args.dir, lambda path: base.load_dtags(rootpath, path))
     else:
         base.load_dtags(rootpath, args.dir)
 
 
 def unload(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'dir')
     if args.all:
-        _do_all_dirs(top, lambda path: base.unload_dtags(rootpath, args.dir))
+        _do_all_dirs(args.dir, lambda path: base.unload_dtags(rootpath, path))
     else:
-        t_unload
+        base.unload_dtags(rootpath, args.dir)
 
 
 ##############################################################################
 def magic_list(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'path')
     path = args.path
     if posixpath.isdir(path) and args.tags:
         results = dtags.list_tags(path)
@@ -133,7 +151,7 @@ def init_library(args):
 ##############################################################################
 # tagging
 def tag(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'files', 'tags')
     for current_file in args.files:
         for current_tag in args.tags:
             try:
@@ -143,7 +161,7 @@ def tag(args):
 
 
 def untag(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'files', 'tags')
     for current_file in args.files:
         for current_tag in args.tags:
             try:
@@ -159,12 +177,12 @@ def clean(args):
 
 
 def rename_all(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'path')
     bulk.rename_all(rootpath, args.path, args.name)
 
 
 def unlink_all(args):
-    rootpath = _get_rootpath(args)
+    rootpath = _tag_convert(args, 'paths')
     bulk.unlink_all(rootpath, args.path)
 
 
