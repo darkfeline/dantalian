@@ -5,11 +5,11 @@ title: Dantalian
 
 # Dantalian
 
-Dantalian is a set of Python scripts to help with file organization and
-tagging with hard links.
+Dantalian is a Python 3 library for file organization and tagging using hard
+links.
 
 In technical jargon, Dantalian can be described as a multi-dimensionally
-hierarchical tag-based transparent lightweight file organization system.
+hierarchical transparent lightweight file organization system.
 
 ## Features
 
@@ -46,10 +46,5 @@ Bug tracker
 Documentation
 : <http://dantalian.readthedocs.org/en/>
 
-## Contact info
-
-Arch Linux forum thread
-: <https://bbs.archlinux.org/viewtopic.php?pid=1326530>
-
-General mailing list
-: [dantalian-archiver-users](https://lists.sourceforge.net/lists/listinfo/dantalian-archiver-users)
+Mailing list
+: [dantalian-archiver-users@lists.sourceforge.net](https://lists.sourceforge.net/lists/listinfo/dantalian-archiver-users)
