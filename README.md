@@ -2,19 +2,19 @@
 
 Project Website: <http://darkfeline.github.io/dantalian/>
 
-Dantalian is a set of Python scripts to assist file organization and
-tagging using hard links.
+Dantalian is a Python library to assist file organization and tagging
+using hard links.
 
 Comprehensive documentation can be found online at
 <http://dantalian.readthedocs.org/en/>
 
 ## Features
 
-* Organizes using the plain file system.
-* Extremely flexible (no tag limit, no tag naming restrictions,
+- Organizes using the plain file system.
+- Extremely flexible (no tag limit, no tag naming restrictions,
   hierarchical tags, no file naming restrictions, can tag all files and
   directories).
-* Transparent to other applications, since it works directly with the
+- Transparent to other applications, since it works directly with the
   file system.
 
 ## Requirements
@@ -28,19 +28,22 @@ problems.
 Install using packages from your distribution if available.
 Otherwise, see below for manual installation.
 
-* [Arch Linux (AUR)](https://aur.archlinux.org/packages/dantalian/)
-* [Arch Linux (AUR) (git)](https://aur.archlinux.org/packages/dantalian-git/)
+### Arch Linux
+
+- [dantalian](https://aur.archlinux.org/packages/dantalian/)
+- [dantalian-git](https://aur.archlinux.org/packages/dantalian-git/)
+
+### Manual installation
 
 Dependencies:
 
-* [Python 3](http://www.python.org/)
-* [GNU findutils](http://www.gnu.org/software/findutils/)
-* [FUSE](http://fuse.sourceforge.net/) (Optional, for FUSE features)
+- [Python 3](http://www.python.org/)
+- [GNU findutils](http://www.gnu.org/software/findutils/)
 
 Build dependencies:
 
-* [setuptools](https://pypi.python.org/pypi/setuptools)
-* [Sphinx](http://sphinx-doc.org/index.html)
+- [setuptools](https://pypi.python.org/pypi/setuptools)
+- [Sphinx](http://sphinx-doc.org/index.html)
 
 Installation is simple.  Obtain the sources, then run:
 
@@ -52,35 +55,15 @@ user:
 
     $ python setup.py install --user
 
-It is recommended to install the man pages as well.  The man pages can
-be built like so:
-
-    $ cd doc
-    $ make man
-
-The man pages can be found in `doc/_build/man`.  How they are
-installed depends on your system.  On Arch Linux, man pages are
-installed in `/usr/share/man` as gzipped archives, so you would do
-the following:
-
-    $ cd doc/_build/man
-    $ gzip ./*
-    # install ./* /usr/share/man/man1
+By default this will install to `~/.local/bin`.
 
 ## Usage
 
-Dantalian provides a script which can be invoked:
+Dantalian can be used either as a Python library or a standalone program.
 
-    $ dantalian <command>
+Note that using Dantalian separately may be slow due to Python's nature.
+When performing bulk operations, consider using Dantalian as a library
+in a Python script instead of invoking Dantalian repeated in a shell
+script.
 
-Dantalian also installs a python package that can be imported by any
-Python scripts:
-
-    >>> import dantalian
-
-Check the man pages for specifics:
-
-    $ man 1 dantalian
-
-If the man pages are not installed, they can be found in
-reStructuredText form in `doc/man`.
+Check the documentation for more information.
