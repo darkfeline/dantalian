@@ -70,28 +70,8 @@ def rename_all(rootpath, top, path, name):
             continue
         # pylint: disable=cell-var-from-loop
         pathlib.free_name_do(dirname, newname,
-                             lambda dst: _rename_safe(rootpath, filepath, dst))
+                             lambda dst: base.rename(rootpath, filepath, dst))
         seen.add(dirname)
-
-
-def _rename_safe(rootpath, src, dst):
-    """Safe version of rename.
-
-    Raises FileExistsError if dst exists instead of overwriting, but subject to
-    race conditions.
-
-    base.rename() implementation does not overwrite, but this function is kept
-    in case base.rename() implementation is changed.
-
-    Args:
-        rootpath: Rootpath for tag conversions.
-        src: Source path.
-        dst: Destination path.
-
-    """
-    if posixpath.exists(dst):
-        raise oserrors.file_exists(src, dst)
-    base.rename(rootpath, src, dst)
 
 
 def unlink_all(rootpath, path):
