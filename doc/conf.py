@@ -226,7 +226,7 @@ HEADER_PATTERN = re.compile(
     r'(?P<name>[-a-z]+)'
     r'\((?P<section>\d+)\)'
     r' +-- +'
-    r'(?P<description>\w.*?)\s*'
+    r'(?P<description>\w.*)\s*$'
 )
 
 
