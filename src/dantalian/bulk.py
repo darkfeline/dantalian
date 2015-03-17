@@ -46,7 +46,7 @@ def clean_symlinks(dirpath):
                 os.unlink(path)
 
 
-def rename_all(rootpath, path, name):
+def rename_all(rootpath, top, path, name):
     """Rename all links to the file or directory.
 
     Attempt to rename all links to the target under the rootpath to the given
@@ -54,7 +54,8 @@ def rename_all(rootpath, path, name):
     directory, the first will be renamed and the rest unlinked.
 
     Args:
-        rootpath: Base path for tag conversions and search.
+        rootpath: Base path for tag conversions.
+        top: Path of search directory.
         path: Path to target.
         name: New filename.
 
@@ -62,7 +63,7 @@ def rename_all(rootpath, path, name):
     target = path
     newname = name
     seen = set()
-    for filepath in base.list_links(rootpath, target):
+    for filepath in base.list_links(top, target):
         dirname = posixpath.dirname(filepath)
         if dirname in seen:
             base.unlink(rootpath, filepath)
