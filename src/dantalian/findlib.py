@@ -147,32 +147,7 @@ class DirNode(SearchNode):
 def parse_query(rootpath, query):
     r"""Parse query string into query node tree.
 
-    Parent node syntax:
-
-        NODE foo [bar...] END
-
-    where NODE is AND, OR, or MINUS
-
-    Tokens beginning with a backslash are used directly in DirNodes.
-    Everything else parses to a DirNode, but with tagname conversion.
-
-    Query strings look like:
-
-        'AND foo bar OR spam eggs END AND \AND \OR \END \\\END ) )'
-
-    which parses to:
-
-        AndNode(
-            DirNode('foo'),
-            DirNode('bar'),
-            OrNode(
-                DirNode('spam'),
-                DirNode('eggs')),
-            AndNode(
-                DirNode('AND'),
-                DirNode('OR')),
-                DirNode('END'),
-                DirNode('\\END'))
+    See documentation for details.
 
     Args:
         rootpath: Rootpath for tag conversions.
