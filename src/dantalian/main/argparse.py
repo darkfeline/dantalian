@@ -116,7 +116,7 @@ def make_parser():
 
     ###########################################################################
     # library
-    parser = subparsers.add_parser('init_library', usage='%(prog)s [PATH]')
+    parser = subparsers.add_parser('init-library', usage='%(prog)s [PATH]')
     parser.add_argument('path', nargs='?', default='.')
     parser.set_defaults(func=commands.init_library)
 
@@ -150,14 +150,14 @@ def make_parser():
     parser.set_defaults(func=commands.clean)
 
     # rename_all
-    parser = subparsers.add_parser('rename_all', usage='%(prog)s PATH NAME')
+    parser = subparsers.add_parser('rename-all', usage='%(prog)s PATH NAME')
     _add_root(parser)
     parser.add_argument('path')
     parser.add_argument('name')
     parser.set_defaults(func=commands.rename_all)
 
     # unlink_all
-    parser = subparsers.add_parser('unlink_all',
+    parser = subparsers.add_parser('unlink-all',
                                    usage='%(prog)s PATH [PATH ...]')
     _add_root(parser)
     parser.add_argument('paths', nargs='+')
