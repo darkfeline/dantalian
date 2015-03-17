@@ -37,7 +37,7 @@ def link(rootpath, src, dst):
     """Link src to dst.
 
     Args:
-        rootpath: Path for tag conversions.
+        rootpath: Path for tagname conversions.
         src: Source path.
         dst: Destination path.
 
@@ -78,7 +78,7 @@ def rename(rootpath, src, dst):
     Doesn't overwrite an existing file at dst.
 
     Args:
-        rootpath: Rootpath for tag conversions.
+        rootpath: Rootpath for tagname conversions.
         src: Source path.
         dst: Destination path.
     """
