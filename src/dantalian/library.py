@@ -48,7 +48,9 @@ def find_library(dirpath='.'):
 
 def init_library(dirpath):
     """Initialize library."""
-    os.mkdir(posixpath.join(dirpath, _ROOTDIR))
+    rootdir = posixpath.join(dirpath, _ROOTDIR)
+    if not posixpath.isdir(rootdir):
+        os.mkdir(rootdir)
 
 
 def get_resource(dirpath, resource_path):
