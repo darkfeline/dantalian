@@ -99,9 +99,10 @@ def _do_all_dirs(top, callback):
 def save(args):
     rootpath = _tag_convert(args, 'dir')
     if args.all:
-        _do_all_dirs(args.dir, lambda path: base.save_dtags(rootpath, path))
+        _do_all_dirs(args.dir,
+                     lambda path: base.save_dtags(rootpath, rootpath, path))
     else:
-        base.save_dtags(rootpath, args.dir)
+        base.save_dtags(rootpath, rootpath, args.dir)
 
 
 def load(args):

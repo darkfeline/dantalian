@@ -133,18 +133,19 @@ def list_links(top, path):
                 yield filepath
 
 
-def save_dtags(rootpath, dirpath):
+def save_dtags(rootpath, top, dirpath):
     """Save symlinks to a directory's dtags, overwriting it.
 
     Args:
-        rootpath: Path for tag conversions and searching.
-        dirpath: Path of directory.
+        rootpath: Path for tag conversions.
+        top: Path of directory in which to search.
+        dirpath: Path of directory whose dtags to update.
 
     """
     dirpath = pathlib.readlink(dirpath)
-    dir_tagname = tagnames.path2tag(rootpath, dirpath)
     tags = [tagnames.path2tag(rootpath, path)
-            for path in list_links(rootpath, dirpath)]
+            for path in list_links(top, dirpath)]
+    dir_tagname = tagnames.path2tag(rootpath, dirpath)
     tags = [tagname
             for tagname in tags
             if tagname != dir_tagname]
