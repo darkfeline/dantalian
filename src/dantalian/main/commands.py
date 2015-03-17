@@ -184,7 +184,7 @@ def rename_all(args):
 
 def unlink_all(args):
     rootpath = _tag_convert(args, 'paths')
-    bulk.unlink_all(rootpath, args.path)
+    bulk.unlink_all(rootpath, rootpath, args.path)
 
 
 def import_tags(args):

@@ -74,13 +74,14 @@ def rename_all(rootpath, top, path, name):
         seen.add(dirname)
 
 
-def unlink_all(rootpath, path):
+def unlink_all(rootpath, top, path):
     """Unlink all links to the target file-or-directory.
 
-    Unlink all links to the target under the rootpath.
+    Unlink all links to the target under top.
 
     Args:
         rootpath: Base path for tag conversions and search.
+        top: Path of search directory.
         path: Path to target.
 
     """
@@ -90,7 +91,7 @@ def unlink_all(rootpath, path):
         base.unload_dtags(rootpath, target)
         shutil.rmtree(target)
     else:
-        for path in base.list_links(rootpath, target):
+        for path in base.list_links(top, target):
             base.unlink(rootpath, path)
 
 
