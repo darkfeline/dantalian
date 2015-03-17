@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-swap(1) -- Swap directory links
+=========================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **swap** [*options*] *dir*
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Swap out a directory symlink for the actual directory.
 
 OPTIONS
 -------
@@ -23,4 +23,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

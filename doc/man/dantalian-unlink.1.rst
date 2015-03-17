@@ -1,15 +1,17 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-unlink(1) -- Unlink file or directory
+===============================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **unlink** [*options*] *file*...
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Unlink files and/or directories.
+
+Replacement for rm(1) that works with directories.
 
 OPTIONS
 -------
@@ -23,4 +25,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

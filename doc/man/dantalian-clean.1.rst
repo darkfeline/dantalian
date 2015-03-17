@@ -1,19 +1,23 @@
-dantalian-clean(1) -- Clean stored converted directories
-========================================================
+dantalian-clean(1) -- Clean broken symlinks
+===========================================
 
 SYNOPSIS
 --------
 
-**dantalian** **clean** [*options*]
+**dantalian** **clean** [*options*] [*dir*]
 
 DESCRIPTION
 -----------
 
-This command removes directories that have been converted, but no longer
-have any symbolic links pointing to them in the library.
+Remove all broken symlinks.  Use current directory if no path is given.
 
 OPTIONS
 -------
 
 -h, --help   Print help information.
---root=PATH  Specify the root directory of the library to use.
+
+SEE ALSO
+--------
+
+dantalian(1)
+    Main man page

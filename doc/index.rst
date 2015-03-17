@@ -12,16 +12,22 @@ Website
 
 This is the documentation for Dantalian |release|, built on |today|.
 
+Dantalian is a Python 3 library for file organization and tagging using hard
+links.
+
 Contents
 --------
 
 .. toctree::
    :maxdepth: 1
 
+   intro
+   install
    definitions
-   reference
-   user
-   dev
+   linking
+   searching
+   tagging
+   bulk
    man
 
 Copyright

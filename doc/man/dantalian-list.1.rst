@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-list(1) -- List links
+===============================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **list** [*options*] *path*
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+List all links of the given file or directory.
 
 OPTIONS
 -------
@@ -17,10 +17,10 @@ OPTIONS
 -h, --help   Print help information.
 --root=PATH  Specify the root directory of the library to use.  If not
              specified, try to find a library automatically.
+--tags       List tagnames instead of pathnames.
 
 SEE ALSO
 --------
 
 dantalian(1)
     Main man page
-

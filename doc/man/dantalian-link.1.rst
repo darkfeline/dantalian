@@ -1,15 +1,17 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-link(1) -- Link file or directory
+===========================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **link** [*options*] *src* *dst*
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Link *src* to *dst*
+
+Replacement for ln(1) that works with directories.
 
 OPTIONS
 -------
@@ -23,4 +25,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

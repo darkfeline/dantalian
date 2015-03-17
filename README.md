@@ -2,7 +2,7 @@
 
 Project Website: <http://darkfeline.github.io/dantalian/>
 
-Dantalian is a Python library to assist file organization and tagging
+Dantalian is a Python 3 library to assist file organization and tagging
 using hard links.
 
 Comprehensive documentation can be found online at
@@ -38,12 +38,11 @@ Otherwise, see below for manual installation.
 Dependencies:
 
 - [Python 3](http://www.python.org/)
-- [GNU findutils](http://www.gnu.org/software/findutils/)
 
 Build dependencies:
 
 - [setuptools](https://pypi.python.org/pypi/setuptools)
-- [Sphinx](http://sphinx-doc.org/index.html)
+- [Sphinx](http://sphinx-doc.org/index.html) (for documentation)
 
 Installation is simple.  Obtain the sources, then run:
 
@@ -57,13 +56,28 @@ user:
 
 By default this will install to `~/.local/bin`.
 
+It is recommended to install the man pages as well.  The man pages can
+be built like so:
+
+    $ cd doc
+    $ make man
+
+The man pages can be found in `doc/_build/man`.  How they are
+installed depends on your system.  On Arch Linux, man pages are
+installed in `/usr/share/man` as gzipped archives, so you would do
+the following:
+
+    $ cd doc/_build/man
+    $ gzip ./*
+    # install ./* /usr/share/man/man1
+
 ## Usage
 
 Dantalian can be used either as a Python library or a standalone program.
 
 Note that using Dantalian separately may be slow due to Python's nature.
 When performing bulk operations, consider using Dantalian as a library
-in a Python script instead of invoking Dantalian repeated in a shell
+in a Python script instead of invoking Dantalian repeatedly in a shell
 script.
 
 Check the documentation for more information.

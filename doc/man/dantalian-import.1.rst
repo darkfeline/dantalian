@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-import(1) -- Import tags
+==================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **import** [*options*]
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Import JSON tag data from stdin.
 
 OPTIONS
 -------
@@ -23,4 +23,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

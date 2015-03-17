@@ -1,5 +1,5 @@
-dantalian(1) -- file tagging using hard links
-=============================================
+dantalian(1) -- file management using hard links
+================================================
 
 SYNOPSIS
 --------
@@ -9,8 +9,14 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-**dantalian** provides an interface to scripts that automate management
-of file tagging using hard links.
+**dantalian** is a standalone script for accessing Dantalian functionality.
+
+Dantalian is a Python 3 library to assist file organization and tagging using
+hard links.
+
+The commands here are generally equivalent to the respective functions in the
+Dantalian library, with some command line sugar. Therefore, make sure to read
+the documentation in addition to the man pages!
 
 OPTIONS
 -------
@@ -20,77 +26,74 @@ OPTIONS
 COMMANDS
 --------
 
-There are three types of commands.  Library commands require a library.
-**dantalian** will search up the directory tree from the working
-directory and use the first library it finds, or a library can be
-specified explicitly by path.
+Base commands
+^^^^^^^^^^^^^
 
-Global commands do not require a library.  Socket commands require a
-virtual FUSE library, and simply write commands to the virtual FUSE
-library's command socket.
+dantalian-link(1)
+    Link file or directory.
 
-LIBRARY COMMANDS
+dantalian-unlink(1)
+    Unlink file or directory.
+
+dantalian-rename(1)
+    Rename file or directory.
+
+dantalian-swap(1)
+    Swap symlink with its directory.
+
+dantalian-save(1)
+    Save dtags.
+
+dantalian-load(1)
+    Load dtags.
+
+dantalian-unload(1)
+    Unoad dtags.
+
+dantalian-list(1)
+    List links.
+
+Search commands
+^^^^^^^^^^^^^^^
+
+dantalian-search(1)
+    Do tag query search.
+
+Library commands
+^^^^^^^^^^^^^^^^
+
+dantalian-init-library(1)
+    Initialize library.
+
+Tagging commands
 ^^^^^^^^^^^^^^^^
 
 dantalian-tag(1)
-    Tag files.
+   Tag file or directory.
 
 dantalian-untag(1)
-    Untag files.
+   Untag file or directory.
 
-dantalian-mktag(1)
-    Make tags.
-
-dantalian-rmtag(1)
-    Remove tags.
-
-dantalian-tags(1)
-    List tags of files.
-
-dantalian-find(1)
-    Find files with tags.
-
-dantalian-rm(1)
-    Remove all tags of files.
-
-dantalian-rename(1)
-    Rename tagged file.
-
-dantalian-convert(1)
-    Convert directories into taggable symbolic links.
-
-dantalian-revert(1)
-    Revert converted directories from symbolic links.
-
-dantalian-fix(1)
-    Fix symbolic links of converted directories.
+Bulk commands
+^^^^^^^^^^^^^
 
 dantalian-clean(1)
-    Clean stored converted directories.
+    Clean up broken symlinks.
 
-dantalian-mount(1)
-    Mount library as virtual FUSE library.
+dantalian-rename-all(1)
+    Rename all links of a file.
 
-GLOBAL COMMANDS
-^^^^^^^^^^^^^^^
+dantalian-unlink-all(1)
+    Unlink all links of a file.
 
-dantalian-init(1)
-    Initialize a library.
+dantalian-import(1)
+    Import tag data.
 
-SOCKET COMMANDS
-^^^^^^^^^^^^^^^
-
-dantalian-mknode(1)
-    Make a tag node.
-
-dantalian-rmnode(1)
-    Remove nodes.
+dantalian-export(1)
+    Export tag data.
 
 SEE ALSO
 --------
-
-dantalian-concepts(1)
-    Concepts and general information.
 
 Online documentation
     http://dantalian.readthedocs.org/

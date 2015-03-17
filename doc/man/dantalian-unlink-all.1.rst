@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-unlink-all(1) -- Unlink all links
+===========================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **unlink-all** [*options*] *path*...
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Unlink all links of the given files or directories.
 
 OPTIONS
 -------
@@ -23,4 +23,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

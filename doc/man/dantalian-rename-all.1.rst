@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-rename-all(1) -- Rename all links
+===========================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **rename-all** [*options*] *path* *name*
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Rename all links of a file or directory.
 
 OPTIONS
 -------
@@ -23,4 +23,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

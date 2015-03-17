@@ -1,15 +1,16 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-search(1) -- Search tags
+==================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **search** [*options*] *query*...
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Do a tag query search.  Queries are parsed using the Dantalian library; see
+documentation for details.
 
 OPTIONS
 -------
@@ -23,4 +24,3 @@ SEE ALSO
 
 dantalian(1)
     Main man page
-

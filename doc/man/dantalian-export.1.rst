@@ -1,15 +1,15 @@
-dantalian-tag(1) -- Tag files
-=============================
+dantalian-export(1) -- Export tags
+==================================
 
 SYNOPSIS
 --------
 
-**dantalian** **tag** [*options*] -f *file*... -- *tag*...
+**dantalian** **export** [*options*] *dir*
 
 DESCRIPTION
 -----------
 
-Tag all of the given files with all of the given tags.
+Export JSON tag data to stdout.
 
 OPTIONS
 -------
@@ -17,10 +17,10 @@ OPTIONS
 -h, --help   Print help information.
 --root=PATH  Specify the root directory of the library to use.  If not
              specified, try to find a library automatically.
+--full       Export full tag data; check documentation for more info.
 
 SEE ALSO
 --------
 
 dantalian(1)
     Main man page
-
