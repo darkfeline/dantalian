@@ -116,7 +116,7 @@ def export_tags(rootpath, top, full=False):
     Returns a dictionary that maps pathnames to lists of tagnames.
 
     Each file will only have one key path mapping to a list of tags.  If
-    full=True, Each file will have one key path for each one of that file's
+    full=True, each file will have one key path for each one of that file's
     links, all mapping to the same list of tags.
 
     Args:
