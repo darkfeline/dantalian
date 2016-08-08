@@ -6,7 +6,7 @@ Dantalian is a Python 3 library to assist file organization and tagging
 using hard links.
 
 Comprehensive documentation can be found online at
-<http://dantalian.readthedocs.org/en/>
+<http://dantalian.readthedocs.io/>
 
 ## Features
 

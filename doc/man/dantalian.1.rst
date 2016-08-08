@@ -96,7 +96,7 @@ SEE ALSO
 --------
 
 Online documentation
-    http://dantalian.readthedocs.org/
+    http://dantalian.readthedocs.io/
 
 Project website
     http://darkfeline.github.io/dantalian/
