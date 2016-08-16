@@ -47,6 +47,9 @@ def untag(rootpath, path, directory):
         directory: Directory path.
     """
     target = path
+    to_unlink = []
     for filepath in pathlib.listdirpaths(directory):
         if posixpath.samefile(target, filepath):
-            base.unlink(rootpath, filepath)
+            to_unlink.append(filepath)
+    for filepath in to_unlink:
+        base.unlink(rootpath, filepath)
