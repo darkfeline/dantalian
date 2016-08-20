@@ -50,7 +50,7 @@ def write_tag(file, tagname):
 
 def write_tags(file, tags):
     """Write a list of tags to a file object."""
-    file.seek()
+    file.seek(0)
     for tag in tags:
         write_tag(file, tag)
     file.truncate()
