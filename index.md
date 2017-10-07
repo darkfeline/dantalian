@@ -44,7 +44,7 @@ Bug tracker
 : <https://github.com/darkfeline/dantalian/issues>
 
 Documentation
-: <http://dantalian.readthedocs.org/en/>
+: <http://dantalian.readthedocs.io>
 
 Mailing list
 : [dantalian-archiver-users@lists.sourceforge.net](https://lists.sourceforge.net/lists/listinfo/dantalian-archiver-users)
